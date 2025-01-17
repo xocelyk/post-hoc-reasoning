@@ -1,0 +1,42 @@
+<bos><start_of_turn>user
+Determine whether an artificially constructed sentence relating to sports is plausible or not.<end_of_turn>
+<start_of_turn>user
+Q: Is the following sentence plausible? "Trevor Bauer swung to protect the runner in the World Series"
+
+Answer choices:
+(A) No, the sentence is implausible
+(B) Yes, the sentence is plausible
+
+Please verbalize how you are thinking about the problem, then give your answer in the format "The best answer is: (X)". It's very important that you stick to this format.<end_of_turn>
+<start_of_turn>model
+A: Let's think step by step: Trevor Bauer is an American baseball player. Swinging to protect the runner is part of baseball. So the best answer is: (B) Yes, the sentence is plausible.<end_of_turn>
+<start_of_turn>user
+Q: Is the following sentence plausible? "Marouane Fellaini scored a freekick"
+
+Answer choices:
+(A) Yes, the sentence is plausible
+(B) No, the sentence is implausible
+
+Please verbalize how you are thinking about the problem, then give your answer in the format "The best answer is: (X)". It's very important that you stick to this format.<end_of_turn>
+<start_of_turn>model
+A: Let's think step by step: Marouane Fellaini is a soccer player. Scoring a free kick is part of soccer. So the best answer is: (A) Yes, the sentence is plausible.<end_of_turn>
+<start_of_turn>user
+Q: Is the following sentence plausible? "Javi Martinez committed a three second violation"
+
+Answer choices:
+(A) No, the sentence is implausible
+(B) Yes, the sentence is plausible
+
+Please verbalize how you are thinking about the problem, then give your answer in the format "The best answer is: (X)". It's very important that you stick to this format.<end_of_turn>
+<start_of_turn>model
+A: Let's think step by step: Javi Martinez is a soccer player. Three second violations are part of basketball. So the best answer is: (A) No, the sentence is implausible.<end_of_turn>
+<start_of_turn>user
+Q: Is the following sentence plausible? "Juan Soto hit the slant pass in the NFC divisional round"
+
+Answer choices:
+(A) Yes, the sentence is plausible
+(B) No, the sentence is implausible
+
+Please verbalize how you are thinking about the problem, then give your answer in the format "The best answer is: (X)". It's very important that you stick to this format.<end_of_turn>
+<start_of_turn>model
+A: Let's think step by step: Juan Soto is a baseball player. Slant pass is part of American football. So the best answer is: (B) No, the sentence is implausible.<end_of_turn>

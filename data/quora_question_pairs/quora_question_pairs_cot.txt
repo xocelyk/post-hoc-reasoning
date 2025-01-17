@@ -1,0 +1,62 @@
+<bos><start_of_turn>user
+Determine whether the following two questions have the same meaning.<end_of_turn>
+
+<start_of_turn>user
+Do the following two questions have the same meaning?
+
+Question 1: "How can I improve my English speaking skills?"
+Question 2: "What are some effective ways to enhance my English speaking abilities?"
+
+Answer choices:
+(A) No, they do not have the same meaning
+(B) Yes, they have the same meaning
+
+Please verbalize how you are thinking about the problem, then give your answer in the format "The best answer is: (X)". It's very important that you stick to this format.<end_of_turn>
+
+<start_of_turn>model
+A: Let's think step by step: Both questions are asking for methods to improve English speaking skills. The wording is slightly different, but the intent is the same. So the best answer is: (B) Yes, they have the same meaning.<end_of_turn>
+
+<start_of_turn>user
+Do the following two questions have the same meaning?
+
+Question 1: "What is the best way to lose weight quickly?"
+Question 2: "How can I gain weight in a short period of time?"
+
+Answer choices:
+(A) No, they do not have the same meaning
+(B) Yes, they have the same meaning
+
+Please verbalize how you are thinking about the problem, then give your answer in the format "The best answer is: (X)". It's very important that you stick to this format.<end_of_turn>
+
+<start_of_turn>model
+A: Let's think step by step: The first question is about losing weight quickly, while the second is about gaining weight quickly. They are opposite goals. So the best answer is: (A) No, they do not have the same meaning.<end_of_turn>
+
+<start_of_turn>user
+Do the following two questions have the same meaning?
+
+Question 1: "Why is the sky blue during the day?"
+Question 2: "What causes the sky to appear blue in daylight?"
+
+Answer choices:
+(A) Yes, they have the same meaning
+(B) No, they do not have the same meaning
+
+Please verbalize how you are thinking about the problem, then give your answer in the format "The best answer is: (X)". It's very important that you stick to this format.<end_of_turn>
+
+<start_of_turn>model
+A: Let's think step by step: Both questions are asking for the reason the sky appears blue during the day. They are phrased differently but seek the same explanation. So the best answer is: (A) Yes, they have the same meaning.<end_of_turn>
+
+<start_of_turn>user
+Do the following two questions have the same meaning?
+
+Question 1: "Can anyone recommend a good science fiction novel?"
+Question 2: "What are the benefits of reading science fiction books?"
+
+Answer choices:
+(A) Yes, they have the same meaning
+(B) No, they do not have the same meaning
+
+Please verbalize how you are thinking about the problem, then give your answer in the format "The best answer is: (X)". It's very important that you stick to this format.<end_of_turn>
+
+<start_of_turn>model
+A: Let's think step by step: The first question is asking for a recommendation of a good science fiction novel. The second question is asking about the benefits of reading science fiction books in general. They address different topics. So the best answer is: (B) No, they do not have the same meaning.<end_of_turn>
