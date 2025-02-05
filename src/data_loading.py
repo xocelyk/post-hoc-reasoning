@@ -1,5 +1,6 @@
 import json
 import random
+import os
 from typing import Dict, List
 
 def format_sports_understanding_from_json(data: Dict) -> List[List[str]]:
@@ -115,7 +116,6 @@ def create_dataset(task_name: str) -> List[List[str]]:
     else:
         raise ValueError(f"Unknown task name: {task_name}")
 
-
     return example_data
 
 def create_cot_dataset(task_name: str, examples: List[List[str]]) -> List[Dict]:
@@ -182,7 +182,6 @@ def create_cot_dataset(task_name: str, examples: List[List[str]]) -> List[Dict]:
             text, label = example
             full_text = f"\"{text}\""
 
-        # Skip if text is empty
         if not full_text.strip():
             continue
 
@@ -190,12 +189,10 @@ def create_cot_dataset(task_name: str, examples: List[List[str]]) -> List[Dict]:
         config = task_configs[task_name]
         choices = random.choice(config["choices"])
 
-        # Prepare a new prompt list (copy CoT messages, then add user/model messages)
         prompt = []
-        prompt.extend(cot_prompt)  # each entry in cot_prompt is {"role": ..., "content": ...}
+        prompt.extend(cot_prompt)
 
         if task_name == 'logical_deduction':
-            # Append a user message containing the text + answer choices + instruction
             prompt.append({
                 "role": "user",
                 "content": (
@@ -205,7 +202,6 @@ def create_cot_dataset(task_name: str, examples: List[List[str]]) -> List[Dict]:
                 ),
             })
         else:
-            # Append a user message for all other tasks
             prompt.append({
                 "role": "user",
                 "content": (
@@ -215,19 +211,17 @@ def create_cot_dataset(task_name: str, examples: List[List[str]]) -> List[Dict]:
                 ),
             })
 
-        # Model message to begin chain-of-thought reasoning
         prompt.append({
             "role": "model",
             "content": "A: Let's think step by step:"
         })
 
-        # Determine the correct letter based on the label and chosen pair of answers
         if label in choices[0].lower():
             correct_letter = 'A'
         elif label in choices[1].lower():
             correct_letter = 'B'
         else:
-            continue  # If none matches, skip
+            continue
 
         dataset.append({
             'prompt': prompt,
@@ -243,26 +237,34 @@ def load_cot_prompt(task_name: str) -> Dict:
 
 def load_all_datasets(sample_size=1000):
     task_datasets = {}
+    # Supported tasks based on available format functions
     task_names = [
         "sports_understanding",
         "anachronisms",
         "social_chemistry",
         "logical_deduction",
+        "snarks",
+        "quora_question_pairs"
     ]
     for task_name in task_names:
         examples = create_dataset(task_name)
-
-        # Randomly sample "sample_size" examples, if needed
         if len(examples) > sample_size:
             examples = random.sample(examples, sample_size)
-
         cot_dataset = create_cot_dataset(task_name, examples)
         task_datasets[task_name] = cot_dataset
     return task_datasets
 
-if __name__ == "__main__":
-    datasets = load_all_datasets()
-    for task_name, data in datasets.items():
-        print(f"\nSample from {task_name} dataset:")
-        for sample in data[:1]:
-            print(json.dumps(sample, indent=2))
+def list_available_datasets() -> List[str]:
+    """
+    Lists the names of available datasets by scanning the ../data directory.
+    A dataset is considered available if its corresponding JSON file exists.
+    """
+    base_path = os.path.join(os.path.dirname(__file__), '..', 'data')
+    dataset_names = []
+    for name in os.listdir(base_path):
+        dataset_path = os.path.join(base_path, name)
+        if os.path.isdir(dataset_path):
+            json_file = os.path.join(dataset_path, f"{name}.json")
+            if os.path.exists(json_file):
+                dataset_names.append(name)
+    return dataset_names
