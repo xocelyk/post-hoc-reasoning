@@ -1,4 +1,3 @@
-# %%
 import pandas as pd
 import numpy as np
 import torch
@@ -16,23 +15,17 @@ import time
 import json
 import warnings
 from sklearn.exceptions import ConvergenceWarning
+import argparse
 
 from data_loading import load_all_datasets
 from utils import generate_with_hooks
 from models import ChatModel
 
 '''
-TODO:
-- Remove global model and other vars so that I can just run the experiment in cells with max control (DONE)
-- Increase train/test size
-- Implement chat template application
-- Change/fix parse answer function
-- Create config. Should have openai api key for evaluation
+This module orchestrates research experiments.
+It supports running generation and steering experiments on various datasets
+using models from the transformer_lens library.
 '''
-
-# Removed the global constants and model instantiation so that we can work
-# with them on a cell-by-cell basis in a notebook for maximal control.
-# Now you can pass these parameters as arguments to the functions below.
 
 torch.cuda.empty_cache()
 gc.collect()
@@ -65,7 +58,6 @@ class PromptDataset(Dataset):
 # Helper functions
 def parse_response(response: str) -> Tuple[str, str]:
     response = response.strip().replace('<eos>', '').replace('<pad>', '').replace('<end_of_turn>', '').strip()
-    # --- Original parsing logic for Gemma ---
     start_answer_string = 'the best answer is:'
     if start_answer_string not in response.lower():
         return "", ""
@@ -90,17 +82,12 @@ def batch_get_resid_activations(prompts, model: ChatModel):
     tokens = model.to_tokens(prompts, prepend_bos=True)
     _, cache = model.run_with_cache(tokens, pos_slice=-1)
 
-    # Initialize activations array with zeros
     activations = np.zeros((len(prompts), model.cfg.n_layers, model.cfg.d_model))
 
     for layer in layers:
-        # Get the layer activations
         layer_activations = cache['resid_post', layer]
-        # Move to CPU and convert to numpy array
         layer_activations = layer_activations.squeeze().detach().cpu().numpy()
         activations[:, layer, :] = layer_activations
-
-        # Clear the cache after processing each layer
         del layer_activations
         torch.cuda.empty_cache()
         gc.collect()
@@ -113,7 +100,6 @@ def batch_get_generations(prompts, model: ChatModel, temperature=0.7, max_new_to
     generations = model.to_string(token_generations)
     return generations
 
-# Data processing functions
 def process_batch(
     prompts,
     correct_tups,
@@ -128,7 +114,6 @@ def process_batch(
     generations = batch_get_generations(
         prompts, model, temperature=temperature, max_new_tokens=max_new_tokens
     )
-    # Trim the prompt out of the generation text
     generations = [gen[len(prompt):] for gen, prompt in zip(generations, prompts)]
     
     responses = [parse_response(response) for response in generations]
@@ -184,9 +169,7 @@ def process_dataset(
                 'pred_letter': pred_letters[i],
                 'pred_answer': pred_answers[i],
             }
-            # Remove activations from the results
             results.append(result)
-            # Collect activations separately
             if get_activations:
                 activations_list.append(activations[i])
 
@@ -197,7 +180,6 @@ def process_dataset(
         if max_gen and sample_count >= max_gen:
             break
 
-    # Return results and activations separately
     return results, activations_list
 
 def save_pickle(data, filepath):
@@ -237,7 +219,6 @@ def load_json(filepath):
     with open(filepath, 'r') as f:
         return json.load(f)
 
-# Function to generate and save generations for a dataset
 def generate_and_save_generations(
     model: ChatModel,
     dataset_name: str,
@@ -248,15 +229,10 @@ def generate_and_save_generations(
     use_cache: bool = True,
     max_gen: int = None
 ):
-    """
-    Generates and saves model responses (and optionally layer activations) for a given dataset.
-    You can customize train_size, batch_size, etc., from outside for maximum notebook control.
-    """
     model_name = getattr(model, 'model_name', 'google/gemma-2-9b-it')
     setup_logging(model_name, dataset_name)
     print(f"Generating and saving generations for dataset: {dataset_name} with model: {model_name}")
 
-    # Check if dataset cache exists
     dataset_cache_path = os.path.join(CACHE_DIR, model_name, dataset_name, 'dataset.pkl')
 
     if use_cache and os.path.exists(dataset_cache_path):
@@ -267,7 +243,6 @@ def generate_and_save_generations(
         datasets = load_all_datasets()
         dataset = datasets[dataset_name]
                 
-        # Save dataset cache
         if use_cache:
             ensure_dir(os.path.dirname(dataset_cache_path))
             save_pickle(dataset, dataset_cache_path)
@@ -275,11 +250,9 @@ def generate_and_save_generations(
 
     print(f"Dataset loaded: {dataset_name}, total samples: {len(dataset)}")
 
-    # Split dataset
     train_dataset, test_dataset = train_test_split(dataset, train_size=train_size, random_state=42)
     print(f"Dataset split: train size = {len(train_dataset)}, test size = {len(test_dataset)}")
 
-    # Get generation and activation cache paths
     train_cache_path, test_cache_path, train_activations_cache, test_activations_cache = get_generation_cache_paths(
         model_name, dataset_name
     )
@@ -294,7 +267,6 @@ def generate_and_save_generations(
         print("Generations and activations already cached.")
         return
     else:
-        # Process train and test datasets
         train_dataloader = DataLoader(PromptDataset(train_dataset), batch_size=batch_size, shuffle=False)
         test_dataloader = DataLoader(PromptDataset(test_dataset), batch_size=batch_size, shuffle=False)
 
@@ -319,7 +291,6 @@ def generate_and_save_generations(
         )
         print(f"Test data processed: {len(test_results)} samples")
 
-        # Save generations and activations separately
         if use_cache:
             save_pickle(train_results, train_cache_path)
             save_pickle(test_results, test_cache_path)
@@ -327,22 +298,16 @@ def generate_and_save_generations(
             save_pickle(test_activations, test_activations_cache)
             print("Generations and activations cached")
 
-# Function to run steering experiments
 def run_steering_experiment(
     model: ChatModel,
     dataset_name: str,
     alpha_range: List[int] = [0, 1, 2, 3, 5, 7],
     use_cache: bool = True
 ):
-    """
-    Encompasses loading cached generations, training probes, and doing the steering experiment.
-    You can customize the alpha range or other parameters in a notebook environment as needed.
-    """
     model_name = getattr(model, 'model_name', 'google/gemma-2-9b-it')
     setup_logging(model_name, dataset_name)
     print(f"Running steering experiments for dataset: {dataset_name} with model: {model_name}")
 
-    # Load saved generations and activations
     train_cache_path, test_cache_path, train_activations_cache, test_activations_cache = get_generation_cache_paths(
         model_name, dataset_name
     )
@@ -352,7 +317,6 @@ def run_steering_experiment(
     test_activations = load_pickle(test_activations_cache)
     print(f"Results loaded: {len(train_results)} train samples, {len(test_results)} test samples")
 
-    # Train classifiers and save probes
     layers = list(range(model.cfg.n_layers))
     probes_cache_path = os.path.join(RESULTS_DIR, model_name, dataset_name, 'all_coef_vectors.pkl')
     layers_cache_path = os.path.join(RESULTS_DIR, model_name, dataset_name, 'selected_layers.pkl')
@@ -365,18 +329,15 @@ def run_steering_experiment(
         )
     print("Classifiers trained and probes saved")
     
-    # Save coefficient vectors and selected layers
     if use_cache:
         save_pickle(all_coef_vectors, probes_cache_path)
         save_pickle(selected_layers, layers_cache_path)
         print(f"Coefficient vectors saved at {probes_cache_path}")
         print(f"Selected layers saved at {layers_cache_path}")
 
-    # Create yes and no test datasets
     yes_test_data, no_test_data = create_test_subsets(test_results)
     print(f"Test subsets created: yes = {len(yes_test_data)}, no = {len(no_test_data)}")
 
-    # Perform steering
     print("Performing steering...")
     perform_steering(
         model, yes_test_data, no_test_data, all_coef_vectors, selected_layers, dataset_name,
@@ -401,28 +362,22 @@ def train_and_save_probes(
 
     for layer in layers:
         print(f"Training classifier for layer {layer}")
-        # Prepare data with only correct predictions
         train_data = prepare_data(model, train_results, train_activations, layer)
         test_data = prepare_data(model, test_results, test_activations, layer)
         
-        # Train classifier
         clf = train_classifier(train_data)
 
-        # Evaluate classifier
         auc_score = evaluate_classifier(clf, test_data)
         auc_scores.append(auc_score)
         print(f"AUROC for layer {layer}: {auc_score:.4f}")
         
-        # Save probe
         probe_path = os.path.join(results_dir, f'layer_{layer}.pkl')
         save_pickle(clf, probe_path)
         print(f"Probe saved for layer {layer} at {probe_path}")
 
-        # Extract coefficient vector
         coef_vector = extract_diff_vector(clf)
         all_coef_vectors.append(coef_vector)
 
-    # Choose a layer or set of layers for steering
     best_layer = layers[np.argmax(auc_scores)]
     selected_layers = layers
 
@@ -455,19 +410,12 @@ def perform_steering(
     max_new_tokens: int = 100,
     **kwargs
 ):
-    """
-    For each alpha in alpha_range:
-      - negative alpha is applied to 'yes' data to push it away,
-      - positive alpha is applied to 'no' data to push it away,
-    etc.
-    """
     torch.cuda.empty_cache()
     gc.collect()
 
     model_name = getattr(model, 'model_name', 'google/gemma-2-9b-it')
     steering_cache_path = os.path.join(RESULTS_DIR, model_name, dataset_name, 'steering_results.pkl')
     
-    # Load existing steering results if they exist
     if os.path.exists(steering_cache_path):
         print("Loading existing steering results...")
         steering_results = load_pickle(steering_cache_path)
@@ -475,9 +423,7 @@ def perform_steering(
         steering_results = {'yes': {}, 'no': {}}
     
     for alpha in alpha_range:
-        # For 'yes' data, use negative alpha
         alpha_yes = -alpha
-        # Check if results for this alpha already exist
         if alpha_yes in steering_results.get('yes', {}):
             print(f"Steering results for alpha {alpha_yes} already exist for 'yes' data, skipping...")
         else:
@@ -496,7 +442,6 @@ def perform_steering(
             success_rate = sum(r['success'] for r in results_yes) / len(results_yes) if results_yes else 0
             print(f"Success rate for 'yes' data with alpha = {alpha_yes}: {success_rate:.2f}")
 
-        # For 'no' data, use positive alpha
         alpha_no = alpha
         if alpha_no in steering_results.get('no', {}):
             print(f"Steering results for alpha {alpha_no} already exist for 'no' data, skipping...")
@@ -516,7 +461,6 @@ def perform_steering(
             success_rate = sum(r['success'] for r in results_no) / len(results_no) if results_no else 0
             print(f"Success rate for 'no' data with alpha = {alpha_no}: {success_rate:.2f}")
 
-    # Save updated steering results
     if use_cache:
         save_pickle(steering_results, steering_cache_path)
         print(f"Steering results saved at {steering_cache_path}")
@@ -557,7 +501,6 @@ def generate_steered_examples(
         print(f"Steered generation: {generation}")
         print(f"Original answer: {example['pred_answer']}, New answer: {new_answer}")
 
-        # Define success in a problem-relevant way; as a placeholder:
         orig = example['pred_answer']
         success = ((orig == 'yes' and new_answer == 'no') or (orig == 'no' and new_answer == 'yes'))
         print("-" * 50)
@@ -576,18 +519,12 @@ def generate_steered_examples(
     return steered_results
 
 def prepare_data(model: ChatModel, results, activations, layer):
-    """
-    Prepare data for classifier training on activations from a given layer.
-    Only includes items whose predicted answer matched the correct answer.
-    """
     data = []
     for idx, result in enumerate(results):
         if result['pred_answer'] == result['correct_answer']:
-            # Get the activations from the separate activations list
             activation = activations[idx][layer]
             data.append(activation.tolist() + [result['pred_answer']])
     df = pd.DataFrame(data, columns=['ac' + str(i) for i in range(model.cfg.d_model)] + ['pred'])
-    # Keep only 'yes' and 'no' answers
     df = df[df['pred'].isin(['yes', 'no'])]
     return df
 
@@ -611,21 +548,27 @@ def extract_diff_vector(clf):
 def normalize_vectors(vectors):
     return [vec / np.linalg.norm(vec) for vec in vectors]
 
-# Removed the global "main" function and any direct references
-# to global variables or a globally instantiated model. 
-# You can now define/configure your model and parameters in your notebook cells
-# and directly call the functions above for maximum flexibility.
-torch.cuda.empty_cache()
-gc.collect()
+# New main entry point using argparse for ease-of-use.
+def main():
+    parser = argparse.ArgumentParser(description="Run research experiments using transformer_lens models and various datasets.")
+    parser.add_argument("--model", type=str, default="google/gemma-2-9b-it", help="Name of the model to use (via transformer_lens).")
+    parser.add_argument("--dataset", type=str, default="sports_understanding", help="Dataset to use (e.g., sports_understanding, anachronisms, social_chemistry, logical_deduction).")
+    parser.add_argument("--mode", type=str, choices=["generate", "steer", "all"], default="all", help="Experiment mode to run.")
+    parser.add_argument("--train_size", type=int, default=100, help="Train set size for generation experiments.")
+    parser.add_argument("--batch_size", type=int, default=2, help="Batch size for processing.")
+    parser.add_argument("--max_new_tokens", type=int, default=100, help="Maximum new tokens to generate.")
+    parser.add_argument("--temperature", type=float, default=0.7, help="Temperature for generation.")
+    parser.add_argument("--alpha_range", type=int, nargs="+", default=[0,1,2,3,5,7], help="Alpha range for steering experiments.")
+    parser.add_argument("--use_cache", action="store_true", help="Use cached generations if available.")
+    parser.add_argument("--chat_type", type=str, choices=["gemma", "llama"], default="gemma", help="Chat formatting style to use.")
+    args = parser.parse_args()
 
-# %%
+    model = ChatModel(args.model, chat_type=args.chat_type)
 
-# Example usage
+    if args.mode in ["generate", "all"]:
+        generate_and_save_generations(model, args.dataset, train_size=args.train_size, batch_size=args.batch_size, max_new_tokens=args.max_new_tokens, temperature=args.temperature, use_cache=args.use_cache)
+    if args.mode in ["steer", "all"]:
+        run_steering_experiment(model, args.dataset, alpha_range=args.alpha_range, use_cache=args.use_cache)
 
-model = ChatModel('google/gemma-2-9b-it')
-dataset = 'sports_understanding'
-
-generate_and_save_generations(model, dataset, use_cache=True)
-run_steering_experiment(model, dataset, use_cache=True)
-
-# %%
+if __name__ == "__main__":
+    main()
