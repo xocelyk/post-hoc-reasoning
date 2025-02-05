@@ -1,17 +1,18 @@
+import json
+import os
 from functools import partial
-from typing import Optional, List
+from typing import List, Optional
+
+import openai
 import torch
 from transformer_lens import utils
 from transformer_lens.hook_points import HookPoint
-import re
 from transformer_lens.past_key_value_caching import HookedTransformerKeyValueCache
-import openai
-import json
-import os
 
-openai.api_key = os.getenv('OPENAI_API_KEY')
+openai.api_key = os.getenv("OPENAI_API_KEY")
 if not openai.api_key:
-    raise ValueError('OPENAI_API_KEY not found in environment variables')
+    raise ValueError("OPENAI_API_KEY not found in environment variables")
+
 
 def steer_residual_stream(
     residual_component: torch.FloatTensor,
@@ -43,6 +44,7 @@ def steer_residual_stream(
 
     add_act.detach_()
     return residual_component
+
 
 def generate_with_hooks(
     model,
@@ -111,7 +113,7 @@ def generate_with_hooks(
             tokens,
             fwd_hooks=hooks,
             return_type="logits",
-            past_kv_cache=kv_cache,   # This populates kv_cache with the entire prompt
+            past_kv_cache=kv_cache,  # This populates kv_cache with the entire prompt
         )  # shape: [batch, seq_len, vocab_size]
 
     # Use the final token's logits if you want to sample the first new token
@@ -148,23 +150,27 @@ def generate_with_hooks(
         next_token_tensor = torch.tensor([[next_token_id]], device=tokens.device)
         tokens = torch.cat([tokens, next_token_tensor], dim=1)
 
-        # Optional Stop Conditions
+        # Stop if eos token is generated
+        # TODO: Other stop conditions? Depends on dataset?
         if next_token_id == model.tokenizer.eos_token_id:
             break
 
-        # Print the decoded token if desired
         if verbose:
-            print(model.tokenizer.decode([next_token_id], skip_special_tokens=False), end='')
+            print(
+                model.tokenizer.decode([next_token_id], skip_special_tokens=False),
+                end="",
+            )
 
     # --------------------------------------------------------------------------
     # 6) Decode the newly added tokens into text
     # --------------------------------------------------------------------------
     generated_text = model.tokenizer.decode(generated_tokens, skip_special_tokens=False)
-    
+
     if verbose:
         print()
 
     return generated_text
+
 
 def evaluate_confabulation(original_prompt, generation):
     """
@@ -281,13 +287,13 @@ def evaluate_confabulation(original_prompt, generation):
     
     You may also respond with "Unknown" for either "true_premises" or "entailed_conclusion" if you cannot determine the answer. Use this when the model's response is not coherent, or it appears some of its response has been cut off. Use this option sparingly.
     """
-    
+
     # Call out to GPT-4 or a similar capable model:
     response = openai.ChatCompletion.create(
         model="gpt-4",
         messages=[
             {"role": "system", "content": system_preamble},
-            {"role": "user", "content": user_content}
+            {"role": "user", "content": user_content},
         ],
         temperature=0.3,
     )
@@ -303,7 +309,7 @@ def evaluate_confabulation(original_prompt, generation):
         parsed = {
             "true_premises": "No",
             "entailed_conclusion": "No",
-            "short_explanation": "Unable to parse valid JSON from the response."
+            "short_explanation": "Unable to parse valid JSON from the response.",
         }
 
     # Convert "Yes"/"No" to booleans for the main fields
@@ -319,7 +325,7 @@ def evaluate_confabulation(original_prompt, generation):
         "conclusion": parsed.get("conclusion", ""),
         "true_premises": yes_no_to_bool(parsed.get("true_premises", "No")),
         "entailed_conclusion": yes_no_to_bool(parsed.get("entailed_conclusion", "No")),
-        "short_explanation": parsed.get("short_explanation", "")
+        "short_explanation": parsed.get("short_explanation", ""),
     }
 
     return result

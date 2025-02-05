@@ -1,22 +1,23 @@
+from typing import Dict, List
+
 from transformer_lens import HookedTransformer
-from typing import List, Dict
+
 
 class ChatModel:
-    def __init__(self, model_name: str, device: str = 'cpu', dtype: str = 'bfloat16'):
+    def __init__(self, model_name: str, device: str = "cpu", dtype: str = "bfloat16"):
         """
         Initialize the ChatModel.
 
-        :param model_name: Name of the model to load via transformer_lens.
-        :param device: Device to run the model on.
-        :param dtype: Data type for model weights.
+        Args:
+            model_name: Name of the model to load via transformer_lens.
+            device: Device to run the model on.
+            dtype: Data type for model weights.
         """
         self.model_name = model_name
         self.device = device
         self.dtype = dtype
         self.model = HookedTransformer.from_pretrained_no_processing(
-            model_name,
-            device=self.device,
-            dtype=self.dtype
+            model_name, device=self.device, dtype=self.dtype
         )
 
     def apply_chat_template(self, messages: List[Dict[str, str]]) -> str:
