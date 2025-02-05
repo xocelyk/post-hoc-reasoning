@@ -14,7 +14,6 @@ import logging
 import time
 import json
 import warnings
-from sklearn.exceptions import ConvergenceWarning
 import argparse
 
 from data_loading import load_all_datasets
@@ -558,12 +557,11 @@ def main():
     parser.add_argument("--batch_size", type=int, default=2, help="Batch size for processing.")
     parser.add_argument("--max_new_tokens", type=int, default=100, help="Maximum new tokens to generate.")
     parser.add_argument("--temperature", type=float, default=0.7, help="Temperature for generation.")
-    parser.add_argument("--alpha_range", type=int, nargs="+", default=[0,1,2,3,5,7], help="Alpha range for steering experiments.")
+    parser.add_argument("--alpha_range", type=int, nargs="+", default=[0,1,2,3,4,5,6,7], help="Alpha range for steering experiments.")
     parser.add_argument("--use_cache", action="store_true", help="Use cached generations if available.")
-    parser.add_argument("--chat_type", type=str, choices=["gemma", "llama"], default="gemma", help="Chat formatting style to use.")
     args = parser.parse_args()
 
-    model = ChatModel(args.model, chat_type=args.chat_type)
+    model = ChatModel(args.model)
 
     if args.mode in ["generate", "all"]:
         generate_and_save_generations(model, args.dataset, train_size=args.train_size, batch_size=args.batch_size, max_new_tokens=args.max_new_tokens, temperature=args.temperature, use_cache=args.use_cache)
