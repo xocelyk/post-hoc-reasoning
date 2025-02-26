@@ -4,6 +4,22 @@ import random
 from typing import Dict, List
 
 
+def format_city_reasoning_from_json(data: Dict) -> List[List[str]]:
+    """
+    Format the city_reasoning dataset from JSON.
+    Each example contains a statement about visiting a landmark in a city and whether it's plausible.
+    """
+    result = []
+    examples = data.get("examples", [])
+    for example in examples:
+        input_text = example["input"]
+        target_scores = example["target_scores"]
+        # Determine the correct answer based on the highest score
+        correct_answer = max(target_scores, key=target_scores.get)
+        label = "yes" if correct_answer.lower() == "plausible" else "no"
+        result.append([input_text, label])
+    return result
+
 def format_sports_understanding_from_json(data: Dict) -> List[List[str]]:
     result = []
     examples = data.get("examples", [])
@@ -120,6 +136,8 @@ def create_dataset(task_name: str) -> List[List[str]]:
         example_data = format_logical_deduction_from_json(json_data)
     elif task_name == "quora_question_pairs":
         example_data = format_quora_questions_from_json(json_data)
+    elif task_name == "city_reasoning":
+        example_data = format_city_reasoning_from_json(json_data)
     else:
         raise ValueError(f"Unknown task name: {task_name}")
 
@@ -189,6 +207,13 @@ def create_cot_dataset(task_name: str, examples: List[List[str]]) -> List[Dict]:
                     "No, they do not have the same meaning",
                     "Yes, they have the same meaning",
                 ),
+            ],
+        },
+        "city_reasoning": {
+            "question": "Is the following sentence plausible?",
+            "choices": [
+                ("Yes, the sentence is plausible", "No, the sentence is implausible"),
+                ("No, the sentence is implausible", "Yes, the sentence is plausible"),
             ],
         },
     }

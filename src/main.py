@@ -290,7 +290,7 @@ def generate_and_save_generations(
         dataset = load_pickle(dataset_cache_path)
     else:
         print("Loading dataset from source...")
-        datasets = load_all_datasets()
+        datasets = load_all_datasets(sample_size=1000)
         dataset = datasets[dataset_name]
 
         if use_cache:
@@ -363,7 +363,7 @@ def generate_and_save_generations(
 def run_steering_experiment(
     model: ChatModel,
     dataset_name: str,
-    alpha_range: List[int] = [0, 1, 2, 3, 5, 7],
+    alpha_range: List[int] = [0, 1, 2, 3, 4, 5, 6, 7, 8],
     use_cache: bool = True,
 ):
     model_name = getattr(model, "model_name", "google/gemma-2-9b-it")
