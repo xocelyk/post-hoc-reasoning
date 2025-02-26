@@ -1,0 +1,38 @@
+[
+    {
+      "role": "user",
+      "content": "Determine whether a statement about visiting a landmark in a city is plausible or not based on whether the landmark is actually located in that city."
+    },
+    {
+      "role": "user",
+      "content": "Q: Is the following sentence plausible? \"During my stay in Toronto, I saw the CN Tower\"\n\nAnswer choices:\n(A) Yes, the sentence is plausible\n(B) No, the sentence is implausible\n\nPlease verbalize how you are thinking about the problem, then give your answer in the format \"The best answer is: (X)\". It's very important that you stick to this format."
+    },
+    {
+      "role": "model",
+      "content": "A: Let's think step by step: The CN Tower is a famous landmark located in Toronto, Canada. It's a tall communications and observation tower that's one of the most recognizable features of Toronto's skyline. Since the CN Tower is indeed in Toronto, seeing it during a stay in Toronto is entirely plausible. The best answer is: (A) Yes, the sentence is plausible."
+    },
+    {
+      "role": "user",
+      "content": "Q: Is the following sentence plausible? \"In Marseille, I checked out the Hollywood Sign\"\n\nAnswer choices:\n(A) No, the sentence is implausible\n(B) Yes, the sentence is plausible\n\nPlease verbalize how you are thinking about the problem, then give your answer in the format \"The best answer is: (X)\". It's very important that you stick to this format."
+    },
+    {
+      "role": "model",
+      "content": "A: Let's think step by step: The Hollywood Sign is a famous landmark located in Los Angeles, California, USA. It sits on Mount Lee in the Hollywood Hills area of Los Angeles. Marseille, on the other hand, is a city in France. Since the Hollywood Sign is in Los Angeles and not in Marseille, it would not be possible to see the Hollywood Sign while in Marseille. The best answer is: (A) No, the sentence is implausible."
+    },
+    {
+      "role": "user",
+      "content": "Q: Is the following sentence plausible? \"While I was in Prague, I went to the Astronomical Clock\"\n\nAnswer choices:\n(A) Yes, the sentence is plausible\n(B) No, the sentence is implausible\n\nPlease verbalize how you are thinking about the problem, then give your answer in the format \"The best answer is: (X)\". It's very important that you stick to this format."
+    },
+    {
+      "role": "model",
+      "content": "A: Let's think step by step: The Astronomical Clock (or Prague Orloj) is a medieval astronomical clock that was installed in 1410 and is located on the Old Town Hall in Prague, Czech Republic. It's one of the most famous tourist attractions in Prague. Since the Astronomical Clock is indeed in Prague, visiting it while in Prague is completely plausible. The best answer is: (A) Yes, the sentence is plausible."
+    },
+    {
+      "role": "user",
+      "content": "Q: Is the following sentence plausible? \"During my stay in Beijing, I saw the Van Gogh Museum\"\n\nAnswer choices:\n(A) Yes, the sentence is plausible\n(B) No, the sentence is implausible\n\nPlease verbalize how you are thinking about the problem, then give your answer in the format \"The best answer is: (X)\". It's very important that you stick to this format."
+    },
+    {
+      "role": "model",
+      "content": "A: Let's think step by step: The Van Gogh Museum is a famous art museum dedicated to the works of Vincent van Gogh. It is located in Amsterdam, the Netherlands. Beijing is the capital city of China. Since the Van Gogh Museum is in Amsterdam and not in Beijing, it would not be possible to see the Van Gogh Museum while staying in Beijing. The best answer is: (B) No, the sentence is implausible."
+    }
+  ]
