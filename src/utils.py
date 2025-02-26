@@ -62,6 +62,8 @@ def generate_with_hooks(
 
     The steering function (steer_residual_stream) only applies additions to residual
     positions strictly beyond the initial `instruction_pos`.
+    
+    This function is designed to be model-agnostic.
     """
 
     # --------------------------------------------------------------------------
@@ -150,9 +152,20 @@ def generate_with_hooks(
         next_token_tensor = torch.tensor([[next_token_id]], device=tokens.device)
         tokens = torch.cat([tokens, next_token_tensor], dim=1)
 
-        # Stop if eos token is generated
-        # TODO: Other stop conditions? Depends on dataset?
-        if next_token_id == model.tokenizer.eos_token_id:
+        # Get the model's tokenizer and determine appropriate stopping tokens
+        eos_token_id = getattr(model.tokenizer, "eos_token_id", None)
+        if eos_token_id is None:
+            # Try to find alternative EOS token IDs based on model family
+            model_family = getattr(model, "model_family", "unknown")
+            if model_family == "gemma":
+                eos_token_id = model.tokenizer.convert_tokens_to_ids(["<eos>"])[0]
+            elif model_family == "llama":
+                eos_token_id = model.tokenizer.convert_tokens_to_ids(["</s>"])[0]
+            elif model_family == "mistral":
+                eos_token_id = model.tokenizer.convert_tokens_to_ids(["</s>"])[0]
+        
+        # Stop if eos token is generated (if we found one)
+        if eos_token_id is not None and next_token_id == eos_token_id:
             break
 
         if verbose:
