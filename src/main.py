@@ -136,7 +136,8 @@ def process_batch(
     )
     generations = [gen[len(prompt) :] for gen, prompt in zip(generations, prompts)]
 
-    responses = [parse_response(response) for response in generations]
+    # Use the model's parse_response method rather than a global function
+    responses = [model.parse_response(response) for response in generations]
     pred_letters, pred_answers = zip(*responses)
 
     corrects = [pred == correct for pred, correct in zip(pred_letters, correct_letters)]
