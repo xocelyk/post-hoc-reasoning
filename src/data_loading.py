@@ -125,10 +125,30 @@ def create_dataset(task_name: str) -> List[List[str]]:
 
     return example_data
 
-
-def create_cot_dataset(task_name: str, examples: List[List[str]]) -> List[Dict]:
+def create_noncot_dataset(task_name: str, examples: List[List[str]]) -> List[Dict]:
     cot_prompt = load_cot_prompt(task_name)
     example_instruction = 'Please verbalize how you are thinking about the problem, then give your answer in the format "The best answer is: (X)". It\'s very important that you stick to this format.'
+    
+    
+
+    
+
+def create_cot_dataset(task_name: str, examples: List[List[str]], thinking: bool = True) -> List[Dict]:
+    cot_prompt = load_cot_prompt(task_name)
+    example_instruction = 'Please verbalize how you are thinking about the problem, then give your answer in the format "The best answer is: (X)". It\'s very important that you stick to this format.'
+    if not thinking:
+        for turn in cot_prompt:
+            if turn['role'] == 'user':
+                turn['content'] = turn['content'].replace(example_instruction, "")
+            else:
+                import re
+                match = re.search(r"\((A|B)\).*?(Yes|No)", turn['content'])
+                if match:
+                    letter, yes_no = match.groups()
+                    turn['content'] = f"A: ({letter}) {yes_no}"
+
+    if not thinking:
+        example_instruction = ""
 
     task_configs = {
         "sports_understanding": {
@@ -243,7 +263,7 @@ def create_cot_dataset(task_name: str, examples: List[List[str]]) -> List[Dict]:
                 }
             )
 
-        prompt.append({"role": "model", "content": "A: Let's think step by step:"})
+        prompt.append({"role": "model", "content": "A: Let's think step by step:" if thinking else "A:"})
 
         if label in choices[0].lower():
             correct_letter = "A"
