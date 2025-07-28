@@ -69,7 +69,7 @@ class ConfigValidator:
         if config.device not in ["auto", "cpu", "cuda", "mps"]:
             errors.append(f"Invalid device: {config.device}")
 
-        if config.dtype not in ["float32", "float16", "bfloat16"]:
+        if config.dtype not in ["float32", "float16", "bfloat16", "int8"]:
             errors.append(f"Invalid dtype: {config.dtype}")
 
         if config.batch_size <= 0:

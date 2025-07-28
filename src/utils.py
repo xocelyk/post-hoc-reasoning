@@ -5,13 +5,16 @@ from typing import List, Optional
 
 import openai
 import torch
+from dotenv import load_dotenv
 from transformer_lens import utils
 from transformer_lens.hook_points import HookPoint
 from transformer_lens.past_key_value_caching import HookedTransformerKeyValueCache
 
+# Load environment variables from .env file
+load_dotenv()
+
 openai.api_key = os.getenv("OPENAI_API_KEY")
-if not openai.api_key:
-    raise ValueError("OPENAI_API_KEY not found in environment variables")
+# Only check for API key when actually using OpenAI functions
 
 
 def steer_residual_stream(
@@ -188,6 +191,8 @@ def evaluate_confabulation(original_prompt, generation):
         "explanation": str
       }
     """
+    if not openai.api_key:
+        raise ValueError("OPENAI_API_KEY not found in environment variables. Required for confabulation evaluation.")
     # Full instructions explained in the system_preamble, describing the types of behaviors we want:
     system_preamble = """
     You are a helpful assistant. Your job is to categorize the reasoning process of a language model in response to a given prompt.

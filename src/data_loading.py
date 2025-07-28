@@ -4,16 +4,13 @@ import random
 from typing import Dict, List
 
 
-def format_sports_understanding_from_json(data: Dict) -> List[List[str]]:
+def format_sports_understanding_from_json(data: List[Dict]) -> List[List[str]]:
     result = []
-    examples = data.get("examples", [])
-    for example in examples:
-        sentence = example["input"]
+    for example in data:
+        question = example["input"]  # Use the full question as-is
         target = example["target"]
         label = "no" if target.lower() == "no" else "yes"
-        # Extract the sentence inside quotes
-        sentence = sentence.split('"')[1]
-        result.append([sentence, label])
+        result.append([question, label])
     return result
 
 
@@ -104,7 +101,10 @@ def format_quora_questions_from_json(data: List[Dict]) -> List[List[str]]:
 
 
 def create_dataset(task_name: str) -> List[List[str]]:
-    json_filename = f"../data/{task_name}/{task_name}.json"
+    # Get the directory of this script
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    # Go up one level to get to the project root, then to data
+    json_filename = os.path.join(script_dir, "..", "data", task_name, f"{task_name}.json")
     with open(json_filename, "r") as f:
         json_data = json.load(f)
 
@@ -253,11 +253,17 @@ def create_cot_dataset(
                 }
             )
         else:
+            # For sports_understanding, full_text already contains the question
+            if task_name == "sports_understanding":
+                question_text = full_text  # Already contains "Is the following sentence plausible? ..."
+            else:
+                question_text = f"{config['question']} {full_text}"
+                
             prompt.append(
                 {
                     "role": "user",
                     "content": (
-                        f"Q: {config['question']} {full_text}\n\n"
+                        f"Q: {question_text}\n\n"
                         f"Answer choices:\n(A) {choices[0]}\n(B) {choices[1]}\n\n"
                         f"{example_instruction}"
                     ),
@@ -266,7 +272,7 @@ def create_cot_dataset(
 
         prompt.append(
             {
-                "role": "model",
+                "role": "assistant",
                 "content": "A: Let's think step by step:" if thinking else "A:",
             }
         )
@@ -290,8 +296,45 @@ def create_cot_dataset(
 
 
 def load_cot_prompt(task_name: str) -> Dict:
-    with open(f"../data/{task_name}/{task_name}_cot.json", "r") as f:
-        return json.load(f)
+    # Get the directory of this script
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    # Go up one level to get to the project root, then to data
+    cot_filename = os.path.join(script_dir, "..", "data", task_name, f"{task_name}_cot.json")
+    with open(cot_filename, "r") as f:
+        cot_data = json.load(f)
+    
+    # Fix chat format issues for proper alternation
+    fixed_cot = []
+    
+    # Process all messages, converting 'model' to 'assistant' and adding proper Q:/A: prefixes
+    for i, message in enumerate(cot_data):
+        new_message = message.copy()
+        if new_message["role"] == "model":
+            new_message["role"] = "assistant"
+        
+        content = new_message["content"].strip()
+        
+        # Add Q: prefix to user messages that are questions (not the first instruction)
+        if new_message["role"] == "user":
+            if i == 0:
+                # First message is instruction, keep as-is
+                new_message["content"] = content
+            else:
+                # Subsequent user messages are questions, add Q: if not already there
+                if not content.startswith("Q: "):
+                    new_message["content"] = "Q: " + content
+                else:
+                    new_message["content"] = content
+        elif new_message["role"] == "assistant":
+            # Add A: prefix to assistant messages if not already there
+            if not content.startswith("A: "):
+                new_message["content"] = "A: " + content
+            else:
+                new_message["content"] = content
+            
+        fixed_cot.append(new_message)
+    
+    return fixed_cot
 
 
 def load_all_datasets(sample_size=1000):

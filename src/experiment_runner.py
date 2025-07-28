@@ -28,14 +28,23 @@ from visualizer import create_visualizer
 class PromptDataset(Dataset):
     """Dataset wrapper for prompts."""
 
-    def __init__(self, data: List[Dict[str, Any]]):
+    def __init__(self, data: List[Dict[str, Any]], model: ChatModel):
         self.data = data
+        self.model = model
 
     def __len__(self) -> int:
         return len(self.data)
 
     def __getitem__(self, idx: int) -> Tuple[str, Tuple[str, str]]:
-        return self.data[idx]["prompt"], (
+        prompt_data = self.data[idx]["prompt"]
+        
+        # Convert chat messages to string using model's chat template
+        if not isinstance(prompt_data, list):
+            raise TypeError(f"Expected prompt to be a list of chat messages, got {type(prompt_data)}")
+        
+        prompt_string = self.model.apply_chat_template(prompt_data)
+        
+        return prompt_string, (
             self.data[idx]["correct_answer"],
             self.data[idx]["correct_letter"],
         )
@@ -111,18 +120,27 @@ class EnhancedExperimentRunner:
 
     def batch_get_resid_activations(self, prompts: List[str], model: ChatModel):
         """Get residual stream activations for a batch of prompts."""
+        print(f"DEBUG: batch_get_resid_activations with {len(prompts)} prompts")
         layers = list(range(model.cfg.n_layers))
+        print(f"DEBUG: Model has {model.cfg.n_layers} layers")
         tokens = model.to_tokens(prompts, prepend_bos=True)
+        print(f"DEBUG: Tokenized to shape {tokens.shape}")
+        print("DEBUG: Running model.run_with_cache...")
         _, cache = model.run_with_cache(tokens, pos_slice=-1)
+        print("DEBUG: Finished model.run_with_cache")
 
         activations = np.zeros((len(prompts), model.cfg.n_layers, model.cfg.d_model))
 
         for layer in layers:
             layer_activations = cache["resid_post", layer]
-            layer_activations = layer_activations.squeeze().detach().cpu().numpy()
+            # Convert to float32 before converting to numpy to avoid BFloat16 issues on MPS
+            layer_activations = layer_activations.squeeze().detach().float().cpu().numpy()
             activations[:, layer, :] = layer_activations
             del layer_activations
-            torch.cuda.empty_cache()
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+            elif torch.backends.mps.is_available():
+                torch.mps.empty_cache()
             gc.collect()
 
         return activations
@@ -131,10 +149,14 @@ class EnhancedExperimentRunner:
         self, prompts: List[str], model: ChatModel, temperature=0.7, max_new_tokens=100
     ):
         """Get generations for a batch of prompts."""
+        print(f"DEBUG: batch_get_generations with {len(prompts)} prompts, max_new_tokens={max_new_tokens}")
         tokens = model.to_tokens(prompts, prepend_bos=True)
+        print(f"DEBUG: Tokenized to shape {tokens.shape}")
+        print("DEBUG: Starting model.generate...")
         token_generations = model.generate(
-            tokens, max_new_tokens=max_new_tokens, temperature=temperature
+            tokens, max_new_tokens=max_new_tokens, temperature=temperature, verbose=True
         )
+        print("DEBUG: Finished model.generate")
         generations = model.to_string(token_generations)
         return generations
 
@@ -148,18 +170,25 @@ class EnhancedExperimentRunner:
         max_new_tokens=100,
     ):
         """Process a batch of prompts."""
+        print(f"DEBUG: process_batch called with {len(prompts)} prompts")
         correct_answers, correct_letters = correct_tups
 
+        print("DEBUG: Starting batch_get_resid_activations...")
         activations = (
             self.batch_get_resid_activations(prompts, model)
             if get_activations
             else None
         )
+        print("DEBUG: Finished batch_get_resid_activations")
+        
+        print("DEBUG: Starting batch_get_generations...")
         generations = self.batch_get_generations(
             prompts, model, temperature=temperature, max_new_tokens=max_new_tokens
         )
+        print("DEBUG: Finished batch_get_generations")
         generations = [gen[len(prompt) :] for gen, prompt in zip(generations, prompts)]
 
+        print("DEBUG: Parsing responses...")
         responses = [self.parse_response(response) for response in generations]
         pred_letters, pred_answers = zip(*responses)
 
@@ -207,6 +236,9 @@ class EnhancedExperimentRunner:
                 (train_dataset, test_dataset), cache.get_train_test_split_path()
             )
 
+        print("DEBUG: Train size:", len(train_dataset))
+        print("DEBUG: Test size:", len(test_dataset))
+        
         batch_size = next(
             (
                 m.batch_size
@@ -215,19 +247,24 @@ class EnhancedExperimentRunner:
             ),
             2,
         )
+        print(f"DEBUG: Using batch size: {batch_size}")
 
         # Process training data
         if not cache.has_generations():
+            print("DEBUG: Creating train dataloader...")
             train_dataloader = DataLoader(
-                PromptDataset(train_dataset), batch_size=batch_size, shuffle=False
+                PromptDataset(train_dataset, model), batch_size=batch_size, shuffle=False
             )
+            print("DEBUG: Creating test dataloader...")
             test_dataloader = DataLoader(
-                PromptDataset(test_dataset), batch_size=batch_size, shuffle=False
+                PromptDataset(test_dataset, model), batch_size=batch_size, shuffle=False
             )
 
+            print("DEBUG: Starting to process training dataset...")
             train_results, train_activations = self.process_dataset(
                 train_dataloader, model, config.train_size, config
             )
+            print("DEBUG: Starting to process test dataset...")
             test_results, test_activations = self.process_dataset(
                 test_dataloader, model, len(test_dataset), config
             )
@@ -248,11 +285,14 @@ class EnhancedExperimentRunner:
         config: ExperimentConfig,
     ):
         """Process entire dataset."""
+        print(f"DEBUG: process_dataset called with max_samples={max_samples}")
+        print(f"DEBUG: Dataloader length: {len(dataloader)}")
         results = []
         activations_list = []
         sample_count = 0
 
-        for prompts, correct_tups in dataloader:
+        for batch_idx, (prompts, correct_tups) in enumerate(dataloader):
+            print(f"DEBUG: Processing batch {batch_idx + 1}/{len(dataloader)} with {len(prompts)} prompts")
             activations, generations, pred_letters, pred_answers, corrects = (
                 self.process_batch(
                     prompts,

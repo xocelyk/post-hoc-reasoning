@@ -1,0 +1,23 @@
+models:
+- name: google/gemma-2-2b-it
+  device: auto
+  dtype: int8
+  batch_size: 1
+
+datasets:
+- name: sports_understanding
+  train_size: 10
+  test_size: 10
+  split_seed: 42
+
+steering:
+  alpha_range: [4]
+  temperature: 0.7
+  max_new_tokens: 100
+
+cache_dir: cache
+use_cache: true
+interactive: false
+max_concurrent_models: 1
+save_generations: true
+evaluate_confabulation: false

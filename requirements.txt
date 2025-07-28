@@ -9,3 +9,7 @@ torch
 python-dotenv
 aim
 nnsight
+rich
+pyyaml
+plotext
+tqdm

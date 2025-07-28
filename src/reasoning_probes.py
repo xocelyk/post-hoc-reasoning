@@ -268,6 +268,14 @@ class ReasoningDataset(Dataset):
 
 
 def collate_fn_reasoning(batch, tokenizer):
+    # Validate chat template exists before using
+    if not hasattr(tokenizer, 'chat_template') or tokenizer.chat_template is None:
+        raise ValueError(
+            f"Tokenizer does not have a chat template. "
+            f"Chat templates are required for proper conversation formatting. "
+            f"Please use a model that supports chat templates."
+        )
+    
     tokens = tokenizer.apply_chat_template(
         [item[0] for item in batch],
         return_tensors="pt",
