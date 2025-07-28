@@ -6,3 +6,4 @@ src/cache/
 .env
 writing/
 tmp/
+cache/

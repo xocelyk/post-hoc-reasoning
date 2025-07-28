@@ -168,6 +168,7 @@ class EnhancedExperimentRunner:
         get_activations=True,
         temperature=0.7,
         max_new_tokens=100,
+        log_first_batch=False,
     ):
         """Process a batch of prompts."""
         print(f"DEBUG: process_batch called with {len(prompts)} prompts")
@@ -195,6 +196,24 @@ class EnhancedExperimentRunner:
         corrects = [
             pred == correct for pred, correct in zip(pred_letters, correct_letters)
         ]
+
+        # Log details for first batch
+        if log_first_batch:
+            print("\n" + "="*80)
+            print("FIRST BATCH DETAILED LOGGING")
+            print("="*80)
+            for i, prompt in enumerate(prompts):
+                print(f"\n--- SAMPLE {i+1} ---")
+                print("PROMPT:")
+                print(prompt)
+                print(f"\nGENERATED RESPONSE:")
+                print(repr(generations[i]))
+                print(f"\nPARSED LETTER: {pred_letters[i]}")
+                print(f"PARSED ANSWER: {pred_answers[i]}")
+                print(f"CORRECT LETTER: {correct_letters[i]}")
+                print(f"CORRECT ANSWER: {correct_answers[i]}")
+                print(f"CORRECT: {corrects[i]}")
+            print("="*80 + "\n")
 
         return activations, generations, pred_letters, pred_answers, corrects
 
