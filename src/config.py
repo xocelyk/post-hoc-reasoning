@@ -15,6 +15,7 @@ class ModelConfig:
     device: str = "auto"
     dtype: str = "bfloat16"
     batch_size: int = 2
+    backend: str = "auto"  # Backend selection: "auto", "nnsight", "transformer_lens"
 
 
 @dataclass
@@ -74,6 +75,9 @@ class ConfigValidator:
 
         if config.batch_size <= 0:
             errors.append("Batch size must be positive")
+
+        if config.backend not in ["auto", "nnsight", "transformer_lens"]:
+            errors.append(f"Invalid backend: {config.backend}")
 
         return errors
 
@@ -195,6 +199,7 @@ class ConfigLoader:
                         device=model_data.get("device", "auto"),
                         dtype=model_data.get("dtype", "bfloat16"),
                         batch_size=model_data.get("batch_size", 2),
+                        backend=model_data.get("backend", "auto"),
                     )
                 )
             else:
@@ -288,6 +293,7 @@ class ConfigLoader:
                     "device": model.device,
                     "dtype": model.dtype,
                     "batch_size": model.batch_size,
+                    "backend": model.backend,
                 }
                 for model in config.models
             ],
@@ -364,9 +370,9 @@ def save_default_configs():
     configs_dir = "configs"
     os.makedirs(configs_dir, exist_ok=True)
 
-    # Basic config
+    # Basic config (transformer_lens)
     basic_config = ExperimentRunConfig(
-        models=[ModelConfig(name="google/gemma-2-9b-it")],
+        models=[ModelConfig(name="google/gemma-2-9b-it", backend="transformer_lens")],
         datasets=[DatasetConfig(name="sports_understanding")],
         steering=SteeringConfig(alpha_range=[0, 2, 4, 6]),
     )
@@ -374,11 +380,11 @@ def save_default_configs():
         basic_config, os.path.join(configs_dir, "basic.yaml")
     )
 
-    # Multi-model config
+    # Multi-model config (mixed backends)
     multi_model_config = ExperimentRunConfig(
         models=[
-            ModelConfig(name="google/gemma-2-2b-it", batch_size=4),
-            ModelConfig(name="google/gemma-2-9b-it", batch_size=2),
+            ModelConfig(name="google/gemma-2-2b-it", batch_size=4, backend="transformer_lens"),
+            ModelConfig(name="google/gemma-2-9b-it", batch_size=2, backend="auto"),
         ],
         datasets=[
             DatasetConfig(name="sports_understanding"),
@@ -391,9 +397,25 @@ def save_default_configs():
         multi_model_config, os.path.join(configs_dir, "multi_model.yaml")
     )
 
-    # Full dataset config
+    # NNsight-specific config with DeepSeek
+    nnsight_config = ExperimentRunConfig(
+        models=[
+            ModelConfig(name="deepseek-ai/DeepSeek-R1-Distill-Llama-8B", backend="nnsight", batch_size=1),
+            ModelConfig(name="google/gemma-2-9b-it", backend="nnsight", batch_size=2),
+        ],
+        datasets=[
+            DatasetConfig(name="sports_understanding"),
+            DatasetConfig(name="logical_deduction"),
+        ],
+        steering=SteeringConfig(alpha_range=[0, 2, 4, 6, 8]),
+    )
+    ConfigLoader.save_experiment_config(
+        nnsight_config, os.path.join(configs_dir, "nnsight.yaml")
+    )
+
+    # Full dataset config with auto backend
     full_config = ExperimentRunConfig(
-        models=[ModelConfig(name="google/gemma-2-9b-it")],
+        models=[ModelConfig(name="google/gemma-2-9b-it", backend="auto")],
         datasets=[
             DatasetConfig(name="sports_understanding"),
             DatasetConfig(name="social_chemistry"),
@@ -406,6 +428,106 @@ def save_default_configs():
     ConfigLoader.save_experiment_config(
         full_config, os.path.join(configs_dir, "full_datasets.yaml")
     )
+
+
+def get_recommended_backend_for_model(model_name: str) -> str:
+    """
+    Get the recommended backend for a specific model.
+    
+    Args:
+        model_name: Name of the model
+        
+    Returns:
+        Recommended backend name
+    """
+    model_lower = model_name.lower()
+    
+    # Models that require specific backends
+    if "deepseek" in model_lower:
+        return "nnsight"  # DeepSeek models require nnsight
+    elif "gpt2" in model_lower and "openai-community" in model_lower:
+        return "transformer_lens"  # GPT-2 works well with transformer_lens
+    elif any(pattern in model_lower for pattern in ["gemma", "llama", "mistral"]):
+        return "auto"  # These models work with both, try auto-selection
+    else:
+        return "auto"  # Default to auto-detection
+
+
+def validate_model_backend_compatibility(model: ModelConfig) -> List[str]:
+    """
+    Validate backend compatibility for a model configuration.
+    
+    Args:
+        model: ModelConfig instance
+        
+    Returns:
+        List of warning messages
+    """
+    warnings = []
+    model_lower = model.name.lower()
+    
+    # Check for known incompatibilities
+    if "deepseek" in model_lower and model.backend == "transformer_lens":
+        warnings.append(
+            f"DeepSeek models ('{model.name}') are not supported by transformer_lens. "
+            "Consider using backend 'nnsight' instead."
+        )
+    
+    # Check for suboptimal choices
+    if "gpt2" in model_lower and model.backend == "nnsight":
+        warnings.append(
+            f"GPT-2 models ('{model.name}') work better with transformer_lens backend. "
+            "Consider using backend 'transformer_lens' for better performance."
+        )
+    
+    return warnings
+
+
+def suggest_backend_optimization(config: ExperimentRunConfig) -> Dict[str, Any]:
+    """
+    Analyze experiment configuration and suggest backend optimizations.
+    
+    Args:
+        config: ExperimentRunConfig instance
+        
+    Returns:
+        Dictionary with optimization suggestions
+    """
+    suggestions = {
+        "warnings": [],
+        "recommendations": [],
+        "optimized_models": []
+    }
+    
+    for model in config.models:
+        # Check compatibility
+        warnings = validate_model_backend_compatibility(model)
+        suggestions["warnings"].extend(warnings)
+        
+        # Generate recommendations
+        recommended = get_recommended_backend_for_model(model.name)
+        if model.backend == "auto" and recommended != "auto":
+            suggestions["recommendations"].append(
+                f"Model '{model.name}': Consider explicitly setting backend to '{recommended}' "
+                "for better performance."
+            )
+        elif model.backend != recommended and recommended != "auto":
+            suggestions["recommendations"].append(
+                f"Model '{model.name}': Recommended backend is '{recommended}', "
+                f"currently set to '{model.backend}'."
+            )
+        
+        # Create optimized model config
+        optimized_model = ModelConfig(
+            name=model.name,
+            device=model.device,
+            dtype=model.dtype,
+            batch_size=model.batch_size,
+            backend=recommended if recommended != "auto" else model.backend
+        )
+        suggestions["optimized_models"].append(optimized_model)
+    
+    return suggestions
 
 
 if __name__ == "__main__":

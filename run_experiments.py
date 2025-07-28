@@ -14,8 +14,10 @@ from typing import List, Optional
 # Add src directory to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), "src"))
 
-from config import ConfigLoader, ExperimentRunConfig, save_default_configs
+from config import ConfigLoader, ExperimentRunConfig, save_default_configs, suggest_backend_optimization
 from experiment_runner import EnhancedExperimentRunner
+from nnsight_experiment_runner import NNsightExperimentRunner
+from model_factory import get_recommended_backend
 
 
 def create_parser() -> argparse.ArgumentParser:
@@ -36,6 +38,9 @@ Examples:
 
   # Run with specific models and datasets (override config)
   python run_experiments.py --config configs/basic.yaml --models google/gemma-2-9b-it --datasets sports_understanding
+
+  # Run with specific backend
+  python run_experiments.py --config configs/basic.yaml --backend nnsight
 
   # Run in non-interactive mode
   python run_experiments.py --config configs/basic.yaml --no-interactive
@@ -78,6 +83,11 @@ Examples:
         "--datasets",
         nargs="+",
         help="Override datasets from config (space-separated list)",
+    )
+    parser.add_argument(
+        "--backend",
+        choices=["auto", "nnsight", "transformer_lens"],
+        help="Override backend for all models (auto, nnsight, transformer_lens)",
     )
     parser.add_argument(
         "--alpha-range",
@@ -153,7 +163,13 @@ def apply_overrides(
     if args.models:
         from config import ModelConfig
 
-        config.models = [ModelConfig(name=model) for model in args.models]
+        backend = args.backend if args.backend else "auto"
+        config.models = [ModelConfig(name=model, backend=backend) for model in args.models]
+    
+    # Backend override for existing models
+    if args.backend and not args.models:
+        for model in config.models:
+            model.backend = args.backend
 
     # Dataset overrides
     if args.datasets:
@@ -194,6 +210,55 @@ def apply_overrides(
         config.max_concurrent_models = args.max_concurrent
 
     return config
+
+
+def select_experiment_runner(config: ExperimentRunConfig) -> str:
+    """
+    Select the appropriate experiment runner based on model backends.
+    
+    Args:
+        config: Experiment configuration
+        
+    Returns:
+        Runner type: "nnsight" or "transformer_lens"
+    """
+    # Check if any model requires nnsight
+    has_nnsight = any(
+        model.backend == "nnsight" or 
+        (model.backend == "auto" and "deepseek" in model.name.lower())
+        for model in config.models
+    )
+    
+    # Check if any model explicitly requires transformer_lens
+    has_transformer_lens = any(
+        model.backend == "transformer_lens"
+        for model in config.models
+    )
+    
+    # If we have mixed backends, print warning
+    if has_nnsight and has_transformer_lens:
+        print("⚠️  Warning: Mixed backends detected. Using NNsight runner for compatibility.")
+        return "nnsight"
+    
+    # Use nnsight if any model needs it, otherwise use transformer_lens for compatibility
+    return "nnsight" if has_nnsight else "transformer_lens"
+
+
+def analyze_backend_configuration(config: ExperimentRunConfig):
+    """Analyze and provide feedback on backend configuration."""
+    suggestions = suggest_backend_optimization(config)
+    
+    if suggestions["warnings"]:
+        print("\n⚠️  Backend Configuration Warnings:")
+        for warning in suggestions["warnings"]:
+            print(f"  • {warning}")
+    
+    if suggestions["recommendations"]:
+        print("\n💡 Backend Recommendations:")
+        for rec in suggestions["recommendations"]:
+            print(f"  • {rec}")
+    
+    print()  # Add spacing
 
 
 def list_experiments(cache_dir: str = "cache"):
@@ -307,13 +372,25 @@ def main():
 
         print("✓ Configuration loaded and validated")
         print(f"  Models: {[m.name for m in config.models]}")
+        print(f"  Backends: {[m.backend for m in config.models]}")
         print(f"  Datasets: {[d.name for d in config.datasets]}")
         print(f"  Alpha range: {config.steering.alpha_range}")
         print(f"  Cache directory: {config.cache_dir}")
 
+        # Analyze backend configuration
+        analyze_backend_configuration(config)
+
+        # Select appropriate runner
+        runner_type = select_experiment_runner(config)
+        print(f"🔧 Using {runner_type} experiment runner")
+
         # Create and run experiments
         print("\n🚀 Starting experiments...")
-        runner = EnhancedExperimentRunner(config)
+        if runner_type == "nnsight":
+            runner = NNsightExperimentRunner(config)
+        else:
+            runner = EnhancedExperimentRunner(config)
+        
         runner.run_all_experiments()
 
         # Save summary if requested

@@ -4,25 +4,26 @@ This repository contains **7 datasets** for binary classification tasks designed
 
 ## Summary Statistics
 
-| Dataset | Samples | Domain | Answer Format | Used in Probes* |
-|---------|---------|--------|---------------|----------------|
-| Sports Understanding | 250 | Sports knowledge | Plausible/Implausible | ✓ |
-| Anachronisms | 226 | Temporal reasoning | Anachronistic/Not anachronistic | |
-| Snarks | 178 | Sarcasm detection | Sarcastic/Not sarcastic | |
-| Social Chemistry | 77,799 | Social norms | Appropriate/Inappropriate | ✓ |
-| Logical Deduction | 300 | Logic puzzles | Plausible/Implausible | ✓ |
-| Quora Question Pairs | 81,661 | Semantic similarity | Same meaning/Different meaning | ✓ |
-| City Reasoning** | 2,000 | Geography | Plausible/Implausible | |
+| Dataset | Samples | Domain | Answer Format | Used in Probes* | Augmented** |
+|---------|---------|--------|---------------|----------------|-------------|
+| Sports Understanding | 1,200 | Sports knowledge | Plausible/Implausible | ✓ | ✓ |
+| Anachronisms | 1,098 | Temporal reasoning | Anachronistic/Not anachronistic | | ✓ |
+| Snarks | 178 | Sarcasm detection | Sarcastic/Not sarcastic | | |
+| Social Chemistry | 77,799 | Social norms | Appropriate/Inappropriate | ✓ | |
+| Logical Deduction | 1,023 | Logic puzzles | Plausible/Implausible | ✓ | ✓ |
+| Quora Question Pairs | 81,661 | Semantic similarity | Same meaning/Different meaning | ✓ | |
+| City Reasoning*** | 2,000 | Geography | Plausible/Implausible | | |
 
 *Used in blog post probe experiments with Gemma-2 9B  
-**Data exists but processing not implemented
+**Datasets expanded with AI-generated samples and o3 quality review  
+***Data exists but processing not implemented
 
 ## Detailed Dataset Descriptions
 
 ### 1. Sports Understanding
 **Purpose**: Tests whether sports-related sentences are plausible by checking if actions match the correct sport for specific athletes.
 
-**Sample Count**: 250
+**Sample Count**: 1,200
 
 **Binary Choices**: 
 - "Yes, the sentence is plausible"
@@ -45,7 +46,7 @@ This repository contains **7 datasets** for binary classification tasks designed
 ### 2. Anachronisms
 **Purpose**: Identifies whether sentences contain anachronistic elements (things out of their proper time period).
 
-**Sample Count**: 226
+**Sample Count**: 1,098
 
 **Binary Choices**:
 - "Yes, contains anachronistic elements" 
@@ -105,7 +106,7 @@ This repository contains **7 datasets** for binary classification tasks designed
 ### 5. Logical Deduction
 **Purpose**: Tests logical reasoning about object positioning and relationships.
 
-**Sample Count**: 300
+**Sample Count**: 1,023
 
 **Binary Choices**:
 - "Yes, the statement is plausible"
