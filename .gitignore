@@ -7,3 +7,11 @@ src/cache/
 writing/
 tmp/
 cache/
+claude-scratchpad
+run_gemma_comprehensive.py
+test_cache_consistency.py
+test_split_consistency.py
+debug_steering.py
+generate_test_prompts.py
+run_gpt2_experiments.py
+test_integration.py
