@@ -705,6 +705,7 @@ class EnhancedExperimentRunner:
                         alpha=alpha,
                         steering_vectors=steering_vectors,
                         layers=layers,
+                        verbose=True,
                     )
                     
                     # Clean up tokens immediately
