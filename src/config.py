@@ -32,6 +32,7 @@ class DatasetConfig:
 class SteeringConfig:
     """Configuration for steering experiments."""
 
+    method: str = "caa-single-layer"  # "caa-single-layer" or "caa-layer-incremental"
     alpha_range: List[float] = field(
         default_factory=lambda: [0, 1, 2, 3, 4, 5, 6, 7, 8]
     )
@@ -117,6 +118,11 @@ class ConfigValidator:
     def validate_steering_config(config: SteeringConfig) -> List[str]:
         """Validate a steering configuration."""
         errors = []
+
+        # Validate steering method
+        valid_methods = ["caa-single-layer", "caa-layer-incremental"]
+        if config.method not in valid_methods:
+            errors.append(f"Invalid steering method: {config.method}. Valid options: {valid_methods}")
 
         if not config.alpha_range:
             errors.append("Alpha range cannot be empty")
@@ -236,6 +242,7 @@ class ConfigLoader:
     def create_steering_config(steering_data: Dict) -> SteeringConfig:
         """Create SteeringConfig from configuration data."""
         return SteeringConfig(
+            method=steering_data.get("method", "caa-single-layer"),
             alpha_range=steering_data.get("alpha_range", [0, 1, 2, 3, 4, 5, 6, 7, 8]),
             temperature=steering_data.get("temperature", 0.7),
             max_new_tokens=steering_data.get("max_new_tokens", 100),
@@ -307,6 +314,7 @@ class ConfigLoader:
                 for dataset in config.datasets
             ],
             "steering": {
+                "method": config.steering.method,
                 "alpha_range": config.steering.alpha_range,
                 "temperature": config.steering.temperature,
                 "max_new_tokens": config.steering.max_new_tokens,
@@ -345,6 +353,8 @@ def create_experiment_configs(
                 temperature=run_config.steering.temperature,
                 max_new_tokens=run_config.steering.max_new_tokens,
             )
+            # Store steering method for later access
+            exp_config.steering_method = getattr(run_config.steering, 'method', 'caa-single-layer')
             experiment_configs.append(exp_config)
 
     return experiment_configs
@@ -361,7 +371,7 @@ def create_default_config() -> ExperimentRunConfig:
             DatasetConfig(name="sports_understanding"),
             DatasetConfig(name="social_chemistry"),
         ],
-        steering=SteeringConfig(alpha_range=[0, 1, 2, 4, 6, 8]),
+        steering=SteeringConfig(method="caa-single-layer", alpha_range=[0, 1, 2, 4, 6, 8]),
     )
 
 
@@ -374,7 +384,7 @@ def save_default_configs():
     basic_config = ExperimentRunConfig(
         models=[ModelConfig(name="google/gemma-2-9b-it", backend="transformer_lens")],
         datasets=[DatasetConfig(name="sports_understanding")],
-        steering=SteeringConfig(alpha_range=[0, 2, 4, 6]),
+        steering=SteeringConfig(method="caa-single-layer", alpha_range=[0, 2, 4, 6]),
     )
     ConfigLoader.save_experiment_config(
         basic_config, os.path.join(configs_dir, "basic.yaml")
@@ -390,7 +400,7 @@ def save_default_configs():
             DatasetConfig(name="sports_understanding"),
             DatasetConfig(name="social_chemistry"),
         ],
-        steering=SteeringConfig(alpha_range=[0, 1, 2, 3, 4, 5, 6, 7, 8]),
+        steering=SteeringConfig(method="caa-single-layer", alpha_range=[0, 1, 2, 3, 4, 5, 6, 7, 8]),
         max_concurrent_models=2,
     )
     ConfigLoader.save_experiment_config(
@@ -407,7 +417,7 @@ def save_default_configs():
             DatasetConfig(name="sports_understanding"),
             DatasetConfig(name="logical_deduction"),
         ],
-        steering=SteeringConfig(alpha_range=[0, 2, 4, 6, 8]),
+        steering=SteeringConfig(method="caa-single-layer", alpha_range=[0, 2, 4, 6, 8]),
     )
     ConfigLoader.save_experiment_config(
         nnsight_config, os.path.join(configs_dir, "nnsight.yaml")
@@ -422,7 +432,7 @@ def save_default_configs():
             DatasetConfig(name="logical_deduction"),
             DatasetConfig(name="quora_question_pairs"),
         ],
-        steering=SteeringConfig(alpha_range=list(range(0, 9))),
+        steering=SteeringConfig(method="caa-single-layer", alpha_range=list(range(0, 9))),
         evaluate_confabulation=True,
     )
     ConfigLoader.save_experiment_config(

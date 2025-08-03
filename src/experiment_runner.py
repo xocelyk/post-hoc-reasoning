@@ -22,6 +22,7 @@ from models import ChatModel
 from parsing_utils import parse_response
 from utils import generate_with_hooks
 from visualizer import create_visualizer
+from steering_methods import create_steering_method, format_steering_results
 
 
 class PromptDataset(Dataset):
@@ -353,15 +354,18 @@ class EnhancedExperimentRunner:
     def train_and_cache_probes(
         self, model: ChatModel, config: ExperimentConfig, cache: ExperimentCache
     ) -> bool:
-        """Compute and cache contrastive activation vectors."""
+        """Compute and cache contrastive activation vectors using configured steering method."""
         if self.run_config.use_cache and cache.has_probes():
             self.logger.info(
                 f"Contrastive vectors already cached for {config.model_name} on {config.dataset_name}"
             )
             return True
 
+        # Get steering method from config
+        steering_method_name = getattr(self.run_config.steering, 'method', 'caa-single-layer')
+        
         self.logger.info(
-            f"Computing contrastive activation vectors for {config.model_name} on {config.dataset_name}"
+            f"Computing contrastive activation vectors using {steering_method_name} for {config.model_name} on {config.dataset_name}"
         )
 
         # Load cached data
@@ -388,9 +392,9 @@ class EnhancedExperimentRunner:
                         train_layer_activations.append(activation)
                         train_labels.append(result["pred_answer"])
 
-                # Compute contrastive vector for this layer
+                # Compute contrastive vector for this layer (L2 normalized)
                 contrastive_vector = self.extract_contrastive_vector(
-                    train_layer_activations, train_labels
+                    train_layer_activations, train_labels, normalize=True
                 )
                 all_contrastive_vectors.append(contrastive_vector)
 
@@ -412,37 +416,51 @@ class EnhancedExperimentRunner:
 
                 self.logger.info(f"Layer {layer} Similarity Score: {similarity_score:.4f}")
 
-        # Select best layer with tiebreaker (latest layer wins ties)
-        best_score = max(similarity_scores)
-        best_layers = [i for i, score in enumerate(similarity_scores) if score == best_score]
-        best_layer_idx = max(best_layers)  # Latest layer wins ties
-        best_layer = layers[best_layer_idx]
-        
-        self.logger.info(
-            f"Best Similarity Score: {best_score:.4f} at layer {best_layer} for {config.model_name} on {config.dataset_name}"
-        )
-        
-        if len(best_layers) > 1:
-            self.logger.info(
-                f"Tie between layers {[layers[i] for i in best_layers]} - selecting latest layer {best_layer}"
+        # Create and apply steering method
+        try:
+            steering_method = create_steering_method(
+                steering_method_name, 
+                similarity_scores=similarity_scores
             )
-        
-        # Use only the best vector for all layer positions (maintains steering compatibility)
-        best_contrastive_vector = all_contrastive_vectors[best_layer_idx]
-        final_contrastive_vectors = [best_contrastive_vector] * len(layers)
+            final_steering_vectors = steering_method.compute_steering_vectors(all_contrastive_vectors)
+            
+            # Log method-specific information
+            if steering_method_name == "caa-single-layer":
+                best_score = max(similarity_scores)
+                best_layers = [i for i, score in enumerate(similarity_scores) if score == best_score]
+                best_layer = layers[max(best_layers)]
+                
+                self.logger.info(
+                    f"Best Similarity Score: {best_score:.4f} at layer {best_layer} for {config.model_name} on {config.dataset_name}"
+                )
+                
+                if len(best_layers) > 1:
+                    self.logger.info(
+                        f"Tie between layers {[layers[i] for i in best_layers]} - selecting latest layer {best_layer}"
+                    )
+            elif steering_method_name == "caa-layer-incremental":
+                self.logger.info(
+                    f"Computed incremental steering vectors for all {len(layers)} layers"
+                )
+                
+        except Exception as e:
+            self.logger.error(f"Error creating steering method '{steering_method_name}': {e}")
+            # Fallback to single-layer method
+            steering_method = create_steering_method("caa-single-layer", similarity_scores=similarity_scores)
+            final_steering_vectors = steering_method.compute_steering_vectors(all_contrastive_vectors)
         
         # Save results for downstream use
-        cache.save_pickle(final_contrastive_vectors, cache.get_probe_coefficients_path())
+        cache.save_pickle(final_steering_vectors, cache.get_probe_coefficients_path())
         cache.save_json(similarity_scores, cache.get_auc_scores_path())
         
-        # Save metadata about best layer selection
-        best_layer_metadata = {
-            "best_layer": best_layer,
-            "best_score": best_score,
-            "all_scores": similarity_scores,
-            "tied_layers": [layers[i] for i in best_layers] if len(best_layers) > 1 else None
-        }
-        cache.save_json(best_layer_metadata, os.path.join(cache.cache_dir, "best_layer_metadata.json"))
+        # Save steering method metadata
+        steering_metadata = format_steering_results(final_steering_vectors, steering_method_name)
+        steering_metadata.update({
+            "all_layer_scores": [float(score) for score in similarity_scores],
+            "best_score": float(max(similarity_scores)),
+            "best_layer": int(layers[np.argmax(similarity_scores)])
+        })
+        cache.save_json(steering_metadata, os.path.join(cache.cache_dir, "steering_metadata.json"))
 
         # Update visualizer
         if hasattr(self.visualizer, "update_auc_scores"):

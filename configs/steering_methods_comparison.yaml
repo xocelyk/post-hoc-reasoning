@@ -1,0 +1,40 @@
+# Configuration for comparing CAA steering methods
+# Tests both caa-single-layer and caa-layer-incremental on sports_understanding dataset
+
+cache_dir: cache
+evaluate_confabulation: false
+interactive: true
+max_concurrent_models: 1
+save_generations: true
+use_cache: true
+
+models:
+- name: google/gemma-2-9b-it
+  backend: auto
+  batch_size: 2
+  device: auto
+  dtype: bfloat16
+
+datasets:
+- name: sports_understanding
+  train_size: 100
+  test_size: 100
+  split_seed: 42
+
+# Default steering config - will be used for caa-single-layer
+steering:
+  method: caa-single-layer
+  alpha_range: [1, 2, 3, 4, 5]
+  temperature: 0.7
+  max_new_tokens: 100
+
+# Note: To test caa-layer-incremental, create a second config file or 
+# modify this config and run again. This allows for direct comparison
+# of results between the two methods.
+
+# Example second config for layer-incremental:
+# steering:
+#   method: caa-layer-incremental
+#   alpha_range: [1, 2, 3, 4, 5]
+#   temperature: 0.7
+#   max_new_tokens: 100
