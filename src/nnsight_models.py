@@ -113,18 +113,9 @@ class NNsightChatModel:
         Returns:
             Formatted chat string
         """
-        print(f"🔍 DEBUG - NNsightChatModel.apply_chat_template called for {self.model_name}")
-        print(f"🔍 DEBUG - Messages to process: {len(messages)} messages")
-        for i, msg in enumerate(messages):
-            print(f"🔍 DEBUG - Message {i}: role='{msg.get('role', 'MISSING')}', content_length={len(msg.get('content', ''))}")
-        
         # Apply model-specific formatting first
         if self.model_name in self.format_registry:
-            print(f"🔍 DEBUG - Applying model-specific formatting for {self.model_name}")
             messages = self.format_registry[self.model_name](messages)
-            print(f"🔍 DEBUG - After formatting: {len(messages)} messages")
-            for i, msg in enumerate(messages):
-                print(f"🔍 DEBUG - Formatted Message {i}: role='{msg.get('role', 'MISSING')}', content_length={len(msg.get('content', ''))}")
         
         # Use tokenizer's chat template
         try:
@@ -133,11 +124,8 @@ class NNsightChatModel:
                 tokenize=False,
                 **kwargs
             )
-            print(f"🔍 DEBUG - Chat template applied successfully, result length: {len(result)}")
             return result
         except Exception as e:
-            print(f"❌ DEBUG - Chat template failed: {str(e)}")
-            print(f"❌ DEBUG - Error type: {type(e).__name__}")
             raise
     
     def to_tokens(self, text: Union[str, List[str]], **kwargs) -> torch.Tensor:
