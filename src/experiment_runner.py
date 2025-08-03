@@ -238,12 +238,11 @@ class EnhancedExperimentRunner:
                 test_dataloader, model, len(test_dataset), config
             )
 
-            # Cache results
-            if self.run_config.use_cache:
-                cache.save_pickle(train_results, cache.get_train_generations_path())
-                cache.save_pickle(test_results, cache.get_test_generations_path())
-                cache.save_pickle(train_activations, cache.get_train_activations_path())
-                cache.save_pickle(test_activations, cache.get_test_activations_path())
+            # Always save results for downstream use
+            cache.save_pickle(train_results, cache.get_train_generations_path())
+            cache.save_pickle(test_results, cache.get_test_generations_path())
+            cache.save_pickle(train_activations, cache.get_train_activations_path())
+            cache.save_pickle(test_activations, cache.get_test_activations_path())
 
         return True
 
@@ -339,10 +338,9 @@ class EnhancedExperimentRunner:
 
                 self.logger.info(f"Layer {layer} AUC: {auc_score:.4f}")
 
-        # Cache results
-        if self.run_config.use_cache:
-            cache.save_pickle(all_coef_vectors, cache.get_probe_coefficients_path())
-            cache.save_json(auc_scores, cache.get_auc_scores_path())
+        # Always save results for downstream use
+        cache.save_pickle(all_coef_vectors, cache.get_probe_coefficients_path())
+        cache.save_json(auc_scores, cache.get_auc_scores_path())
 
         # Update visualizer
         if hasattr(self.visualizer, "update_auc_scores"):
