@@ -231,11 +231,13 @@ class EnhancedExperimentRunner:
                 PromptDataset(test_dataset, model), batch_size=batch_size, shuffle=False
             )
 
+            self.logger.info("Processing TRAINING data...")
             train_results, train_activations = self.process_dataset(
-                train_dataloader, model, config.train_size, config
+                train_dataloader, model, config.train_size, config, phase="train"
             )
+            self.logger.info("Processing TEST data...")
             test_results, test_activations = self.process_dataset(
-                test_dataloader, model, len(test_dataset), config
+                test_dataloader, model, len(test_dataset), config, phase="test"
             )
 
             # Always save results for downstream use
@@ -252,13 +254,19 @@ class EnhancedExperimentRunner:
         model: ChatModel,
         max_samples: int,
         config: ExperimentConfig,
+        phase: str = "unknown",
     ):
         """Process entire dataset."""
         results = []
         activations_list = []
         sample_count = 0
 
+        all_corrects = []
+        
         for batch_idx, (prompts, correct_tups) in enumerate(dataloader):
+            # Enable detailed logging for first batch
+            log_first_batch = (batch_idx == 0)
+            
             activations, generations, pred_letters, pred_answers, corrects = (
                 self.process_batch(
                     prompts,
@@ -267,10 +275,12 @@ class EnhancedExperimentRunner:
                     get_activations=True,
                     temperature=config.temperature,
                     max_new_tokens=config.max_new_tokens,
+                    log_first_batch=log_first_batch,
                 )
             )
 
             sample_count += len(prompts)
+            all_corrects.extend(corrects)
 
             for i, prompt in enumerate(prompts):
                 result = {
@@ -284,13 +294,28 @@ class EnhancedExperimentRunner:
                 results.append(result)
                 if activations is not None:
                     activations_list.append(activations[i])
-
-            self.logger.info(
-                f"Processed {sample_count}/{max_samples} samples. Accuracy: {np.mean(corrects):.2f}"
-            )
+                
+                # Log individual sample details
+                correct_mark = "✓" if corrects[i] else "✗"
+                self.logger.info(
+                    f"{phase.upper()} sample {len(results)}/{max_samples}: "
+                    f"pred={pred_letters[i]}/{pred_answers[i]}, "
+                    f"correct={correct_tups[1][i]}/{correct_tups[0][i]} {correct_mark}"
+                )
 
             if sample_count >= max_samples:
                 break
+
+        # Summary logging
+        overall_accuracy = np.mean(all_corrects) if all_corrects else 0.0
+        pred_answers_list = [r["pred_answer"] for r in results]
+        pred_distribution = {answer: pred_answers_list.count(answer) for answer in set(pred_answers_list)}
+        
+        self.logger.info(
+            f"{phase.upper()} phase complete: {len(results)} samples, "
+            f"overall accuracy: {overall_accuracy:.2f}, "
+            f"predictions: {pred_distribution}"
+        )
 
         return results, activations_list
 
