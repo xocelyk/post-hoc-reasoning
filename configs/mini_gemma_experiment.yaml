@@ -1,0 +1,37 @@
+# Mini Gemma 2 experiment configuration
+# Single model on all 4 datasets with alpha=4, small train/test sizes for quick testing
+
+models:
+  - name: google/gemma-2-2b-it
+    backend: auto
+    batch_size: 2
+    temperature: 0.7
+    max_new_tokens: 100
+
+datasets:
+  - name: anachronisms
+    train_size: 20
+    test_size: 20
+    split_seed: 42
+  - name: social_chemistry
+    train_size: 20
+    test_size: 20
+    split_seed: 42
+  - name: logical_deduction
+    train_size: 20
+    test_size: 20
+    split_seed: 42
+  - name: sports_understanding
+    train_size: 20
+    test_size: 20
+    split_seed: 42
+
+steering:
+  alpha_range: [4]  # Single alpha value for quick testing
+
+# Optional: Experiment metadata
+experiment:
+  name: "mini_gemma_2_experiment"
+  description: "Quick test of Gemma 2B on all 4 datasets with alpha=4"
+  cache_dir: "cache"
+  interactive: false
