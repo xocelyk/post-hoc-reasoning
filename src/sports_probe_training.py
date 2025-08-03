@@ -18,6 +18,8 @@ from sklearn.model_selection import train_test_split
 
 warnings.filterwarnings("ignore")
 from dotenv import load_dotenv
+
+from .memory_utils import smart_empty_cache, memory_cleanup_context
 from torch.utils.data import DataLoader, Dataset
 
 load_dotenv()
@@ -74,26 +76,31 @@ def get_resid_activations(prompts, model, batch_size=1):
     layers = list(range(model.cfg.n_layers))
     all_activations = []
 
-    # Process prompts in batches
-    for i in range(0, len(prompts), batch_size):
-        batch_prompts = prompts[i : i + batch_size]
-        tokens = model.to_tokens(batch_prompts, prepend_bos=True)
-        _, cache = model.run_with_cache(tokens, pos_slice=-1)
+    with memory_cleanup_context(initial_cleanup=True, final_cleanup=True, monitor=True):
+        # Process prompts in batches
+        for i in range(0, len(prompts), batch_size):
+            batch_prompts = prompts[i : i + batch_size]
+            tokens = model.to_tokens(batch_prompts, prepend_bos=True)
+            _, cache = model.run_with_cache(tokens, pos_slice=-1)
 
-        batch_activations = torch.zeros(
-            (len(batch_prompts), model.cfg.n_layers, model.cfg.d_model)
-        )
+            batch_activations = torch.zeros(
+                (len(batch_prompts), model.cfg.n_layers, model.cfg.d_model)
+            )
 
-        for layer in layers:
-            layer_activations = cache["resid_post", layer]
-            layer_activations = layer_activations.squeeze().detach().cpu()
-            batch_activations[:, layer, :] = layer_activations
-            del layer_activations
+            for layer in layers:
+                layer_activations = cache["resid_post", layer]
+                layer_activations = layer_activations.squeeze().detach().cpu()
+                batch_activations[:, layer, :] = layer_activations
+                del layer_activations
 
-        all_activations.append(batch_activations)
+            all_activations.append(batch_activations)
 
-        # Clear cache after each batch to save memory
-        del cache, tokens
+            # Clear cache after each batch to save memory
+            del cache, tokens
+            
+            # Smart memory cleanup every few batches
+            if i % (batch_size * 5) == 0:
+                smart_empty_cache(threshold_gb=2.0)
 
     # Concatenate all batches
     activations = np.concatenate(all_activations, axis=0)
@@ -157,7 +164,7 @@ def generate_predictions(dataset, model, temperature=0.7, max_new_tokens=100):
 
         # Clean up tensors
         del tokens, generation
-        torch.cuda.empty_cache()
+        smart_empty_cache()
         gc.collect()
 
     return predictions
@@ -182,7 +189,7 @@ def get_layer_activations(prompts, model, layer, batch_size=1):
 
         # Clear cache immediately
         del cache, tokens, layer_activations
-        torch.cuda.empty_cache()
+        smart_empty_cache()
         gc.collect()
 
     # Concatenate all batches
@@ -203,7 +210,7 @@ def prepare_probe_data_layer(results, dataset, model, layer, batch_size=1):
 
     # Clear activations to save memory
     del layer_activations
-    torch.cuda.empty_cache()
+    smart_empty_cache()
     gc.collect()
 
     df = pd.DataFrame(
@@ -441,7 +448,7 @@ def save_residuals_over_time(model, dataset, run_name: str = "2"):
 
         # Clean up to save memory
         del tokens, generation, cache, residuals
-        torch.cuda.empty_cache()
+        smart_empty_cache()
         gc.collect()
 
     print("\nResidual activations saved successfully")
@@ -653,13 +660,6 @@ def compute_auroc_scores(results):
 #     results = pickle.load(f)
 
 # # Compute and print AUROC scores
-# scores = compute_auroc_scores(results)
-# print("\nAUROC scores per layer:")
-# scores.keys()
-# for layer, score in scores["vs_truth"].items():
-#     print(f"{layer=}")
-#     print(f"{score=}")
-#     print(f"Layer {layer}: {score:.3f}")
 
 
 # %%
@@ -766,7 +766,7 @@ def generate_and_save_trainset_cache(
 
         # Clean up
         del tokens, tokens_padded, responses, layer_caches
-        torch.cuda.empty_cache()
+        smart_empty_cache()
         gc.collect()
 
     # Concatenate all layer caches
