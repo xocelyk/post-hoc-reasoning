@@ -19,6 +19,7 @@ from torch.utils.data import DataLoader, Dataset
 
 from data_loading import load_all_datasets
 from models import ChatModel
+from parsing_utils import parse_response
 from utils import generate_with_hooks
 
 # %%
@@ -61,32 +62,7 @@ class PromptDataset(Dataset):
 
 
 # Helper functions
-def parse_response(response: str) -> Tuple[str, str]:
-    # TODO: Make more robust; this only works for gemma
-    response = (
-        response.strip()
-        .replace("<eos>", "")
-        .replace("<pad>", "")
-        .replace("<end_of_turn>", "")
-        .strip()
-    )
-    start_answer_string = "the best answer is:"
-    if start_answer_string not in response.lower():
-        return "", ""
-    answer_part = response.split(start_answer_string)[-1]
-    letter_match = re.search(r"\((.)\)", answer_part)
-    if not letter_match:
-        return "", ""
-    letter = letter_match.group(1)
-    text_answer = (
-        answer_part.split(")")[-1]
-        .strip()
-        .split(", ")[0]
-        .lower()
-        .replace(".", "")
-        .strip()
-    )
-    return letter, text_answer
+# Note: parse_response is now imported from parsing_utils
 
 
 def batch_get_resid_activations(prompts, model: ChatModel):

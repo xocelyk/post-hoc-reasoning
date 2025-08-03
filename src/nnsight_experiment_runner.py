@@ -28,6 +28,7 @@ from cache_manager import ExperimentCache, ExperimentConfig, ExperimentManager
 from config import ExperimentRunConfig, create_experiment_configs
 from data_loading import load_all_datasets
 from nnsight_models import NNsightChatModel
+from parsing_utils import parse_response
 from nnsight_utils import batch_get_resid_activations
 from nnsight_steering import generate_with_nnsight_steering
 from visualizer import create_visualizer
@@ -98,33 +99,7 @@ class NNsightExperimentRunner:
 
     def parse_response(self, response: str) -> Tuple[str, str]:
         """Parse model response to extract answer."""
-        response = (
-            response.strip()
-            .replace("<eos>", "")
-            .replace("<pad>", "")
-            .replace("<end_of_turn>", "")
-            .strip()
-        )
-        start_answer_string = "the best answer is:"
-        if start_answer_string not in response.lower():
-            return "", ""
-        answer_part = response.split(start_answer_string)[-1]
-
-        import re
-
-        letter_match = re.search(r"\((.)\)", answer_part)
-        if not letter_match:
-            return "", ""
-        letter = letter_match.group(1)
-        text_answer = (
-            answer_part.split(")")[-1]
-            .strip()
-            .split(", ")[0]
-            .lower()
-            .replace(".", "")
-            .strip()
-        )
-        return letter, text_answer
+        return parse_response(response, thinking=True)
 
     def batch_get_resid_activations(self, prompts: List[str], model: NNsightChatModel):
         """Get residual stream activations for a batch of prompts using nnsight."""

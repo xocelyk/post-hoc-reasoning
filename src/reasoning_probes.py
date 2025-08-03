@@ -36,6 +36,7 @@ from transformer_lens.utils import Slice
 
 from data_loading import create_cot_dataset, create_dataset
 from models import ChatModel
+from parsing_utils import parse_response_simple
 from utils import generate_with_hooks
 
 WORKSPACE_PATH = "/workspace/post-hoc-reasoning"
@@ -213,40 +214,9 @@ def format_turns(item, model_name):
 
 
 # %%
-def original_parse_response(response: str) -> str:
-    start_answer_string = "the best answer is:"
-    if start_answer_string not in response.lower():
-        return ""
-    answer_part = response.split(start_answer_string)[-1]
-    letter_match = re.search(r"\((.)\)", answer_part)
-    if not letter_match:
-        return ""
-    text_answer = (
-        answer_part.split(")")[-1]
-        .strip()
-        .split(", ")[0]
-        .lower()
-        .replace(".", "")
-        .strip()
-    )
-    return text_answer
-
-
-def new_parse_response(response: str) -> str:
-    """
-    Extracts the answer (plausible/implausible) following (A) or (B) from the response.
-    Example match: (A) plausible
-    Returns the matched answer string, or "" if not found.
-    """
-    match = re.search(r"\((A|B)\)\s*(plausible|implausible)", response, re.IGNORECASE)
-    if match:
-        return "yes" if match.group(2).lower() == "plausible" else "no"
-    return ""
-
-
 def parse_response(response: str) -> str:
-    # return original_parse_response(response)
-    return new_parse_response(response)
+    """Parse response using consolidated parsing logic."""
+    return parse_response_simple(response)
 
 
 # %%
