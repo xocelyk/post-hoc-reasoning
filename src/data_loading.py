@@ -383,6 +383,11 @@ def load_cot_prompt(task_name: str) -> Dict:
     for i, msg in enumerate(fixed_cot):
         print(f"🔍 DEBUG - Fixed message {i}: role='{msg.get('role', 'MISSING')}', content_length={len(msg.get('content', ''))}")
     
+    # Ensure proper role alternation by combining consecutive messages from the same role
+    print(f"🔍 DEBUG - Before role alternation fix: {len(fixed_cot)} messages")
+    fixed_cot = ensure_role_alternation(fixed_cot)
+    print(f"🔍 DEBUG - After role alternation fix: {len(fixed_cot)} messages")
+    
     return fixed_cot
 
 

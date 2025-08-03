@@ -221,7 +221,7 @@ class EnhancedExperimentRunner:
         self, model: ChatModel, config: ExperimentConfig, cache: ExperimentCache
     ) -> bool:
         """Generate and cache model data (generations and activations)."""
-        if cache.has_generations() and cache.has_activations():
+        if self.run_config.use_cache and cache.has_generations() and cache.has_activations():
             self.logger.info(
                 f"Data already cached for {config.model_name} on {config.dataset_name}"
             )
@@ -232,15 +232,16 @@ class EnhancedExperimentRunner:
         )
 
         # Load or use cached dataset
-        if cache.has_dataset():
+        if self.run_config.use_cache and cache.has_dataset():
             dataset = cache.load_pickle(cache.get_dataset_path())
         else:
             datasets = load_all_datasets()
             dataset = datasets[config.dataset_name]
-            cache.save_pickle(dataset, cache.get_dataset_path())
+            if self.run_config.use_cache:
+                cache.save_pickle(dataset, cache.get_dataset_path())
 
         # Load or create train/test split
-        if cache.has_train_test_split():
+        if self.run_config.use_cache and cache.has_train_test_split():
             train_dataset, test_dataset = cache.load_pickle(
                 cache.get_train_test_split_path()
             )
@@ -251,9 +252,10 @@ class EnhancedExperimentRunner:
                 test_size=config.test_size,
                 random_state=config.split_seed,
             )
-            cache.save_pickle(
-                (train_dataset, test_dataset), cache.get_train_test_split_path()
-            )
+            if self.run_config.use_cache:
+                cache.save_pickle(
+                    (train_dataset, test_dataset), cache.get_train_test_split_path()
+                )
 
         print("DEBUG: Train size:", len(train_dataset))
         print("DEBUG: Test size:", len(test_dataset))
@@ -269,7 +271,7 @@ class EnhancedExperimentRunner:
         print(f"DEBUG: Using batch size: {batch_size}")
 
         # Process training data
-        if not cache.has_generations():
+        if not (self.run_config.use_cache and cache.has_generations()):
             print("DEBUG: Creating train dataloader...")
             train_dataloader = DataLoader(
                 PromptDataset(train_dataset, model), batch_size=batch_size, shuffle=False
@@ -289,10 +291,11 @@ class EnhancedExperimentRunner:
             )
 
             # Cache results
-            cache.save_pickle(train_results, cache.get_train_generations_path())
-            cache.save_pickle(test_results, cache.get_test_generations_path())
-            cache.save_pickle(train_activations, cache.get_train_activations_path())
-            cache.save_pickle(test_activations, cache.get_test_activations_path())
+            if self.run_config.use_cache:
+                cache.save_pickle(train_results, cache.get_train_generations_path())
+                cache.save_pickle(test_results, cache.get_test_generations_path())
+                cache.save_pickle(train_activations, cache.get_train_activations_path())
+                cache.save_pickle(test_activations, cache.get_test_activations_path())
 
         return True
 
@@ -351,7 +354,7 @@ class EnhancedExperimentRunner:
         self, model: ChatModel, config: ExperimentConfig, cache: ExperimentCache
     ) -> bool:
         """Train and cache probes."""
-        if cache.has_probes():
+        if self.run_config.use_cache and cache.has_probes():
             self.logger.info(
                 f"Probes already cached for {config.model_name} on {config.dataset_name}"
             )
@@ -392,8 +395,9 @@ class EnhancedExperimentRunner:
                 self.logger.info(f"Layer {layer} AUC: {auc_score:.4f}")
 
         # Cache results
-        cache.save_pickle(all_coef_vectors, cache.get_probe_coefficients_path())
-        cache.save_json(auc_scores, cache.get_auc_scores_path())
+        if self.run_config.use_cache:
+            cache.save_pickle(all_coef_vectors, cache.get_probe_coefficients_path())
+            cache.save_json(auc_scores, cache.get_auc_scores_path())
 
         # Update visualizer
         if hasattr(self.visualizer, "update_auc_scores"):
@@ -475,13 +479,14 @@ class EnhancedExperimentRunner:
         for alpha in config.alpha_range:
             # Yes to No steering
             alpha_yes = -abs(alpha)  # Negative alpha steers "yes" to "no"
-            if not cache.has_steering_results(alpha_yes, "yes"):
+            if not (self.run_config.use_cache and cache.has_steering_results(alpha_yes, "yes")):
                 results_yes = self.generate_steered_examples(
                     model, yes_test_data, all_coef_vectors, layers, alpha_yes, config
                 )
-                cache.save_pickle(
-                    results_yes, cache.get_steering_results_path(alpha_yes, "yes")
-                )
+                if self.run_config.use_cache:
+                    cache.save_pickle(
+                        results_yes, cache.get_steering_results_path(alpha_yes, "yes")
+                    )
 
                 success_rate = (
                     sum(r["success"] for r in results_yes) / len(results_yes)
@@ -504,13 +509,14 @@ class EnhancedExperimentRunner:
 
             # No to Yes steering
             alpha_no = abs(alpha)  # Positive alpha steers "no" to "yes"
-            if not cache.has_steering_results(alpha_no, "no"):
+            if not (self.run_config.use_cache and cache.has_steering_results(alpha_no, "no")):
                 results_no = self.generate_steered_examples(
                     model, no_test_data, all_coef_vectors, layers, alpha_no, config
                 )
-                cache.save_pickle(
-                    results_no, cache.get_steering_results_path(alpha_no, "no")
-                )
+                if self.run_config.use_cache:
+                    cache.save_pickle(
+                        results_no, cache.get_steering_results_path(alpha_no, "no")
+                    )
 
                 success_rate = (
                     sum(r["success"] for r in results_no) / len(results_no)
