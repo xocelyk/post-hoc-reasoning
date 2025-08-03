@@ -418,11 +418,40 @@ class EnhancedExperimentRunner:
 
         # Create and apply steering method
         try:
-            steering_method = create_steering_method(
-                steering_method_name, 
-                similarity_scores=similarity_scores
-            )
-            final_steering_vectors = steering_method.compute_steering_vectors(all_contrastive_vectors)
+            if steering_method_name == "logistic-regression":
+                # Prepare activation data for logistic regression
+                train_activations_list = []
+                train_labels_list = []
+                test_activations_list = []
+                test_labels_list = []
+                
+                # Collect training data
+                for idx, result in enumerate(train_results):
+                    if result["pred_answer"] == result["correct_answer"]:
+                        train_activations_list.append(train_activations[idx])
+                        train_labels_list.append(result["pred_answer"])
+                
+                # Collect test data
+                for idx, result in enumerate(test_results):
+                    if result["pred_answer"] == result["correct_answer"]:
+                        test_activations_list.append(test_activations[idx])
+                        test_labels_list.append(result["pred_answer"])
+                
+                steering_method = create_steering_method(
+                    steering_method_name,
+                    train_activations=train_activations_list,
+                    train_labels=train_labels_list,
+                    test_activations=test_activations_list,
+                    test_labels=test_labels_list
+                )
+                # For logistic regression, we pass empty list since it doesn't use contrastive vectors
+                final_steering_vectors = steering_method.compute_steering_vectors([])
+            else:
+                steering_method = create_steering_method(
+                    steering_method_name, 
+                    similarity_scores=similarity_scores
+                )
+                final_steering_vectors = steering_method.compute_steering_vectors(all_contrastive_vectors)
             
             # Log method-specific information
             if steering_method_name == "caa-single-layer":
@@ -441,6 +470,10 @@ class EnhancedExperimentRunner:
             elif steering_method_name == "caa-layer-incremental":
                 self.logger.info(
                     f"Computed incremental steering vectors for all {len(layers)} layers"
+                )
+            elif steering_method_name == "logistic-regression":
+                self.logger.info(
+                    f"Trained logistic regression classifiers for all {len(layers)} layers"
                 )
                 
         except Exception as e:

@@ -120,7 +120,7 @@ class ConfigValidator:
         errors = []
 
         # Validate steering method
-        valid_methods = ["caa-single-layer", "caa-layer-incremental"]
+        valid_methods = ["caa-single-layer", "caa-layer-incremental", "logistic-regression"]
         if config.method not in valid_methods:
             errors.append(f"Invalid steering method: {config.method}. Valid options: {valid_methods}")
 
