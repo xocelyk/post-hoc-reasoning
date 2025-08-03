@@ -1,3 +1,4 @@
+import gc
 import json
 import os
 from functools import partial
@@ -135,9 +136,9 @@ def generate_with_hooks(
             # Clean up intermediate tensors
             del logits_step, next_logits, probs, next_token_tensor
             
-            # Periodic memory cleanup during long generations
-            if step % 10 == 0 and step > 0:
-                smart_empty_cache(threshold_gb=1.0)
+            # Memory cleanup after every step
+            smart_empty_cache(threshold_gb=0.5)
+            gc.collect()
 
             # Stop if eos token is generated
             # TODO: Other stop conditions? Depends on dataset?

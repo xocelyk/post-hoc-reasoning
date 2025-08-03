@@ -221,19 +221,45 @@ else:
         test_activations = batch_get_resid_activations(test_prompts, model)
     else:
         print("  Using TransformerLens for activation extraction...")
-        # Get activations using transformer lens
+        # Get activations using transformer lens with batched processing
         layers = list(range(model.cfg.n_layers))
-        train_tokens = model.to_tokens(train_prompts, prepend_bos=True)
-        test_tokens = model.to_tokens(test_prompts, prepend_bos=True)
         
-        _, train_cache = model.run_with_cache(train_tokens, pos_slice=-1)
-        _, test_cache = model.run_with_cache(test_tokens, pos_slice=-1)
+        # Process in smaller batches to avoid OOM
+        def get_activations_batched(prompts, model, batch_size=1):
+            """Extract activations in batches to avoid OOM"""
+            all_activations = {layer: [] for layer in layers}
+            
+            for i in range(0, len(prompts), batch_size):
+                batch_prompts = prompts[i:i+batch_size]
+                print(f"    Processing batch {i//batch_size + 1}/{(len(prompts) + batch_size - 1)//batch_size}")
+                
+                with torch.no_grad():
+                    tokens = model.to_tokens(batch_prompts, prepend_bos=True)
+                    _, cache = model.run_with_cache(tokens, pos_slice=-1)
+                    
+                    for layer in layers:
+                        layer_acts = cache[f"blocks.{layer}.hook_resid_post"].cpu().numpy()
+                        all_activations[layer].append(layer_acts)
+                    
+                    # Clean up immediately
+                    del cache, tokens
+                    gc.collect()
+                    if torch.cuda.is_available():
+                        torch.cuda.empty_cache()
+                    elif torch.backends.mps.is_available():
+                        torch.mps.empty_cache()
+            
+            # Concatenate all batches
+            for layer in layers:
+                all_activations[layer] = np.vstack(all_activations[layer])
+            
+            return all_activations
         
-        train_activations = {}
-        test_activations = {}
-        for layer in layers:
-            train_activations[layer] = train_cache[f"blocks.{layer}.hook_resid_post"].cpu().numpy()
-            test_activations[layer] = test_cache[f"blocks.{layer}.hook_resid_post"].cpu().numpy()
+        print("  Processing training activations...")
+        train_activations = get_activations_batched(train_prompts, model, batch_size=1)
+        
+        print("  Processing test activations...")
+        test_activations = get_activations_batched(test_prompts, model, batch_size=1)
     
     print("✓ Activations extracted")
     
