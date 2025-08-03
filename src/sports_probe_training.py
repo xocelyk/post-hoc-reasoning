@@ -241,15 +241,16 @@ def evaluate_probe(clf, test_data):
 
 
 # Function to extract contrastive activation vector
-def extract_contrastive_vector(activations, labels):
+def extract_contrastive_vector(activations, labels, normalize=True):
     """Extract contrastive activation vector from activations and labels.
     
     Args:
         activations: List of activation arrays for this layer
         labels: List of labels ("yes" or "no")
+        normalize: whether to normalize the vector (default: True)
         
     Returns:
-        numpy array: difference vector (mean_yes - mean_no)
+        numpy array: normalized difference vector (mean_yes - mean_no)
     """
     import numpy as np
     
@@ -268,8 +269,17 @@ def extract_contrastive_vector(activations, labels):
     mean_yes = np.mean(activations_array[yes_mask], axis=0)
     mean_no = np.mean(activations_array[no_mask], axis=0)
     
-    # Return difference vector: mean(yes) - mean(no)
-    return mean_yes - mean_no
+    # Compute difference vector: mean(yes) - mean(no)
+    difference_vector = mean_yes - mean_no
+    
+    # Normalize the vector if requested
+    if normalize:
+        vector_norm = np.linalg.norm(difference_vector)
+        if vector_norm > 0:  # Avoid division by zero
+            difference_vector = difference_vector / vector_norm
+        # If norm is 0, vector remains as zero vector
+            
+    return difference_vector
 
 
 def evaluate_contrastive_vector(contrastive_vector, activations, labels):
@@ -374,6 +384,21 @@ def train_probes_all_layers(model, train_dataset, test_dataset, run_name: str = 
         all_contrastive_vectors.append(contrastive_vector)
 
     print(f"\nContrastive vector computation completed for {len(layers)} layers")
+    
+    # Select best layer with tiebreaker (latest layer wins ties)
+    best_score = max(similarity_scores)
+    best_layers = [i for i, score in enumerate(similarity_scores) if score == best_score]
+    best_layer_idx = max(best_layers)  # Latest layer wins ties
+    best_layer = layers[best_layer_idx]
+    
+    print(f"Best Similarity Score: {best_score:.4f} at layer {best_layer}")
+    
+    if len(best_layers) > 1:
+        print(f"Tie between layers {[layers[i] for i in best_layers]} - selecting latest layer {best_layer}")
+    
+    # Use only the best vector for all layer positions (maintains steering compatibility)
+    best_contrastive_vector = all_contrastive_vectors[best_layer_idx]
+    final_contrastive_vectors = [best_contrastive_vector] * len(layers)
 
     # Save train and test datasets
     print("\nSaving datasets...")
@@ -391,18 +416,19 @@ def train_probes_all_layers(model, train_dataset, test_dataset, run_name: str = 
     print("\nSaving contrastive vectors and results...")
     os.makedirs(save_dir, exist_ok=True)
 
-    # Save contrastive vectors using pickle
+    # Save final contrastive vectors (best vector replicated for all layers)
     vectors_path = os.path.join(save_dir, f"contrastive_vectors.pkl")
     with open(vectors_path, "wb") as f:
-        pickle.dump(all_contrastive_vectors, f)
+        pickle.dump(final_contrastive_vectors, f)
     print(f"Contrastive vectors saved to {vectors_path}")
 
     # Save similarity scores as JSON
     scores_path = os.path.join(save_dir, f"similarity_scores.json")
     scores_data = {
         "layer_scores": {str(layer): score for layer, score in zip(layers, similarity_scores)},
-        "best_layer": int(layers[np.argmax(similarity_scores)]),
-        "best_score": float(np.max(similarity_scores)),
+        "best_layer": int(best_layer),
+        "best_score": float(best_score),
+        "tied_layers": [int(layers[i]) for i in best_layers] if len(best_layers) > 1 else None
     }
     with open(scores_path, "w") as f:
         json.dump(scores_data, f, indent=2)
@@ -433,7 +459,7 @@ def train_probes_all_layers(model, train_dataset, test_dataset, run_name: str = 
     print(f"Similarity scores plot saved to {plot_path}")
     plt.close()
 
-    return all_contrastive_vectors, similarity_scores
+    return final_contrastive_vectors, similarity_scores
 
 
 def load_contrastive_vectors(model, run_name: str = "2"):

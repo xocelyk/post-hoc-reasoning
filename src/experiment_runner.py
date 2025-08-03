@@ -412,9 +412,37 @@ class EnhancedExperimentRunner:
 
                 self.logger.info(f"Layer {layer} Similarity Score: {similarity_score:.4f}")
 
-        # Always save results for downstream use
-        cache.save_pickle(all_contrastive_vectors, cache.get_probe_coefficients_path())
+        # Select best layer with tiebreaker (latest layer wins ties)
+        best_score = max(similarity_scores)
+        best_layers = [i for i, score in enumerate(similarity_scores) if score == best_score]
+        best_layer_idx = max(best_layers)  # Latest layer wins ties
+        best_layer = layers[best_layer_idx]
+        
+        self.logger.info(
+            f"Best Similarity Score: {best_score:.4f} at layer {best_layer} for {config.model_name} on {config.dataset_name}"
+        )
+        
+        if len(best_layers) > 1:
+            self.logger.info(
+                f"Tie between layers {[layers[i] for i in best_layers]} - selecting latest layer {best_layer}"
+            )
+        
+        # Use only the best vector for all layer positions (maintains steering compatibility)
+        best_contrastive_vector = all_contrastive_vectors[best_layer_idx]
+        final_contrastive_vectors = [best_contrastive_vector] * len(layers)
+        
+        # Save results for downstream use
+        cache.save_pickle(final_contrastive_vectors, cache.get_probe_coefficients_path())
         cache.save_json(similarity_scores, cache.get_auc_scores_path())
+        
+        # Save metadata about best layer selection
+        best_layer_metadata = {
+            "best_layer": best_layer,
+            "best_score": best_score,
+            "all_scores": similarity_scores,
+            "tied_layers": [layers[i] for i in best_layers] if len(best_layers) > 1 else None
+        }
+        cache.save_json(best_layer_metadata, cache.get_cache_dir() + "/best_layer_metadata.json")
 
         # Update visualizer
         if hasattr(self.visualizer, "update_auc_scores"):
@@ -422,24 +450,19 @@ class EnhancedExperimentRunner:
                 config.model_name, config.dataset_name, similarity_scores
             )
 
-        best_layer = layers[np.argmax(similarity_scores)]
-        best_score = max(similarity_scores)
-        self.logger.info(
-            f"Best Similarity Score: {best_score:.4f} at layer {best_layer} for {config.model_name} on {config.dataset_name}"
-        )
-
         return True
 
 
-    def extract_contrastive_vector(self, activations, labels):
+    def extract_contrastive_vector(self, activations, labels, normalize=True):
         """Extract contrastive activation vector from activations and labels.
         
         Args:
             activations: numpy array of activations for this layer
             labels: list of labels ("yes" or "no")
+            normalize: whether to normalize the vector (default: True)
             
         Returns:
-            numpy array: difference vector (mean_yes - mean_no)
+            numpy array: normalized difference vector (mean_yes - mean_no)
         """
         activations_array = np.array(activations)
         labels_array = np.array(labels)
@@ -456,8 +479,17 @@ class EnhancedExperimentRunner:
         mean_yes = np.mean(activations_array[yes_mask], axis=0)
         mean_no = np.mean(activations_array[no_mask], axis=0)
         
-        # Return difference vector: mean(yes) - mean(no)
-        return mean_yes - mean_no
+        # Compute difference vector: mean(yes) - mean(no)
+        difference_vector = mean_yes - mean_no
+        
+        # Normalize the vector if requested
+        if normalize:
+            vector_norm = np.linalg.norm(difference_vector)
+            if vector_norm > 0:  # Avoid division by zero
+                difference_vector = difference_vector / vector_norm
+            # If norm is 0, vector remains as zero vector
+                
+        return difference_vector
 
     def evaluate_contrastive_vector(self, contrastive_vector, activations, labels):
         """Evaluate contrastive vector using similarity scores.

@@ -500,15 +500,16 @@ def collect_residuals(
 
 # Simplified probe functions using contrastive activations
 
-def extract_contrastive_vector(activations, labels):
+def extract_contrastive_vector(activations, labels, normalize=True):
     """Extract contrastive activation vector from activations and labels.
     
     Args:
         activations: tensor or array of activations for this layer
         labels: list of labels ("yes" or "no")
+        normalize: whether to normalize the vector (default: True)
         
     Returns:
-        numpy array: difference vector (mean_yes - mean_no)
+        numpy array: normalized difference vector (mean_yes - mean_no)
     """
     if isinstance(activations, torch.Tensor):
         activations_array = activations.cpu().numpy()
@@ -529,8 +530,17 @@ def extract_contrastive_vector(activations, labels):
     mean_yes = np.mean(activations_array[yes_mask], axis=0)
     mean_no = np.mean(activations_array[no_mask], axis=0)
     
-    # Return difference vector: mean(yes) - mean(no)
-    return mean_yes - mean_no
+    # Compute difference vector: mean(yes) - mean(no)
+    difference_vector = mean_yes - mean_no
+    
+    # Normalize the vector if requested
+    if normalize:
+        vector_norm = np.linalg.norm(difference_vector)
+        if vector_norm > 0:  # Avoid division by zero
+            difference_vector = difference_vector / vector_norm
+        # If norm is 0, vector remains as zero vector
+            
+    return difference_vector
 
 
 def compute_contrastive_vector(
