@@ -8,7 +8,6 @@ import torch
 from dotenv import load_dotenv
 from transformer_lens import utils
 from transformer_lens.hook_points import HookPoint
-from transformer_lens.past_key_value_caching import HookedTransformerKeyValueCache
 
 # Load environment variables from .env file
 load_dotenv()
@@ -60,25 +59,15 @@ def generate_with_hooks(
     layers: Optional[List[int]] = None,
 ) -> str:
     """
-    Generate text while steering the residual stream (through hooks)
-    AND benefiting from key-value caching to avoid re-running the full prompt.
+    Generate text while steering the residual stream (through hooks).
 
     The steering function (steer_residual_stream) only applies additions to residual
     positions strictly beyond the initial `instruction_pos`.
     """
 
-    # --------------------------------------------------------------------------
-    # 1) Initialize a key-value cache for the model
-    #    So we can reuse it at each decoding step.
-    # --------------------------------------------------------------------------
-    kv_cache = HookedTransformerKeyValueCache.init_cache(
-        cfg=model.cfg,
-        device=tokens.device,
-        batch_size=tokens.size(0),
-    )
 
     # --------------------------------------------------------------------------
-    # 2) Figure out which layers we want to steer
+    # 1) Figure out which layers we want to steer
     # --------------------------------------------------------------------------
     # If no layers are specified, we steer all layers
     if layers is None:
@@ -89,7 +78,7 @@ def generate_with_hooks(
     instruction_pos = tokens.size(1)
 
     # --------------------------------------------------------------------------
-    # 3) Build our hook function that adds the "steering_vectors" in the
+    # 2) Build our hook function that adds the "steering_vectors" in the
     #    residual stream after `instruction_pos`.
     # --------------------------------------------------------------------------
     partial_steer_func = partial(
@@ -106,40 +95,23 @@ def generate_with_hooks(
         for layer in layers
     ]
 
-    # --------------------------------------------------------------------------
-    # 4) First forward pass over the entire prompt to:
-    #    (a) fill the kv_cache
-    #    (b) retrieve logits for the final prompt token
-    # --------------------------------------------------------------------------
-    with torch.no_grad():
-        logits_full_prompt = model.run_with_hooks(
-            tokens,
-            fwd_hooks=hooks,
-            return_type="logits",
-            past_kv_cache=kv_cache,  # This populates kv_cache with the entire prompt
-        )  # shape: [batch, seq_len, vocab_size]
-
-    # Use the final token's logits if you want to sample the first new token
-    # but in practice we'll do that inside the loop below
-    model.reset_hooks()  # Clear ephemeral hooks before next step
 
     generated_tokens = []
 
     # --------------------------------------------------------------------------
-    # 5) Generate new tokens, one step at a time, reusing kv_cache
+    # 3) Generate new tokens, one step at a time
     # --------------------------------------------------------------------------
     for _ in range(max_new_tokens):
-        # Only run forward on the last token we appended
+        # Run forward on the full sequence to apply steering correctly
         with torch.no_grad():
             logits_step = model.run_with_hooks(
-                tokens[:, -1:],
+                tokens,
                 fwd_hooks=hooks,
                 return_type="logits",
-                past_kv_cache=kv_cache,  # Reuse & update the same cache
             )
         model.reset_hooks()
 
-        # logits_step shape: [batch, 1, vocab_size]
+        # logits_step shape: [batch, seq_len, vocab_size]
         next_logits = logits_step[:, -1, :]
         # Apply temperature
         next_logits = next_logits / temperature
@@ -165,7 +137,7 @@ def generate_with_hooks(
             )
 
     # --------------------------------------------------------------------------
-    # 6) Decode the newly added tokens into text
+    # 4) Decode the newly added tokens into text
     # --------------------------------------------------------------------------
     generated_text = model.tokenizer.decode(generated_tokens, skip_special_tokens=False)
 
