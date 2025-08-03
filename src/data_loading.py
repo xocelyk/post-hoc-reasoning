@@ -263,23 +263,22 @@ def create_cot_dataset(
                 f"{example_instruction}"
             )
 
-        # Check if the last message in CoT prompt is from "user" - if so, combine them
-        if prompt and prompt[-1]["role"] == "user":
-            print(f"🔍 DEBUG - Combining last CoT user message with new question")
-            prompt[-1]["content"] += f"\n\n{new_question_content}"
-        else:
-            # If last message is not from user, add new user message
-            prompt.append({
-                "role": "user",
-                "content": new_question_content,
-            })
+        # Add the new question as a user message
+        prompt.append({
+            "role": "user",
+            "content": new_question_content,
+        })
 
-        prompt.append(
-            {
-                "role": "assistant",
-                "content": "A: Let's think step by step:" if thinking else "A:",
-            }
-        )
+        # Add the assistant message
+        prompt.append({
+            "role": "assistant",
+            "content": "A: Let's think step by step:" if thinking else "A:",
+        })
+
+        # Fix role alternation for the entire prompt
+        print(f"🔍 DEBUG - Before role alternation fix: {len(prompt)} messages")
+        prompt = ensure_role_alternation(prompt)
+        print(f"🔍 DEBUG - After role alternation fix: {len(prompt)} messages")
 
         if label in choices[0].lower():
             correct_letter = "A"
@@ -301,6 +300,40 @@ def create_cot_dataset(
         )
 
     return dataset
+
+
+def ensure_role_alternation(messages: List[Dict[str, str]]) -> List[Dict[str, str]]:
+    """
+    Ensure proper role alternation by combining consecutive messages from the same role.
+    
+    Args:
+        messages: List of chat messages
+        
+    Returns:
+        List of messages with proper role alternation
+    """
+    if not messages:
+        return messages
+    
+    fixed_messages = []
+    current_message = messages[0].copy()
+    
+    for i in range(1, len(messages)):
+        next_message = messages[i]
+        
+        if current_message["role"] == next_message["role"]:
+            # Same role - combine the messages
+            print(f"🔍 DEBUG - Combining consecutive {current_message['role']} messages")
+            current_message["content"] += f"\n\n{next_message['content']}"
+        else:
+            # Different role - add current message and start new one
+            fixed_messages.append(current_message)
+            current_message = next_message.copy()
+    
+    # Don't forget the last message
+    fixed_messages.append(current_message)
+    
+    return fixed_messages
 
 
 def load_cot_prompt(task_name: str) -> Dict:
