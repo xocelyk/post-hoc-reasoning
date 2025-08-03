@@ -9,6 +9,8 @@ from dotenv import load_dotenv
 from transformer_lens import utils
 from transformer_lens.hook_points import HookPoint
 
+from .memory_utils import smart_empty_cache, memory_cleanup_context
+
 # Load environment variables from .env file
 load_dotenv()
 
@@ -101,40 +103,52 @@ def generate_with_hooks(
     # --------------------------------------------------------------------------
     # 3) Generate new tokens, one step at a time
     # --------------------------------------------------------------------------
-    for _ in range(max_new_tokens):
-        # Run forward on the full sequence to apply steering correctly
-        with torch.no_grad():
-            logits_step = model.run_with_hooks(
-                tokens,
-                fwd_hooks=hooks,
-                return_type="logits",
-            )
-        model.reset_hooks()
+    with memory_cleanup_context(
+        initial_cleanup=True,
+        final_cleanup=True,
+        monitor=verbose
+    ):
+        for step in range(max_new_tokens):
+            # Run forward on the full sequence to apply steering correctly
+            with torch.no_grad():
+                logits_step = model.run_with_hooks(
+                    tokens,
+                    fwd_hooks=hooks,
+                    return_type="logits",
+                )
+            model.reset_hooks()
 
-        # logits_step shape: [batch, seq_len, vocab_size]
-        next_logits = logits_step[:, -1, :]
-        # Apply temperature
-        next_logits = next_logits / temperature
-        probs = torch.nn.functional.softmax(next_logits, dim=-1)
+            # logits_step shape: [batch, seq_len, vocab_size]
+            next_logits = logits_step[:, -1, :]
+            # Apply temperature
+            next_logits = next_logits / temperature
+            probs = torch.nn.functional.softmax(next_logits, dim=-1)
 
-        # Sample next token. (Assuming batch_size = 1 for simplicity)
-        next_token_id = torch.multinomial(probs, num_samples=1).item()
-        generated_tokens.append(next_token_id)
+            # Sample next token. (Assuming batch_size = 1 for simplicity)
+            next_token_id = torch.multinomial(probs, num_samples=1).item()
+            generated_tokens.append(next_token_id)
 
-        # Append new token to the existing tokens
-        next_token_tensor = torch.tensor([[next_token_id]], device=tokens.device)
-        tokens = torch.cat([tokens, next_token_tensor], dim=1)
+            # Append new token to the existing tokens
+            next_token_tensor = torch.tensor([[next_token_id]], device=tokens.device)
+            tokens = torch.cat([tokens, next_token_tensor], dim=1)
 
-        # Stop if eos token is generated
-        # TODO: Other stop conditions? Depends on dataset?
-        if next_token_id == model.tokenizer.eos_token_id:
-            break
+            # Clean up intermediate tensors
+            del logits_step, next_logits, probs, next_token_tensor
+            
+            # Periodic memory cleanup during long generations
+            if step % 10 == 0 and step > 0:
+                smart_empty_cache(threshold_gb=1.0)
 
-        if verbose:
-            print(
-                model.tokenizer.decode([next_token_id], skip_special_tokens=False),
-                end="",
-            )
+            # Stop if eos token is generated
+            # TODO: Other stop conditions? Depends on dataset?
+            if next_token_id == model.tokenizer.eos_token_id:
+                break
+
+            if verbose:
+                print(
+                    model.tokenizer.decode([next_token_id], skip_special_tokens=False),
+                    end="",
+                )
 
     # --------------------------------------------------------------------------
     # 4) Decode the newly added tokens into text

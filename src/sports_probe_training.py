@@ -89,15 +89,11 @@ def get_resid_activations(prompts, model, batch_size=1):
             layer_activations = layer_activations.squeeze().detach().cpu()
             batch_activations[:, layer, :] = layer_activations
             del layer_activations
-            torch.cuda.empty_cache()
-            gc.collect()
 
         all_activations.append(batch_activations)
 
         # Clear cache after each batch to save memory
         del cache, tokens
-        torch.cuda.empty_cache()
-        gc.collect()
 
     # Concatenate all batches
     activations = np.concatenate(all_activations, axis=0)

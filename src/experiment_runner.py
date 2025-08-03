@@ -159,21 +159,16 @@ class EnhancedExperimentRunner:
 
         # Log details for first batch
         if log_first_batch:
-            print("\n" + "="*80)
-            print("FIRST BATCH DETAILED LOGGING")
-            print("="*80)
+            self.logger.info("FIRST BATCH DETAILED LOGGING")
             for i, prompt in enumerate(prompts):
-                print(f"\n--- SAMPLE {i+1} ---")
-                print("PROMPT:")
-                print(prompt)
-                print(f"\nGENERATED RESPONSE:")
-                print(repr(generations[i]))
-                print(f"\nPARSED LETTER: {pred_letters[i]}")
-                print(f"PARSED ANSWER: {pred_answers[i]}")
-                print(f"CORRECT LETTER: {correct_letters[i]}")
-                print(f"CORRECT ANSWER: {correct_answers[i]}")
-                print(f"CORRECT: {corrects[i]}")
-            print("="*80 + "\n")
+                self.logger.info(f"--- SAMPLE {i+1} ---")
+                self.logger.info(f"PROMPT: {prompt}")
+                self.logger.info(f"GENERATED RESPONSE: {repr(generations[i])}")
+                self.logger.info(f"PARSED LETTER: {pred_letters[i]}")
+                self.logger.info(f"PARSED ANSWER: {pred_answers[i]}")
+                self.logger.info(f"CORRECT LETTER: {correct_letters[i]}")
+                self.logger.info(f"CORRECT ANSWER: {correct_answers[i]}")
+                self.logger.info(f"CORRECT: {corrects[i]}")
 
         return activations, generations, pred_letters, pred_answers, corrects
 

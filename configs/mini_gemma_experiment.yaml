@@ -2,28 +2,28 @@
 # Single model on all 4 datasets with alpha=4, small train/test sizes for quick testing
 
 models:
-  - name: google/gemma-2-2b-it
+  - name: google/gemma-2-9b-it
     backend: auto
-    batch_size: 2
+    batch_size: 1
     temperature: 0.7
     max_new_tokens: 100
 
 datasets:
-  - name: anachronisms
-    train_size: 20
-    test_size: 20
-    split_seed: 42
-  - name: social_chemistry
-    train_size: 20
-    test_size: 20
-    split_seed: 42
-  - name: logical_deduction
-    train_size: 20
-    test_size: 20
-    split_seed: 42
+  # - name: anachronisms
+  #   train_size: 20
+  #   test_size: 20
+  #   split_seed: 42
+  # - name: social_chemistry
+  #   train_size: 20
+  #   test_size: 20
+  #   split_seed: 42
+  # - name: logical_deduction
+  #   train_size: 20
+  #   test_size: 20
+  #   split_seed: 42
   - name: sports_understanding
-    train_size: 20
-    test_size: 20
+    train_size: 5
+    test_size: 5
     split_seed: 42
 
 steering:
