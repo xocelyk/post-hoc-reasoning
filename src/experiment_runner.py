@@ -95,14 +95,9 @@ class EnhancedExperimentRunner:
 
     def batch_get_resid_activations(self, prompts: List[str], model: ChatModel):
         """Get residual stream activations for a batch of prompts."""
-        print(f"DEBUG: batch_get_resid_activations with {len(prompts)} prompts")
         layers = list(range(model.cfg.n_layers))
-        print(f"DEBUG: Model has {model.cfg.n_layers} layers")
         tokens = model.to_tokens(prompts, prepend_bos=True)
-        print(f"DEBUG: Tokenized to shape {tokens.shape}")
-        print("DEBUG: Running model.run_with_cache...")
         _, cache = model.run_with_cache(tokens, pos_slice=-1)
-        print("DEBUG: Finished model.run_with_cache")
 
         activations = np.zeros((len(prompts), model.cfg.n_layers, model.cfg.d_model))
 
@@ -124,14 +119,10 @@ class EnhancedExperimentRunner:
         self, prompts: List[str], model: ChatModel, temperature=0.7, max_new_tokens=100
     ):
         """Get generations for a batch of prompts."""
-        print(f"DEBUG: batch_get_generations with {len(prompts)} prompts, max_new_tokens={max_new_tokens}")
         tokens = model.to_tokens(prompts, prepend_bos=True)
-        print(f"DEBUG: Tokenized to shape {tokens.shape}")
-        print("DEBUG: Starting model.generate...")
         token_generations = model.generate(
             tokens, max_new_tokens=max_new_tokens, temperature=temperature, verbose=True
         )
-        print("DEBUG: Finished model.generate")
         generations = model.to_string(token_generations)
         return generations
 
@@ -146,25 +137,19 @@ class EnhancedExperimentRunner:
         log_first_batch=False,
     ):
         """Process a batch of prompts."""
-        print(f"DEBUG: process_batch called with {len(prompts)} prompts")
         correct_answers, correct_letters = correct_tups
 
-        print("DEBUG: Starting batch_get_resid_activations...")
         activations = (
             self.batch_get_resid_activations(prompts, model)
             if get_activations
             else None
         )
-        print("DEBUG: Finished batch_get_resid_activations")
         
-        print("DEBUG: Starting batch_get_generations...")
         generations = self.batch_get_generations(
             prompts, model, temperature=temperature, max_new_tokens=max_new_tokens
         )
-        print("DEBUG: Finished batch_get_generations")
         generations = [gen[len(prompt) :] for gen, prompt in zip(generations, prompts)]
 
-        print("DEBUG: Parsing responses...")
         responses = [self.parse_response(response) for response in generations]
         pred_letters, pred_answers = zip(*responses)
 
@@ -232,8 +217,6 @@ class EnhancedExperimentRunner:
                     (train_dataset, test_dataset), cache.get_train_test_split_path()
                 )
 
-        print("DEBUG: Train size:", len(train_dataset))
-        print("DEBUG: Test size:", len(test_dataset))
         
         batch_size = next(
             (
@@ -243,24 +226,19 @@ class EnhancedExperimentRunner:
             ),
             2,
         )
-        print(f"DEBUG: Using batch size: {batch_size}")
 
         # Process training data
         if not (self.run_config.use_cache and cache.has_generations()):
-            print("DEBUG: Creating train dataloader...")
             train_dataloader = DataLoader(
                 PromptDataset(train_dataset, model), batch_size=batch_size, shuffle=False
             )
-            print("DEBUG: Creating test dataloader...")
             test_dataloader = DataLoader(
                 PromptDataset(test_dataset, model), batch_size=batch_size, shuffle=False
             )
 
-            print("DEBUG: Starting to process training dataset...")
             train_results, train_activations = self.process_dataset(
                 train_dataloader, model, config.train_size, config
             )
-            print("DEBUG: Starting to process test dataset...")
             test_results, test_activations = self.process_dataset(
                 test_dataloader, model, len(test_dataset), config
             )
@@ -282,14 +260,11 @@ class EnhancedExperimentRunner:
         config: ExperimentConfig,
     ):
         """Process entire dataset."""
-        print(f"DEBUG: process_dataset called with max_samples={max_samples}")
-        print(f"DEBUG: Dataloader length: {len(dataloader)}")
         results = []
         activations_list = []
         sample_count = 0
 
         for batch_idx, (prompts, correct_tups) in enumerate(dataloader):
-            print(f"DEBUG: Processing batch {batch_idx + 1}/{len(dataloader)} with {len(prompts)} prompts")
             activations, generations, pred_letters, pred_answers, corrects = (
                 self.process_batch(
                     prompts,

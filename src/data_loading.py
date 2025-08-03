@@ -32,11 +32,29 @@ def format_snarks_from_json(data: Dict) -> List[List[str]]:
     examples = data.get("examples", [])
     for example in examples:
         input_text = example["input"]
-        # Extract the statement after "Options:"
-        input_text = input_text.split("\nOptions:\n")[-1].split("\n")[0].strip()
         target = example["target"]
-        label = "no" if target == "(A)" else "yes"
-        result.append([input_text, label])
+        
+        # Extract both options from the text
+        lines = input_text.split("\n")
+        option_a = None
+        option_b = None
+        
+        for line in lines:
+            line = line.strip()
+            if line.startswith("(A)"):
+                option_a = line[3:].strip()  # Remove "(A) " prefix
+            elif line.startswith("(B)"):
+                option_b = line[3:].strip()  # Remove "(B) " prefix
+        
+        # Create training examples for both options
+        if option_a:
+            label_a = "yes" if target == "(A)" else "no"
+            result.append([option_a, label_a])
+        
+        if option_b:
+            label_b = "yes" if target == "(B)" else "no"
+            result.append([option_b, label_b])
+    
     return result
 
 
