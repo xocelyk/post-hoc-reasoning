@@ -204,6 +204,8 @@ def format_turns(item, model_name):
     FORMAT_REGISTRY = {
         "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B": format_turns_deepseek,
         "deepseek-ai/DeepSeek-R1-Distill-Llama-8B": format_turns_deepseek,
+        "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B": format_turns_deepseek,
+        "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B": format_turns_deepseek,
         "google/gemma-2-9b-it": format_turns_gemma,
         "google/gemma-3-12b-it": format_turns_gemma,
     }

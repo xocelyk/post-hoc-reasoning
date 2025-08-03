@@ -57,6 +57,8 @@ class NNsightChatModel:
         self.format_registry = {
             "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B": self._format_turns_deepseek,
             "deepseek-ai/DeepSeek-R1-Distill-Llama-8B": self._format_turns_deepseek,
+            "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B": self._format_turns_deepseek,
+            "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B": self._format_turns_deepseek,
             "google/gemma-2-9b-it": self._format_turns_gemma,
             "google/gemma-3-12b-it": self._format_turns_gemma,
         }

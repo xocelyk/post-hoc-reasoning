@@ -212,6 +212,16 @@ def list_supported_models() -> Dict[str, Dict[str, Any]]:
             "recommended": "nnsight",
             "notes": "Requires nnsight for chat template support"
         },
+        "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B": {
+            "backends": ["nnsight"],
+            "recommended": "nnsight",
+            "notes": "Requires nnsight for chat template support"
+        },
+        "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B": {
+            "backends": ["nnsight"],
+            "recommended": "nnsight",
+            "notes": "Requires nnsight for chat template support"
+        },
         
         # Broad HuggingFace support via nnsight
         "meta-llama/Llama-2-7b-chat-hf": {
