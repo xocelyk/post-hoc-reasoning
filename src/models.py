@@ -69,12 +69,49 @@ class ChatModel:
         
         return dtype_map[dtype]
 
+    def _is_incomplete_assistant_message(self, messages: List[Dict[str, str]]) -> bool:
+        """
+        Check if the final message is an incomplete assistant response that should continue.
+        
+        Args:
+            messages: List of chat messages
+            
+        Returns:
+            True if final message is an incomplete assistant response
+        """
+        if not messages:
+            return False
+            
+        final_message = messages[-1]
+        if final_message.get("role") != "assistant":
+            return False
+            
+        content = final_message.get("content", "").strip()
+        # Check for common continuation patterns
+        continuation_patterns = [
+            "Let's think step by step:",
+            "A: Let's think step by step:",
+            "Let me think about this:",
+            "A:",
+        ]
+        
+        return any(content.endswith(pattern) for pattern in continuation_patterns)
+
     def apply_chat_template(self, messages: List[Dict[str, str]]) -> str:
         """
         Format a list of chat messages according to the model's chat template.
+        Automatically detects incomplete assistant messages and uses continue_final_message.
         """
         try:
-            result = self.model.tokenizer.apply_chat_template(messages, tokenize=False)
+            # Check if we need to continue the final message
+            if self._is_incomplete_assistant_message(messages):
+                result = self.model.tokenizer.apply_chat_template(
+                    messages, 
+                    tokenize=False,
+                    continue_final_message=True
+                )
+            else:
+                result = self.model.tokenizer.apply_chat_template(messages, tokenize=False)
             return result
         except Exception as e:
             raise

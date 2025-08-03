@@ -76,10 +76,14 @@ def parse_response_simple(response: str) -> str:
     Returns:
         Text answer or empty string if not found
     """
-    # Try the new pattern-based approach first (for plausible/implausible)
-    match = re.search(r"\(\s*[A-Za-z]\s*\)\s*(plausible|implausible)", response, re.IGNORECASE)
+    # Try to match letter in parentheses followed by yes/no or plausible/implausible
+    match = re.search(r"\(\s*[A-Za-z]\s*\)\s*(yes|no|plausible|implausible)", response, re.IGNORECASE)
     if match:
-        return "yes" if match.group(1).lower() == "plausible" else "no"
+        text = match.group(1).lower()
+        if text in ["yes", "plausible"]:
+            return "yes"
+        elif text in ["no", "implausible"]:
+            return "no"
     
     # Fall back to standard parsing
     letter, text_answer = parse_response(response, thinking=True)
