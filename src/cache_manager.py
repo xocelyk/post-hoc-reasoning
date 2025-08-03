@@ -23,9 +23,11 @@ class ExperimentConfig:
 
     def get_hash(self) -> str:
         """Generate a unique hash for this experiment configuration."""
+        # Include steering method in hash if available
+        steering_method = getattr(self, 'steering_method', 'default')
         config_str = (
             f"{self.model_name}_{self.dataset_name}_{self.train_size}_{self.test_size}_"
-            f"{self.split_seed}_{self.temperature}_{self.max_new_tokens}"
+            f"{self.split_seed}_{self.temperature}_{self.max_new_tokens}_{steering_method}"
         )
         return hashlib.md5(config_str.encode()).hexdigest()[:12]
 

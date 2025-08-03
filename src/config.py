@@ -32,7 +32,8 @@ class DatasetConfig:
 class SteeringConfig:
     """Configuration for steering experiments."""
 
-    method: str = "caa-single-layer"  # "caa-single-layer" or "caa-layer-incremental"
+    method: str = "caa-single-layer"  # "caa-single-layer" or "caa-layer-incremental" or "logistic-regression"
+    methods_to_scan: Optional[List[str]] = None  # Optional list of methods to test (overrides 'method')
     alpha_range: List[float] = field(
         default_factory=lambda: [0, 1, 2, 3, 4, 5, 6, 7, 8]
     )
@@ -119,10 +120,21 @@ class ConfigValidator:
         """Validate a steering configuration."""
         errors = []
 
-        # Validate steering method
+        # Validate steering methods
         valid_methods = ["caa-single-layer", "caa-layer-incremental", "logistic-regression"]
-        if config.method not in valid_methods:
-            errors.append(f"Invalid steering method: {config.method}. Valid options: {valid_methods}")
+        
+        if config.methods_to_scan is not None:
+            # If methods_to_scan is specified, validate each method in the list
+            if not config.methods_to_scan:
+                errors.append("methods_to_scan cannot be empty when specified")
+            else:
+                for method in config.methods_to_scan:
+                    if method not in valid_methods:
+                        errors.append(f"Invalid steering method in methods_to_scan: {method}. Valid options: {valid_methods}")
+        else:
+            # Validate single method
+            if config.method not in valid_methods:
+                errors.append(f"Invalid steering method: {config.method}. Valid options: {valid_methods}")
 
         if not config.alpha_range:
             errors.append("Alpha range cannot be empty")
@@ -243,6 +255,7 @@ class ConfigLoader:
         """Create SteeringConfig from configuration data."""
         return SteeringConfig(
             method=steering_data.get("method", "caa-single-layer"),
+            methods_to_scan=steering_data.get("methods_to_scan", None),
             alpha_range=steering_data.get("alpha_range", [0, 1, 2, 3, 4, 5, 6, 7, 8]),
             temperature=steering_data.get("temperature", 0.7),
             max_new_tokens=steering_data.get("max_new_tokens", 100),
@@ -315,6 +328,7 @@ class ConfigLoader:
             ],
             "steering": {
                 "method": config.steering.method,
+                "methods_to_scan": config.steering.methods_to_scan,
                 "alpha_range": config.steering.alpha_range,
                 "temperature": config.steering.temperature,
                 "max_new_tokens": config.steering.max_new_tokens,
@@ -341,21 +355,30 @@ def create_experiment_configs(
     """Convert ExperimentRunConfig to list of ExperimentConfig objects."""
     experiment_configs = []
 
+    # Determine which steering methods to use
+    if run_config.steering.methods_to_scan is not None:
+        # Use methods_to_scan when specified
+        steering_methods = run_config.steering.methods_to_scan
+    else:
+        # Fall back to single method
+        steering_methods = [run_config.steering.method]
+
     for model in run_config.models:
         for dataset in run_config.datasets:
-            exp_config = ExperimentConfig(
-                model_name=model.name,
-                dataset_name=dataset.name,
-                train_size=dataset.train_size,
-                test_size=dataset.test_size,
-                split_seed=dataset.split_seed,
-                alpha_range=run_config.steering.alpha_range,
-                temperature=run_config.steering.temperature,
-                max_new_tokens=run_config.steering.max_new_tokens,
-            )
-            # Store steering method for later access
-            exp_config.steering_method = getattr(run_config.steering, 'method', 'caa-single-layer')
-            experiment_configs.append(exp_config)
+            for steering_method in steering_methods:
+                exp_config = ExperimentConfig(
+                    model_name=model.name,
+                    dataset_name=dataset.name,
+                    train_size=dataset.train_size,
+                    test_size=dataset.test_size,
+                    split_seed=dataset.split_seed,
+                    alpha_range=run_config.steering.alpha_range,
+                    temperature=run_config.steering.temperature,
+                    max_new_tokens=run_config.steering.max_new_tokens,
+                )
+                # Store steering method for later access
+                exp_config.steering_method = steering_method
+                experiment_configs.append(exp_config)
 
     return experiment_configs
 
