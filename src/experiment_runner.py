@@ -392,9 +392,11 @@ class EnhancedExperimentRunner:
                         train_layer_activations.append(activation)
                         train_labels.append(result["pred_answer"])
 
-                # Compute contrastive vector for this layer (L2 normalized)
+                # Compute contrastive vector for this layer 
+                # Only L2 normalize for layer-incremental method
+                normalize_layer_vectors = (steering_method_name == "caa-layer-incremental")
                 contrastive_vector = self.extract_contrastive_vector(
-                    train_layer_activations, train_labels, normalize=True
+                    train_layer_activations, train_labels, normalize=normalize_layer_vectors
                 )
                 all_contrastive_vectors.append(contrastive_vector)
 

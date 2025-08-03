@@ -33,7 +33,7 @@ class SteeringMethod(ABC):
 
 
 class CAASingleLayerSteering(SteeringMethod):
-    """CAA Single Layer Steering: Use best-performing layer with RMS normalization."""
+    """CAA Single Layer Steering: Use best-performing layer without normalization."""
     
     def __init__(self, similarity_scores: List[float]):
         """Initialize with similarity scores for each layer.
@@ -44,17 +44,14 @@ class CAASingleLayerSteering(SteeringMethod):
         self.similarity_scores = similarity_scores
         
     def compute_steering_vectors(self, layer_vectors: List[np.ndarray]) -> List[np.ndarray]:
-        """Select best layer and apply RMS normalization."""
+        """Select best layer without normalization."""
         # Find best layer with tiebreaker (latest layer wins ties)
         best_score = max(self.similarity_scores)
         best_layers = [i for i, score in enumerate(self.similarity_scores) if score == best_score]
         best_layer_idx = max(best_layers)  # Latest layer wins ties
         
-        # Get the best vector and apply RMS normalization
+        # Get the best vector without normalization
         best_vector = layer_vectors[best_layer_idx].copy()
-        rms = np.sqrt(np.mean(best_vector**2))
-        if rms > 0:
-            best_vector = best_vector / rms
         
         # Replicate best vector for all layers (maintains compatibility)
         steering_vectors = [best_vector] * len(layer_vectors)
