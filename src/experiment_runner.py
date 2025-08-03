@@ -442,7 +442,7 @@ class EnhancedExperimentRunner:
             "all_scores": similarity_scores,
             "tied_layers": [layers[i] for i in best_layers] if len(best_layers) > 1 else None
         }
-        cache.save_json(best_layer_metadata, cache.get_cache_dir() + "/best_layer_metadata.json")
+        cache.save_json(best_layer_metadata, os.path.join(cache.cache_dir, "best_layer_metadata.json"))
 
         # Update visualizer
         if hasattr(self.visualizer, "update_auc_scores"):
