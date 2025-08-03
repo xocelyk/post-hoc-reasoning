@@ -19,7 +19,7 @@ from sklearn.model_selection import train_test_split
 warnings.filterwarnings("ignore")
 from dotenv import load_dotenv
 
-from .memory_utils import smart_empty_cache, memory_cleanup_context
+from memory_utils import smart_empty_cache, memory_cleanup_context
 from torch.utils.data import DataLoader, Dataset
 
 load_dotenv()

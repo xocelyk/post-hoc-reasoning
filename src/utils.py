@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from transformer_lens import utils
 from transformer_lens.hook_points import HookPoint
 
-from .memory_utils import smart_empty_cache, memory_cleanup_context
+from memory_utils import smart_empty_cache, memory_cleanup_context
 
 # Load environment variables from .env file
 load_dotenv()
