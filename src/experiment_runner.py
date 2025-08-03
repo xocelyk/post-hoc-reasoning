@@ -94,19 +94,35 @@ class EnhancedExperimentRunner:
         return parse_response(response, thinking=True)
 
     def batch_get_resid_activations(self, prompts: List[str], model: ChatModel):
-        """Get residual stream activations for a batch of prompts."""
+        """Get residual stream activations for a batch of prompts with memory optimization."""
         layers = list(range(model.cfg.n_layers))
-        tokens = model.to_tokens(prompts, prepend_bos=True)
-        _, cache = model.run_with_cache(tokens, pos_slice=-1)
+        
+        with torch.no_grad():  # Ensure no gradients are computed
+            tokens = model.to_tokens(prompts, prepend_bos=True)
+            _, cache = model.run_with_cache(tokens, pos_slice=-1)
 
-        activations = np.zeros((len(prompts), model.cfg.n_layers, model.cfg.d_model))
+            # Pre-allocate with float32 to save memory
+            activations = np.zeros((len(prompts), model.cfg.n_layers, model.cfg.d_model), dtype=np.float32)
 
-        for layer in layers:
-            layer_activations = cache["resid_post", layer]
-            # Convert to float32 before converting to numpy to avoid BFloat16 issues on MPS
-            layer_activations = layer_activations.squeeze().detach().float().cpu().numpy()
-            activations[:, layer, :] = layer_activations
-            del layer_activations
+            for layer in layers:
+                layer_activations = cache["resid_post", layer]
+                # Convert to float32 before converting to numpy to avoid BFloat16 issues on MPS
+                layer_activations = layer_activations.squeeze().detach().float().cpu().numpy().astype(np.float32)
+                activations[:, layer, :] = layer_activations
+                
+                # Immediate cleanup
+                del layer_activations
+                
+                # More aggressive memory cleanup
+                if layer % 5 == 0:  # Every 5 layers
+                    if torch.cuda.is_available():
+                        torch.cuda.empty_cache()
+                    elif torch.backends.mps.is_available():
+                        torch.mps.empty_cache()
+                    gc.collect()
+            
+            # Final cleanup
+            del cache, tokens
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
             elif torch.backends.mps.is_available():
@@ -118,12 +134,21 @@ class EnhancedExperimentRunner:
     def batch_get_generations(
         self, prompts: List[str], model: ChatModel, temperature=0.7, max_new_tokens=100
     ):
-        """Get generations for a batch of prompts."""
-        tokens = model.to_tokens(prompts, prepend_bos=True)
-        token_generations = model.generate(
-            tokens, max_new_tokens=max_new_tokens, temperature=temperature, verbose=True
-        )
-        generations = model.to_string(token_generations)
+        """Get generations for a batch of prompts with memory optimization."""
+        with torch.no_grad():  # Ensure no gradients are computed
+            tokens = model.to_tokens(prompts, prepend_bos=True)
+            token_generations = model.generate(
+                tokens, max_new_tokens=max_new_tokens, temperature=temperature, verbose=True
+            )
+            generations = model.to_string(token_generations)
+            
+            # Clean up immediately
+            del tokens, token_generations
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+            elif torch.backends.mps.is_available():
+                torch.mps.empty_cache()
+            
         return generations
 
     def process_batch(
@@ -162,7 +187,6 @@ class EnhancedExperimentRunner:
             self.logger.info("FIRST BATCH DETAILED LOGGING")
             for i, prompt in enumerate(prompts):
                 self.logger.info(f"--- SAMPLE {i+1} ---")
-                self.logger.info(f"PROMPT: {prompt}")
                 self.logger.info(f"GENERATED RESPONSE: {repr(generations[i])}")
                 self.logger.info(f"PARSED LETTER: {pred_letters[i]}")
                 self.logger.info(f"PARSED ANSWER: {pred_answers[i]}")
@@ -525,41 +549,80 @@ class EnhancedExperimentRunner:
         alpha: float,
         config: ExperimentConfig,
     ):
-        """Generate steered examples."""
+        """Generate steered examples with memory optimization."""
         steered_results = []
+        
+        # Convert to tensor once and reuse
+        steering_vectors = np.array(all_coef_vectors)
+        
+        # Process in smaller batches to reduce memory pressure
+        batch_size = min(10, len(test_data))  # Process max 10 examples at once
+        
+        for batch_start in range(0, len(test_data), batch_size):
+            batch_end = min(batch_start + batch_size, len(test_data))
+            batch_data = test_data[batch_start:batch_end]
+            
+            self.logger.info(f"Processing steering batch {batch_start//batch_size + 1}/{(len(test_data) + batch_size - 1)//batch_size}")
+            
+            for i, example in enumerate(batch_data):
+                global_idx = batch_start + i
+                example_prompt = example["prompt"]
+                
+                # Memory-efficient tokenization
+                with torch.no_grad():
+                    example_tokens = model.to_tokens(example_prompt, prepend_bos=False)
 
-        for i, example in enumerate(test_data):
-            example_prompt = example["prompt"]
-            example_tokens = model.to_tokens(example_prompt, prepend_bos=False)
+                    generation = generate_with_hooks(
+                        model,
+                        example_tokens,
+                        temperature=config.temperature,
+                        max_new_tokens=config.max_new_tokens,
+                        alpha=alpha,
+                        steering_vectors=steering_vectors,
+                        layers=layers,
+                    )
+                    
+                    # Clean up tokens immediately
+                    del example_tokens
 
-            generation = generate_with_hooks(
-                model,
-                example_tokens,
-                temperature=config.temperature,
-                max_new_tokens=config.max_new_tokens,
-                alpha=alpha,
-                steering_vectors=np.array(all_coef_vectors),
-                layers=layers,
-            )
+                new_letter, new_answer = self.parse_response(generation)
+                orig = example["pred_answer"]
+                success = (orig == "yes" and new_answer == "no") or (
+                    orig == "no" and new_answer == "yes"
+                )
 
-            new_letter, new_answer = self.parse_response(generation)
-            orig = example["pred_answer"]
-            success = (orig == "yes" and new_answer == "no") or (
-                orig == "no" and new_answer == "yes"
-            )
-
-            steered_results.append(
-                {
-                    "original_prompt": example_prompt,
-                    "steered_generation": generation,
-                    "original_answer": orig,
-                    "new_answer": new_answer,
-                    "original_letter": example["pred_letter"],
-                    "new_letter": new_letter,
-                    "alpha": alpha,
-                    "success": success,
-                }
-            )
+                steered_results.append(
+                    {
+                        "original_prompt": example_prompt,
+                        "steered_generation": generation,
+                        "original_answer": orig,
+                        "new_answer": new_answer,
+                        "original_letter": example["pred_letter"],
+                        "new_letter": new_letter,
+                        "alpha": alpha,
+                        "success": success,
+                    }
+                )
+                
+                # Clear variables and cache after each generation
+                del generation, new_letter, new_answer
+                
+                # Aggressive memory cleanup every few examples
+                if (global_idx + 1) % 5 == 0:
+                    gc.collect()
+                    if torch.cuda.is_available():
+                        torch.cuda.empty_cache()
+                    elif torch.backends.mps.is_available():
+                        torch.mps.empty_cache()
+                        
+                self.logger.info(f"Completed steering example {global_idx + 1}/{len(test_data)}")
+            
+            # Clean up between batches
+            gc.collect()
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+            elif torch.backends.mps.is_available():
+                torch.mps.empty_cache()
 
         return steered_results
 
