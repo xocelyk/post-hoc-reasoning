@@ -8,10 +8,14 @@ memory cleanup, monitoring, and optimization during model training and inference
 import gc
 import functools
 import warnings
+import logging
 from contextlib import contextmanager
 from typing import Optional, Dict, Any, Callable, List
 import torch
 import psutil
+
+# Set up logger for memory utils
+logger = logging.getLogger(__name__)
 
 
 class MemoryMonitor:
@@ -57,33 +61,33 @@ class MemoryMonitor:
         return memory_info
     
     def print_memory_summary(self, title: str = "Memory Usage"):
-        """Print current memory usage summary."""
+        """Log current memory usage summary at debug level."""
         info = self.get_memory_info()
-        print(f"\n=== {title} ===")
+        logger.debug(f"=== {title} ===")
         
         if self.is_cuda and torch.cuda.is_available():
-            print(f"GPU Allocated: {info['gpu_allocated_gb']:.2f} GB")
-            print(f"GPU Reserved:  {info['gpu_reserved_gb']:.2f} GB")
-            print(f"GPU Peak:      {info['gpu_max_allocated_gb']:.2f} GB")
+            logger.debug(f"GPU Allocated: {info['gpu_allocated_gb']:.2f} GB")
+            logger.debug(f"GPU Reserved:  {info['gpu_reserved_gb']:.2f} GB")
+            logger.debug(f"GPU Peak:      {info['gpu_max_allocated_gb']:.2f} GB")
         
-        print(f"CPU RSS:       {info['cpu_rss_gb']:.2f} GB")
-        print(f"System Avail:  {info['system_available_gb']:.2f} GB")
-        print("=" * (len(title) + 8))
+        logger.debug(f"CPU RSS:       {info['cpu_rss_gb']:.2f} GB")
+        logger.debug(f"System Avail:  {info['system_available_gb']:.2f} GB")
+        logger.debug("=" * (len(title) + 8))
     
     def compare_checkpoints(self, start_idx: int = -2, end_idx: int = -1):
         """Compare two checkpoints and show memory difference."""
         if len(self.checkpoints) < 2:
-            print("Need at least 2 checkpoints to compare")
+            logger.debug("Need at least 2 checkpoints to compare")
             return
         
         start = self.checkpoints[start_idx]
         end = self.checkpoints[end_idx]
         
-        print(f"\nMemory change from '{start['name']}' to '{end['name']}':")
+        logger.debug(f"Memory change from '{start['name']}' to '{end['name']}':")
         for key in start['memory']:
             if key in end['memory']:
                 diff = end['memory'][key] - start['memory'][key]
-                print(f"  {key}: {diff:+.3f} GB")
+                logger.debug(f"  {key}: {diff:+.3f} GB")
 
 
 def smart_empty_cache(threshold_gb: float = 1.0, force: bool = False):
@@ -105,7 +109,7 @@ def smart_empty_cache(threshold_gb: float = 1.0, force: bool = False):
         
         if allocated_gb > threshold_gb:
             new_allocated = torch.cuda.memory_allocated() / 1024**3
-            print(f"Cleared GPU cache: {allocated_gb:.2f}GB -> {new_allocated:.2f}GB")
+            logger.debug(f"Cleared GPU cache: {allocated_gb:.2f}GB -> {new_allocated:.2f}GB")
 
 
 def clear_all_caches():
@@ -255,12 +259,12 @@ def batch_processor_with_memory_management(
                     if gpu_memory > max_memory_gb and current_batch_size > 1:
                         current_batch_size = max(1, current_batch_size // 2)
                         smart_empty_cache(force=True)
-                        print(f"Reduced batch size to {current_batch_size} due to memory pressure")
+                        logger.debug(f"Reduced batch size to {current_batch_size} due to memory pressure")
                     
                     # Increase batch size if memory usage is low
                     elif gpu_memory < max_memory_gb * 0.6 and current_batch_size < batch_size:
                         current_batch_size = min(batch_size, current_batch_size * 2)
-                        print(f"Increased batch size to {current_batch_size}")
+                        logger.debug(f"Increased batch size to {current_batch_size}")
                 
                 # Process batch in chunks if needed
                 if len(batch) > current_batch_size:

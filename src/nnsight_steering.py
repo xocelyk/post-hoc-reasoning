@@ -6,10 +6,14 @@ offering a cleaner alternative to the transformer_lens hook-based approach.
 """
 
 from typing import List, Optional, Union
+import logging
 import numpy as np
 import torch
 
 from nnsight_models import NNsightChatModel
+
+# Set up logger
+logger = logging.getLogger(__name__)
 
 
 def generate_with_nnsight_steering(
@@ -296,7 +300,7 @@ def validate_steering_vectors(
     
     # Check if vectors are all zeros (might indicate a problem)
     if np.allclose(steering_vectors, 0):
-        print("Warning: All steering vectors are close to zero")
+        logger.debug("Warning: All steering vectors are close to zero")
     
     return True
 
