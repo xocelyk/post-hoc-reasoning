@@ -498,83 +498,123 @@ def collect_residuals(
     return all_residuals, all_preds
 
 
-# %%
-class Probe(nn.Module):
-    def __init__(self, input_dim, layer_dims):
-        super().__init__()
-        layers = []
-        for dim in layer_dims[:-1]:
-            layers.append(nn.Linear(input_dim, dim))
-            layers.append(nn.ReLU())
-            input_dim = dim
-        layers.append(nn.Linear(input_dim, layer_dims[-1]))
-        self.layers = nn.Sequential(*layers)
+# Simplified probe functions using contrastive activations
 
-    def forward(self, x):
-        return self.layers(x)
+def extract_contrastive_vector(activations, labels):
+    """Extract contrastive activation vector from activations and labels.
+    
+    Args:
+        activations: tensor or array of activations for this layer
+        labels: list of labels ("yes" or "no")
+        
+    Returns:
+        numpy array: difference vector (mean_yes - mean_no)
+    """
+    if isinstance(activations, torch.Tensor):
+        activations_array = activations.cpu().numpy()
+    else:
+        activations_array = np.array(activations)
+    
+    labels_array = np.array(labels)
+    
+    # Separate activations by class
+    yes_mask = labels_array == "yes"
+    no_mask = labels_array == "no"
+    
+    if not np.any(yes_mask) or not np.any(no_mask):
+        # If we don't have both classes, return zero vector
+        return np.zeros(activations_array.shape[-1])
+    
+    # Compute mean activations for each class
+    mean_yes = np.mean(activations_array[yes_mask], axis=0)
+    mean_no = np.mean(activations_array[no_mask], axis=0)
+    
+    # Return difference vector: mean(yes) - mean(no)
+    return mean_yes - mean_no
 
 
-def train_probe(
+def compute_contrastive_vector(
     residuals_train,
     residuals_test,
     preds_train,
     preds_test,
-    layer_dims,
-    learning_rate,
-    epochs,
     layer,
-    patience=50,
 ):
-    probe = Probe(residuals_train[layer].shape[1], layer_dims)
-    optimizer = torch.optim.Adam(probe.parameters(), lr=learning_rate)
-    best_auroc = 0
-    patience_counter = 0
-    best_state_dict = None
+    """Compute contrastive activation vector for a single layer.
+    
+    Args:
+        residuals_train: Training residual activations
+        residuals_test: Test residual activations  
+        preds_train: Training predictions ("yes" or "no")
+        preds_test: Test predictions ("yes" or "no")
+        layer: Layer index
+        
+    Returns:
+        tuple: (contrastive_vector, similarity_score)
+    """
+    # Extract activations for this layer
+    train_activations = residuals_train[layer]
+    test_activations = residuals_test[layer]
+    
+    # Convert predictions to list format if needed
+    if isinstance(preds_train, torch.Tensor):
+        train_labels = ["yes" if p == 1 else "no" for p in preds_train.cpu().numpy()]
+    else:
+        train_labels = preds_train
+        
+    if isinstance(preds_test, torch.Tensor):
+        test_labels = ["yes" if p == 1 else "no" for p in preds_test.cpu().numpy()]
+    else:
+        test_labels = preds_test
+    
+    # Compute contrastive vector
+    contrastive_vector = extract_contrastive_vector(train_activations, train_labels)
+    
+    # Evaluate on test data
+    similarity_score = evaluate_contrastive_vector(contrastive_vector, test_activations, test_labels)
+    
+    print(f"Layer {layer} Similarity Score: {similarity_score:.4f}")
+    
+    return contrastive_vector, similarity_score
 
-    for epoch in range(epochs):
-        probe.train()
-        optimizer.zero_grad()
-        outputs = torch.sigmoid(probe(residuals_train[layer]))
-        assert outputs.shape == preds_train.shape
-        loss = nn.BCELoss()(outputs, preds_train)
-        loss.backward()
-        optimizer.step()
-        wandb.log({f"loss_{layer}": loss.item()}, step=epoch)
 
-        probe.eval()
-        with torch.inference_mode():
-            preds_probe = (
-                torch.sigmoid(probe(residuals_test[layer])).squeeze().cpu().numpy()
-            )
-        current_auroc = roc_auc_score(preds_test.squeeze().cpu().numpy(), preds_probe)
-        wandb.log({f"roc_auc_score_{layer}": current_auroc}, step=epoch)
-
-        # Early stopping based on AUROC
-        if current_auroc > best_auroc:
-            best_auroc = current_auroc
-            patience_counter = 0
-            best_state_dict = deepcopy(probe.state_dict())
-        else:
-            patience_counter += 1
-
-        if patience_counter >= patience:
-            print(f"Early stopping at epoch {epoch} with loss {loss.item():.4f}")
-            probe.load_state_dict(best_state_dict)
-            break
-    print(f"Layer {layer} Best AUROC: {best_auroc:.4f}")
-
-    # Save probe and upload to wandb
-    probe_path = os.path.join(WORKSPACE_PATH, "tmp", f"probe_{layer}.pkl")
-    with open(probe_path, "wb") as f:
-        pickle.dump(probe.state_dict(), f)
-
-    # Upload probe as artifact to wandb
-    artifact = wandb.Artifact(name=f"probe_{layer}", type="model")
-    artifact.add_file(probe_path)
-    wandb.log_artifact(artifact, aliases=["latest"])
-
-    os.remove(probe_path)
-    return probe
+def evaluate_contrastive_vector(contrastive_vector, activations, labels):
+    """Evaluate contrastive vector using similarity scores.
+    
+    Args:
+        contrastive_vector: The computed contrastive vector
+        activations: Test activations for this layer
+        labels: Test labels ("yes" or "no")
+        
+    Returns:
+        float: Similarity score (higher is better)
+    """
+    if len(activations) == 0:
+        return 0.0
+        
+    if isinstance(activations, torch.Tensor):
+        activations_array = activations.cpu().numpy()
+    else:
+        activations_array = np.array(activations)
+        
+    labels_array = np.array(labels)
+    
+    # Compute dot product of each activation with contrastive vector
+    similarities = np.dot(activations_array, contrastive_vector)
+    
+    # Convert labels to binary (1 for "yes", 0 for "no")
+    binary_labels = (labels_array == "yes").astype(int)
+    
+    # Compute correlation between similarities and labels
+    # Higher correlation means the contrastive vector better separates the classes
+    if len(set(binary_labels)) < 2:
+        # If all labels are the same, return 0
+        return 0.0
+        
+    correlation = np.corrcoef(similarities, binary_labels)[0, 1]
+    
+    # Return absolute correlation (we care about separation, not direction)
+    return abs(correlation) if not np.isnan(correlation) else 0.0
 
 
 

@@ -240,63 +240,140 @@ def evaluate_probe(clf, test_data):
         return 0
 
 
-# Function to extract coefficient vector
-def extract_coef_vector(clf):
-    """Extract coefficient vector from trained probe"""
-    return clf.coef_[0]
+# Function to extract contrastive activation vector
+def extract_contrastive_vector(activations, labels):
+    """Extract contrastive activation vector from activations and labels.
+    
+    Args:
+        activations: List of activation arrays for this layer
+        labels: List of labels ("yes" or "no")
+        
+    Returns:
+        numpy array: difference vector (mean_yes - mean_no)
+    """
+    import numpy as np
+    
+    activations_array = np.array(activations)
+    labels_array = np.array(labels)
+    
+    # Separate activations by class
+    yes_mask = labels_array == "yes"
+    no_mask = labels_array == "no"
+    
+    if not np.any(yes_mask) or not np.any(no_mask):
+        # If we don't have both classes, return zero vector
+        return np.zeros(activations_array.shape[1])
+    
+    # Compute mean activations for each class
+    mean_yes = np.mean(activations_array[yes_mask], axis=0)
+    mean_no = np.mean(activations_array[no_mask], axis=0)
+    
+    # Return difference vector: mean(yes) - mean(no)
+    return mean_yes - mean_no
+
+
+def evaluate_contrastive_vector(contrastive_vector, activations, labels):
+    """Evaluate contrastive vector using similarity scores.
+    
+    Args:
+        contrastive_vector: The computed contrastive vector
+        activations: Test activations for this layer
+        labels: Test labels ("yes" or "no")
+        
+    Returns:
+        float: Similarity score (higher is better)
+    """
+    import numpy as np
+    
+    if len(activations) == 0:
+        return 0.0
+        
+    activations_array = np.array(activations)
+    labels_array = np.array(labels)
+    
+    # Compute dot product of each activation with contrastive vector
+    similarities = np.dot(activations_array, contrastive_vector)
+    
+    # Convert labels to binary (1 for "yes", 0 for "no")
+    binary_labels = (labels_array == "yes").astype(int)
+    
+    # Compute correlation between similarities and labels
+    # Higher correlation means the contrastive vector better separates the classes
+    if len(set(binary_labels)) < 2:
+        # If all labels are the same, return 0
+        return 0.0
+        
+    correlation = np.corrcoef(similarities, binary_labels)[0, 1]
+    
+    # Return absolute correlation (we care about separation, not direction)
+    return abs(correlation) if not np.isnan(correlation) else 0.0
 
 
 def train_probes_all_layers(model, train_dataset, test_dataset, run_name: str = "2"):
-    """Train probes for all layers of the model and return results"""
+    """Compute contrastive activation vectors for all layers of the model and return results"""
 
     save_dir = f"../results/probes/{model.model_name}/{run_name}/{DATASET_NAME}/"
     os.makedirs(save_dir, exist_ok=True)
     train_predictions = generate_predictions(train_dataset, model)
     test_predictions = generate_predictions(test_dataset, model)
 
-    print("Training probes for all layers...")
+    print("Computing contrastive activation vectors for all layers...")
     layers = list(range(model.cfg.n_layers))
-    all_probes = []
-    all_coef_vectors = []
-    auc_scores = []
+    all_contrastive_vectors = []
+    similarity_scores = []
 
     for layer in layers:
-        print(f"\nTraining probe for layer {layer}...")
+        print(f"\nComputing contrastive vector for layer {layer}...")
 
-        # Prepare data for this layer
-        train_data = prepare_probe_data_layer(
-            train_predictions, train_dataset, model, layer
-        )
+        # Prepare training data for contrastive vector computation
+        train_layer_activations = []
+        train_labels = []
+        
+        for idx, result in enumerate(train_predictions):
+            if result["pred_answer"] == result["correct_answer"]:
+                train_data = prepare_probe_data_layer(
+                    train_predictions, train_dataset, model, layer
+                )
+                # Extract activations from the prepared data
+                if len(train_data) > 0:
+                    for _, row in train_data.iterrows():
+                        activation = [row[f"ac{i}"] for i in range(model.cfg.d_model)]
+                        train_layer_activations.append(activation)
+                        train_labels.append(row["pred"])
+                break
+
+        if len(train_layer_activations) == 0:
+            print(f"  Skipping layer {layer} - insufficient data")
+            all_contrastive_vectors.append(None)
+            similarity_scores.append(0)
+            continue
+
+        # Compute contrastive vector for this layer
+        contrastive_vector = extract_contrastive_vector(train_layer_activations, train_labels)
+
+        # Evaluate using test data
+        test_layer_activations = []
+        test_labels = []
+        
         test_data = prepare_probe_data_layer(
             test_predictions, test_dataset, model, layer
         )
+        
+        if len(test_data) > 0:
+            for _, row in test_data.iterrows():
+                activation = [row[f"ac{i}"] for i in range(model.cfg.d_model)]
+                test_layer_activations.append(activation)
+                test_labels.append(row["pred"])
 
-        print(f"  Train samples: {len(train_data)}")
-        print(f"  Test samples: {len(test_data)}")
+        # Compute similarity score as evaluation metric
+        similarity_score = evaluate_contrastive_vector(contrastive_vector, test_layer_activations, test_labels)
+        similarity_scores.append(similarity_score)
 
-        if len(train_data) == 0 or len(test_data) == 0:
-            print(f"  Skipping layer {layer} - insufficient data")
-            all_probes.append(None)
-            all_coef_vectors.append(None)
-            auc_scores.append(0)
-            continue
+        print(f"  Similarity Score: {similarity_score:.4f}")
 
-        # Train probe
-        clf = train_probe(train_data)
+        all_contrastive_vectors.append(contrastive_vector)
 
-        # Evaluate probe
-        auc_score = evaluate_probe(clf, test_data)
-        auc_scores.append(auc_score)
-
-        # Extract coefficient vector
-        coef_vector = extract_coef_vector(clf)
-
-        print(f"  AUROC: {auc_score:.4f}")
-
-        all_probes.append(clf)
-        all_coef_vectors.append(coef_vector)
-
-    print(f"\nProbe training completed for {len(layers)} layers")
+    print(f"\nContrastive vector computation completed for {len(layers)} layers")
 
     # Save train and test datasets
     print("\nSaving datasets...")
@@ -311,37 +388,37 @@ def train_probes_all_layers(model, train_dataset, test_dataset, run_name: str = 
         pickle.dump(datasets, f)
     print(f"Datasets saved to {dataset_path}")
 
-    print("\nSaving probes and results...")
+    print("\nSaving contrastive vectors and results...")
     os.makedirs(save_dir, exist_ok=True)
 
-    # Save probes using pickle
-    probe_path = os.path.join(save_dir, f"probes.pkl")
-    with open(probe_path, "wb") as f:
-        pickle.dump(all_probes, f)
-    print(f"Probes saved to {probe_path}")
+    # Save contrastive vectors using pickle
+    vectors_path = os.path.join(save_dir, f"contrastive_vectors.pkl")
+    with open(vectors_path, "wb") as f:
+        pickle.dump(all_contrastive_vectors, f)
+    print(f"Contrastive vectors saved to {vectors_path}")
 
-    # Save AUC scores as JSON
-    scores_path = os.path.join(save_dir, f"auc_scores.json")
+    # Save similarity scores as JSON
+    scores_path = os.path.join(save_dir, f"similarity_scores.json")
     scores_data = {
-        "layer_scores": {str(layer): score for layer, score in zip(layers, auc_scores)},
-        "best_layer": int(layers[np.argmax(auc_scores)]),
-        "best_score": float(np.max(auc_scores)),
+        "layer_scores": {str(layer): score for layer, score in zip(layers, similarity_scores)},
+        "best_layer": int(layers[np.argmax(similarity_scores)]),
+        "best_score": float(np.max(similarity_scores)),
     }
     with open(scores_path, "w") as f:
         json.dump(scores_data, f, indent=2)
-    print(f"AUC scores saved to {scores_path}")
+    print(f"Similarity scores saved to {scores_path}")
 
     plt.figure(figsize=(12, 6))
-    plt.plot(layers, auc_scores, marker="o")
+    plt.plot(layers, similarity_scores, marker="o")
     plt.grid(True)
     plt.xlabel("Layer")
-    plt.ylabel("AUROC Score")
-    plt.title("AUROC Scores by Layer")
+    plt.ylabel("Similarity Score")
+    plt.title("Similarity Scores by Layer")
     plt.ylim(0.0, 1.0)
 
     # Add horizontal lines for mean and best scores
-    mean_score = float(np.mean(auc_scores))
-    max_score = float(np.max(auc_scores))
+    mean_score = float(np.mean(similarity_scores))
+    max_score = float(np.max(similarity_scores))
     plt.axhline(
         y=mean_score, color="r", linestyle="--", label=f"Mean ({mean_score:.3f})"
     )
@@ -351,20 +428,24 @@ def train_probes_all_layers(model, train_dataset, test_dataset, run_name: str = 
     plt.tight_layout()
 
     # Save the plot
-    plot_path = os.path.join(save_dir, f"auc_scores.png")
+    plot_path = os.path.join(save_dir, f"similarity_scores.png")
     plt.savefig(plot_path)
-    print(f"AUC scores plot saved to {plot_path}")
+    print(f"Similarity scores plot saved to {plot_path}")
     plt.close()
 
-    return all_probes, all_coef_vectors, auc_scores
+    return all_contrastive_vectors, similarity_scores
 
 
-def load_probes(model, run_name: str = "2"):
+def load_contrastive_vectors(model, run_name: str = "2"):
     save_dir = f"../results/probes/{model.model_name}/{run_name}/{DATASET_NAME}/"
-    probe_path = os.path.join(save_dir, "probes.pkl")
-    with open(probe_path, "rb") as f:
-        all_probes = pickle.load(f)
-    return all_probes
+    vectors_path = os.path.join(save_dir, "contrastive_vectors.pkl")
+    with open(vectors_path, "rb") as f:
+        all_contrastive_vectors = pickle.load(f)
+    return all_contrastive_vectors
+
+# Keep old function name for backward compatibility
+def load_probes(model, run_name: str = "2"):
+    return load_contrastive_vectors(model, run_name)
 
 
 def load_probes_from_position(

@@ -12,8 +12,6 @@ import numpy as np
 import pandas as pd
 import torch
 from rich.live import Live
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader, Dataset
 
@@ -355,15 +353,15 @@ class EnhancedExperimentRunner:
     def train_and_cache_probes(
         self, model: ChatModel, config: ExperimentConfig, cache: ExperimentCache
     ) -> bool:
-        """Train and cache probes."""
+        """Compute and cache contrastive activation vectors."""
         if self.run_config.use_cache and cache.has_probes():
             self.logger.info(
-                f"Probes already cached for {config.model_name} on {config.dataset_name}"
+                f"Contrastive vectors already cached for {config.model_name} on {config.dataset_name}"
             )
             return True
 
         self.logger.info(
-            f"Training probes for {config.model_name} on {config.dataset_name}"
+            f"Computing contrastive activation vectors for {config.model_name} on {config.dataset_name}"
         )
 
         # Load cached data
@@ -373,83 +371,127 @@ class EnhancedExperimentRunner:
         test_activations = cache.load_pickle(cache.get_test_activations_path())
 
         layers = list(range(model.cfg.n_layers))
-        all_coef_vectors = []
-        auc_scores = []
+        all_contrastive_vectors = []
+        similarity_scores = []
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
 
             for layer in layers:
-                train_data = self.prepare_data(
-                    model, train_results, train_activations, layer
+                # Prepare training data for contrastive vector computation
+                train_layer_activations = []
+                train_labels = []
+                
+                for idx, result in enumerate(train_results):
+                    if result["pred_answer"] == result["correct_answer"]:
+                        activation = train_activations[idx][layer]
+                        train_layer_activations.append(activation)
+                        train_labels.append(result["pred_answer"])
+
+                # Compute contrastive vector for this layer
+                contrastive_vector = self.extract_contrastive_vector(
+                    train_layer_activations, train_labels
                 )
-                test_data = self.prepare_data(
-                    model, test_results, test_activations, layer
+                all_contrastive_vectors.append(contrastive_vector)
+
+                # Evaluate using test data
+                test_layer_activations = []
+                test_labels = []
+                
+                for idx, result in enumerate(test_results):
+                    if result["pred_answer"] == result["correct_answer"]:
+                        activation = test_activations[idx][layer]
+                        test_layer_activations.append(activation)
+                        test_labels.append(result["pred_answer"])
+
+                # Compute similarity score as evaluation metric
+                similarity_score = self.evaluate_contrastive_vector(
+                    contrastive_vector, test_layer_activations, test_labels
                 )
+                similarity_scores.append(similarity_score)
 
-                clf = self.train_classifier(train_data)
-                auc_score = self.evaluate_classifier(clf, test_data)
-                auc_scores.append(auc_score)
-
-                coef_vector = self.extract_diff_vector(clf)
-                all_coef_vectors.append(coef_vector)
-
-                self.logger.info(f"Layer {layer} AUC: {auc_score:.4f}")
+                self.logger.info(f"Layer {layer} Similarity Score: {similarity_score:.4f}")
 
         # Always save results for downstream use
-        cache.save_pickle(all_coef_vectors, cache.get_probe_coefficients_path())
-        cache.save_json(auc_scores, cache.get_auc_scores_path())
+        cache.save_pickle(all_contrastive_vectors, cache.get_probe_coefficients_path())
+        cache.save_json(similarity_scores, cache.get_auc_scores_path())
 
         # Update visualizer
         if hasattr(self.visualizer, "update_auc_scores"):
             self.visualizer.update_auc_scores(
-                config.model_name, config.dataset_name, auc_scores
+                config.model_name, config.dataset_name, similarity_scores
             )
 
-        best_layer = layers[np.argmax(auc_scores)]
-        best_auc = max(auc_scores)
+        best_layer = layers[np.argmax(similarity_scores)]
+        best_score = max(similarity_scores)
         self.logger.info(
-            f"Best AUC: {best_auc:.4f} at layer {best_layer} for {config.model_name} on {config.dataset_name}"
+            f"Best Similarity Score: {best_score:.4f} at layer {best_layer} for {config.model_name} on {config.dataset_name}"
         )
 
         return True
 
-    def prepare_data(
-        self, model: ChatModel, results: List[Dict], activations: List, layer: int
-    ):
-        """Prepare data for training classifier."""
-        data = []
-        for idx, result in enumerate(results):
-            if result["pred_answer"] == result["correct_answer"]:
-                activation = activations[idx][layer]
-                data.append(activation.tolist() + [result["pred_answer"]])
 
-        df = pd.DataFrame(
-            data,
-            columns=["ac" + str(i) for i in range(model.cfg.d_model)] + ["pred"],
-        )
-        df = df[df["pred"].isin(["yes", "no"])]
-        return df
+    def extract_contrastive_vector(self, activations, labels):
+        """Extract contrastive activation vector from activations and labels.
+        
+        Args:
+            activations: numpy array of activations for this layer
+            labels: list of labels ("yes" or "no")
+            
+        Returns:
+            numpy array: difference vector (mean_yes - mean_no)
+        """
+        activations_array = np.array(activations)
+        labels_array = np.array(labels)
+        
+        # Separate activations by class
+        yes_mask = labels_array == "yes"
+        no_mask = labels_array == "no"
+        
+        if not np.any(yes_mask) or not np.any(no_mask):
+            # If we don't have both classes, return zero vector
+            return np.zeros(activations_array.shape[1])
+        
+        # Compute mean activations for each class
+        mean_yes = np.mean(activations_array[yes_mask], axis=0)
+        mean_no = np.mean(activations_array[no_mask], axis=0)
+        
+        # Return difference vector: mean(yes) - mean(no)
+        return mean_yes - mean_no
 
-    def train_classifier(self, train_data: pd.DataFrame):
-        """Train logistic regression classifier."""
-        X = train_data[[col for col in train_data.columns if col.startswith("ac")]]
-        y = train_data["pred"]
-        return LogisticRegression(random_state=0, max_iter=1000).fit(X, y)
-
-    def evaluate_classifier(self, clf, test_data: pd.DataFrame):
-        """Evaluate classifier performance."""
-        X = test_data[[col for col in test_data.columns if col.startswith("ac")]]
-        y = test_data["pred"]
-        y = y.apply(lambda x: 1 if x == "yes" else 0)
-        try:
-            return roc_auc_score(y, clf.predict_proba(X)[:, 1])
-        except ValueError:
-            return 0.5
-
-    def extract_diff_vector(self, clf):
-        """Extract coefficient vector from classifier."""
-        return clf.coef_[0]
+    def evaluate_contrastive_vector(self, contrastive_vector, activations, labels):
+        """Evaluate contrastive vector using similarity scores.
+        
+        Args:
+            contrastive_vector: The computed contrastive vector
+            activations: Test activations for this layer
+            labels: Test labels ("yes" or "no")
+            
+        Returns:
+            float: Similarity score (higher is better)
+        """
+        if len(activations) == 0:
+            return 0.0
+            
+        activations_array = np.array(activations)
+        labels_array = np.array(labels)
+        
+        # Compute dot product of each activation with contrastive vector
+        similarities = np.dot(activations_array, contrastive_vector)
+        
+        # Convert labels to binary (1 for "yes", 0 for "no")
+        binary_labels = (labels_array == "yes").astype(int)
+        
+        # Compute correlation between similarities and labels
+        # Higher correlation means the contrastive vector better separates the classes
+        if len(set(binary_labels)) < 2:
+            # If all labels are the same, return 0
+            return 0.0
+            
+        correlation = np.corrcoef(similarities, binary_labels)[0, 1]
+        
+        # Return absolute correlation (we care about separation, not direction)
+        return abs(correlation) if not np.isnan(correlation) else 0.0
 
     def run_steering_experiments(
         self, model: ChatModel, config: ExperimentConfig, cache: ExperimentCache
@@ -461,7 +503,7 @@ class EnhancedExperimentRunner:
 
         # Load cached data
         test_results = cache.load_pickle(cache.get_test_generations_path())
-        all_coef_vectors = cache.load_pickle(cache.get_probe_coefficients_path())
+        all_contrastive_vectors = cache.load_pickle(cache.get_probe_coefficients_path())
 
         # Create test subsets
         yes_test_data = [
@@ -482,7 +524,7 @@ class EnhancedExperimentRunner:
             alpha_yes = -abs(alpha)  # Negative alpha steers "yes" to "no"
             if not (self.run_config.use_cache and cache.has_steering_results(alpha_yes, "yes")):
                 results_yes = self.generate_steered_examples(
-                    model, yes_test_data, all_coef_vectors, layers, alpha_yes, config
+                    model, yes_test_data, all_contrastive_vectors, layers, alpha_yes, config
                 )
                 if self.run_config.use_cache:
                     cache.save_pickle(
@@ -512,7 +554,7 @@ class EnhancedExperimentRunner:
             alpha_no = abs(alpha)  # Positive alpha steers "no" to "yes"
             if not (self.run_config.use_cache and cache.has_steering_results(alpha_no, "no")):
                 results_no = self.generate_steered_examples(
-                    model, no_test_data, all_coef_vectors, layers, alpha_no, config
+                    model, no_test_data, all_contrastive_vectors, layers, alpha_no, config
                 )
                 if self.run_config.use_cache:
                     cache.save_pickle(
@@ -544,7 +586,7 @@ class EnhancedExperimentRunner:
         self,
         model: ChatModel,
         test_data: List[Dict],
-        all_coef_vectors: List,
+        all_contrastive_vectors: List,
         layers: List[int],
         alpha: float,
         config: ExperimentConfig,
@@ -553,7 +595,7 @@ class EnhancedExperimentRunner:
         steered_results = []
         
         # Convert to tensor once and reuse
-        steering_vectors = np.array(all_coef_vectors)
+        steering_vectors = np.array(all_contrastive_vectors)
         
         # Process in smaller batches to reduce memory pressure
         batch_size = min(10, len(test_data))  # Process max 10 examples at once
