@@ -211,6 +211,15 @@ class EnhancedExperimentRunner:
                 cache.save_pickle(
                     (train_dataset, test_dataset), cache.get_train_test_split_path()
                 )
+        
+        # Log data label distributions
+        train_labels = [item["correct_answer"] for item in train_dataset]
+        test_labels = [item["correct_answer"] for item in test_dataset]
+        train_distribution = {label: train_labels.count(label) for label in set(train_labels)}
+        test_distribution = {label: test_labels.count(label) for label in set(test_labels)}
+        
+        self.logger.info(f"Train data labels: {train_distribution} (total: {len(train_dataset)})")
+        self.logger.info(f"Test data labels: {test_distribution} (total: {len(test_dataset)})")
 
         
         batch_size = next(
