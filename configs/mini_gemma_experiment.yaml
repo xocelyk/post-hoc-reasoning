@@ -9,25 +9,25 @@ models:
     max_new_tokens: 100
 
 datasets:
-  # - name: anachronisms
-  #   train_size: 20
-  #   test_size: 20
-  #   split_seed: 42
-  # - name: social_chemistry
-  #   train_size: 20
-  #   test_size: 20
-  #   split_seed: 42
-  # - name: logical_deduction
-  #   train_size: 20
-  #   test_size: 20
-  #   split_seed: 42
+  - name: anachronisms
+    train_size: 20
+    test_size: 20
+    split_seed: 42
+  - name: social_chemistry
+    train_size: 20
+    test_size: 20
+    split_seed: 42
+  - name: logical_deduction
+    train_size: 20
+    test_size: 20
+    split_seed: 42
   - name: sports_understanding
-    train_size: 5
-    test_size: 5
+    train_size: 20
+    test_size: 20
     split_seed: 42
 
 steering:
-  alpha_range: [20]  # Single alpha value for quick testing
+  alpha_range: [10]  # Single alpha value for quick testing
 
 # Optional: Experiment metadata
 experiment:
