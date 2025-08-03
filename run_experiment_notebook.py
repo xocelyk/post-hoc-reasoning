@@ -78,8 +78,15 @@ print(f"Working with: {exp_config.model_name} + {exp_config.dataset_name}")
 
 # Determine backend and load model
 model_name = exp_config.model_name
-use_nnsight = (exp_config.model_backend == "nnsight" or 
-               (exp_config.model_backend == "auto" and "deepseek" in model_name.lower()))
+
+# Get the backend from the original run config for this model
+model_config = next((m for m in run_config.models if m.name == model_name), None)
+if model_config is None:
+    raise ValueError(f"Model {model_name} not found in run config")
+
+backend = model_config.backend
+use_nnsight = (backend == "nnsight" or 
+               (backend == "auto" and "deepseek" in model_name.lower()))
 
 print(f"🔧 Using {'nnsight' if use_nnsight else 'transformer_lens'} backend")
 
@@ -136,10 +143,8 @@ print("="*60)
 print("This phase generates model responses and extracts activations")
 print("for both training and test data.")
 
-# Check if we already have cached data
-has_cached_data = (run_config.use_cache and 
-                   cache.has_generations() and 
-                   cache.has_activations())
+# Check if we already have cached data (disabled with --no-cache equivalent)
+has_cached_data = False  # Force no cache usage
 
 if has_cached_data:
     print("📁 Using cached data...")
@@ -232,14 +237,9 @@ else:
     
     print("✓ Activations extracted")
     
-    # Cache the results if enabled
-    if run_config.use_cache:
-        print("💾 Caching generated data...")
-        cache.save_pickle(train_results, cache.get_train_generations_path())
-        cache.save_pickle(test_results, cache.get_test_generations_path())
-        cache.save_pickle(train_activations, cache.get_train_activations_path())
-        cache.save_pickle(test_activations, cache.get_test_activations_path())
-        print("✓ Data cached")
+    # Cache the results if enabled (disabled with --no-cache equivalent)
+    # Caching disabled for notebook playground mode
+    print("💾 Caching disabled (--no-cache equivalent)")
 
 # Display generation results
 train_accuracy = sum(1 for r in train_results if r["pred_answer"] == r["correct_answer"]) / len(train_results)
@@ -263,8 +263,8 @@ print("="*60)
 print("This phase trains binary classifiers (probes) on model activations")
 print("to predict the correct answer at each layer.")
 
-# Check if we have cached probes
-has_cached_probes = run_config.use_cache and cache.has_probes()
+# Check if we have cached probes (disabled with --no-cache equivalent)
+has_cached_probes = False  # Force no cache usage
 
 if has_cached_probes:
     print("📁 Using cached probes...")
@@ -332,12 +332,9 @@ else:
         
         print(f"  ✓ Layer {layer}: Train AUC={train_auc:.3f}, Test AUC={test_auc:.3f}")
     
-    # Cache the results if enabled
-    if run_config.use_cache:
-        print("\n💾 Caching probe results...")
-        cache.save_pickle(probe_results, cache.get_probe_results_path())
-        cache.save_pickle(probe_coefficients, cache.get_probe_coefficients_path())
-        print("✓ Probes cached")
+    # Cache the results if enabled (disabled with --no-cache equivalent)
+    # Caching disabled for notebook playground mode
+    print("\n💾 Caching disabled (--no-cache equivalent)")
 
 # Display probe training results
 print(f"\n📊 Probe Training Summary:")
