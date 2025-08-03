@@ -73,7 +73,19 @@ class ChatModel:
         """
         Format a list of chat messages according to the model's chat template.
         """
-        return self.model.tokenizer.apply_chat_template(messages, tokenize=False)
+        print(f"🔍 DEBUG - ChatModel.apply_chat_template called for {self.model_name}")
+        print(f"🔍 DEBUG - Messages to process: {len(messages)} messages")
+        for i, msg in enumerate(messages):
+            print(f"🔍 DEBUG - Message {i}: role='{msg.get('role', 'MISSING')}', content_length={len(msg.get('content', ''))}")
+        
+        try:
+            result = self.model.tokenizer.apply_chat_template(messages, tokenize=False)
+            print(f"🔍 DEBUG - Chat template applied successfully, result length: {len(result)}")
+            return result
+        except Exception as e:
+            print(f"❌ DEBUG - Chat template failed: {str(e)}")
+            print(f"❌ DEBUG - Error type: {type(e).__name__}")
+            raise
 
     def __getattr__(self, attr):
         # Delegate attribute access to the underlying transformer lens model.

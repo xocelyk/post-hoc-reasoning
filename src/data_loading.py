@@ -240,6 +240,8 @@ def create_cot_dataset(
 
         prompt = []
         prompt.extend(cot_prompt)
+        
+        print(f"🔍 DEBUG - create_cot_dataset: Starting with {len(cot_prompt)} CoT messages")
 
         if task_name == "logical_deduction":
             prompt.append(
@@ -284,6 +286,10 @@ def create_cot_dataset(
         else:
             continue
 
+        print(f"🔍 DEBUG - Final prompt has {len(prompt)} messages:")
+        for i, msg in enumerate(prompt):
+            print(f"🔍 DEBUG - Final message {i}: role='{msg.get('role', 'MISSING')}', content_length={len(msg.get('content', ''))}")
+        
         dataset.append(
             {
                 "prompt": prompt,
@@ -302,6 +308,10 @@ def load_cot_prompt(task_name: str) -> Dict:
     cot_filename = os.path.join(script_dir, "..", "data", task_name, f"{task_name}_cot.json")
     with open(cot_filename, "r") as f:
         cot_data = json.load(f)
+    
+    print(f"🔍 DEBUG - load_cot_prompt for {task_name}: loaded {len(cot_data)} messages")
+    for i, msg in enumerate(cot_data):
+        print(f"🔍 DEBUG - Original message {i}: role='{msg.get('role', 'MISSING')}', content_length={len(msg.get('content', ''))}")
     
     # Fix chat format issues for proper alternation
     fixed_cot = []
@@ -333,6 +343,10 @@ def load_cot_prompt(task_name: str) -> Dict:
                 new_message["content"] = content
             
         fixed_cot.append(new_message)
+    
+    print(f"🔍 DEBUG - After fixing: {len(fixed_cot)} messages")
+    for i, msg in enumerate(fixed_cot):
+        print(f"🔍 DEBUG - Fixed message {i}: role='{msg.get('role', 'MISSING')}', content_length={len(msg.get('content', ''))}")
     
     return fixed_cot
 
