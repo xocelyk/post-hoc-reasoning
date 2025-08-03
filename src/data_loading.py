@@ -243,16 +243,12 @@ def create_cot_dataset(
         
         print(f"🔍 DEBUG - create_cot_dataset: Starting with {len(cot_prompt)} CoT messages")
 
+        # Create the new question content
         if task_name == "logical_deduction":
-            prompt.append(
-                {
-                    "role": "user",
-                    "content": (
-                        f"Q: {full_text}\n\n"
-                        f"Answer choices:\n(A) {choices[0]}\n(B) {choices[1]}\n\n"
-                        f"{example_instruction}"
-                    ),
-                }
+            new_question_content = (
+                f"Q: {full_text}\n\n"
+                f"Answer choices:\n(A) {choices[0]}\n(B) {choices[1]}\n\n"
+                f"{example_instruction}"
             )
         else:
             # For sports_understanding, full_text already contains the question
@@ -261,16 +257,22 @@ def create_cot_dataset(
             else:
                 question_text = f"{config['question']} {full_text}"
                 
-            prompt.append(
-                {
-                    "role": "user",
-                    "content": (
-                        f"Q: {question_text}\n\n"
-                        f"Answer choices:\n(A) {choices[0]}\n(B) {choices[1]}\n\n"
-                        f"{example_instruction}"
-                    ),
-                }
+            new_question_content = (
+                f"Q: {question_text}\n\n"
+                f"Answer choices:\n(A) {choices[0]}\n(B) {choices[1]}\n\n"
+                f"{example_instruction}"
             )
+
+        # Check if the last message in CoT prompt is from "user" - if so, combine them
+        if prompt and prompt[-1]["role"] == "user":
+            print(f"🔍 DEBUG - Combining last CoT user message with new question")
+            prompt[-1]["content"] += f"\n\n{new_question_content}"
+        else:
+            # If last message is not from user, add new user message
+            prompt.append({
+                "role": "user",
+                "content": new_question_content,
+            })
 
         prompt.append(
             {
