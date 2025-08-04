@@ -790,6 +790,65 @@ class EnhancedExperimentRunner:
 
         return steered_results
 
+    def print_experiment_summary(self, config: ExperimentConfig, cache: ExperimentCache):
+        """Print a nice summary of the completed experiment."""
+        print(f"\n{'='*60}")
+        print(f"📊 EXPERIMENT SUMMARY: {config.model_name}")
+        print(f"Dataset: {config.dataset_name}")
+        print(f"{'='*60}")
+        
+        # Load and summarize probe results
+        try:
+            auc_scores = cache.load_json(cache.get_auc_scores_path())
+            best_layer = int(np.argmax(auc_scores))
+            best_score = float(max(auc_scores))
+            avg_score = float(np.mean(auc_scores))
+            
+            print(f"🎯 PROBE PERFORMANCE:")
+            print(f"   Best layer: {best_layer} (similarity score: {best_score:.4f})")
+            print(f"   Average similarity score: {avg_score:.4f}")
+            print(f"   Total layers analyzed: {len(auc_scores)}")
+        except:
+            print(f"🎯 PROBE PERFORMANCE: Data not available")
+        
+        # Load and summarize steering results
+        completed_steering = cache.get_completed_steering()
+        if completed_steering:
+            print(f"\n🎮 STEERING RESULTS:")
+            
+            # Group by alpha value
+            steering_by_alpha = {}
+            for alpha, direction in completed_steering:
+                if alpha not in steering_by_alpha:
+                    steering_by_alpha[alpha] = {}
+                steering_by_alpha[alpha][direction] = True
+            
+            for alpha in sorted(steering_by_alpha.keys()):
+                directions = steering_by_alpha[alpha]
+                alpha_display = f"{alpha:+.1f}" if alpha != 0 else "0.0"
+                
+                direction_summary = []
+                for direction in ['yes', 'no']:
+                    if direction in directions:
+                        try:
+                            # Load steering results to get success rates
+                            results = cache.load_pickle(cache.get_steering_results_path(alpha, direction))
+                            if results:
+                                success_rate = sum(1 for r in results if r.get("success", False)) / len(results)
+                                direction_summary.append(f"{direction}: {success_rate:.2%}")
+                            else:
+                                direction_summary.append(f"{direction}: no data")
+                        except:
+                            direction_summary.append(f"{direction}: ✓")
+                    else:
+                        direction_summary.append(f"{direction}: ✗")
+                
+                print(f"   α={alpha_display}: {', '.join(direction_summary)}")
+        else:
+            print(f"\n🎮 STEERING RESULTS: No completed steering experiments")
+        
+        print(f"{'='*60}\n")
+
     def run_single_experiment(self, config: ExperimentConfig) -> Dict[str, Any]:
         """Run a single experiment configuration."""
         cache = self.exp_manager.add_experiment(config)
@@ -815,6 +874,9 @@ class EnhancedExperimentRunner:
             # Update status
             status = cache.get_experiment_status()
             self.experiments_status[exp_key] = status
+
+            # Print individual experiment summary
+            self.print_experiment_summary(config, cache)
 
             return {"success": True, "status": status}
 
@@ -849,6 +911,9 @@ class EnhancedExperimentRunner:
         # Print final summary
         if hasattr(self.visualizer, "print_summary"):
             self.visualizer.print_summary(self.experiments_status)
+        
+        # Print comprehensive final summary
+        self.print_final_summary()
 
     def _run_experiments_with_visualization(self, live):
         """Run experiments with live visualization."""

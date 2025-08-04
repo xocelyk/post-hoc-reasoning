@@ -60,6 +60,21 @@ def generate_text(
         "pad_token_id": model.tokenizer.eos_token_id,
     }
     
+    # Add DeepSeek-specific stopping criteria
+    if hasattr(model, 'model_name') and model.model_name.lower().startswith('deepseek'):
+        # Stop at end of sentence or user turn tokens
+        stop_tokens = []
+        vocab = model.tokenizer.get_vocab()
+        
+        # Add DeepSeek specific stopping tokens
+        if '<｜end▁of▁sentence｜>' in vocab:
+            stop_tokens.append(vocab['<｜end▁of▁sentence｜>'])
+        if '<｜User｜>' in vocab:
+            stop_tokens.append(vocab['<｜User｜>'])
+            
+        if stop_tokens:
+            gen_kwargs["eos_token_id"] = stop_tokens
+    
     if top_p is not None:
         gen_kwargs["top_p"] = top_p
     if top_k is not None:

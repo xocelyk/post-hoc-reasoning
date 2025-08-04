@@ -224,15 +224,34 @@ def generate_with_steering_single(
         vectors, alpha, tokens.device, model.dtype
     )
     
+    # Prepare generation kwargs with DeepSeek stopping criteria
+    gen_kwargs = {
+        "max_new_tokens": max_new_tokens,
+        "temperature": temperature,
+        "do_sample": do_sample,
+        "pad_token_id": model.tokenizer.eos_token_id,
+    }
+    
+    # Add DeepSeek-specific stopping criteria
+    if hasattr(model, 'model_name') and model.model_name.lower().startswith('deepseek'):
+        # Stop at end of sentence or user turn tokens
+        stop_tokens = []
+        vocab = model.tokenizer.get_vocab()
+        
+        # Add DeepSeek specific stopping tokens
+        if '<｜end▁of▁sentence｜>' in vocab:
+            stop_tokens.append(vocab['<｜end▁of▁sentence｜>'])
+        if '<｜User｜>' in vocab:
+            stop_tokens.append(vocab['<｜User｜>'])
+            
+        if stop_tokens:
+            gen_kwargs["eos_token_id"] = stop_tokens
+    
+    # Add any additional kwargs
+    gen_kwargs.update(kwargs)
+    
     # Generate with interventions using the corrected nnsight pattern
-    with model.model.generate(
-        tokens,
-        max_new_tokens=max_new_tokens,
-        temperature=temperature,
-        do_sample=do_sample,
-        pad_token_id=model.tokenizer.eos_token_id,
-        **kwargs
-    ) as generator:
+    with model.model.generate(tokens, **gen_kwargs) as generator:
         
         # Apply steering interventions during generation
         for layer in layers:
