@@ -47,6 +47,13 @@ from .utils import (
     create_conversation,
 )
 
+# Caching (new)
+from .caching import (
+    KVCache,
+    SharedPrefixCache,
+    SteeringVectorCache,
+)
+
 # High-level convenience functions
 def extract_activations(
     model: NNsightChatModel,
@@ -156,4 +163,9 @@ __all__ = [
     "batch_tokenize",
     "create_message",
     "create_conversation",
+    
+    # Caching (new)
+    "KVCache",
+    "SharedPrefixCache", 
+    "SteeringVectorCache",
 ]

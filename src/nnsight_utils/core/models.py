@@ -219,9 +219,33 @@ class NNsightChatModel:
         Returns:
             Generated token tensor
         """
-        # Use nnsight's native generation
+        # Use nnsight's native generation with correct output access pattern
         with self.model.generate(tokens, **kwargs) as generator:
-            output = generator.output.save()
+            # Access the generated tokens through the language modeling head
+            # The output tokens are accessible through the model's final layer
+            if hasattr(self.model, 'lm_head'):
+                # For models with lm_head (GPT-style)
+                output = self.model.lm_head.output.save()
+            elif hasattr(self.model, 'embed_out'):
+                # For models with embed_out
+                output = self.model.embed_out.output.save()
+            else:
+                # Fallback: try to access through the last layer
+                last_layer_idx = self.cfg.n_layers - 1
+                output = self.model.model.layers[last_layer_idx].output[0].save()
+        
+        # Convert logits to tokens and combine with input
+        if output.dim() == 3:  # [batch, seq, vocab] - these are the newly generated logits
+            # Get the generated tokens by taking argmax of logits
+            generated_tokens = torch.argmax(output, dim=-1)
+            # Combine input tokens with generated tokens for full sequence
+            full_sequence = torch.cat([tokens, generated_tokens], dim=1)
+            return full_sequence
+        
+        # For other formats, concatenate with input tokens
+        if output.dim() == 2:  # [batch, seq] - already tokens
+            full_sequence = torch.cat([tokens, output], dim=1)
+            return full_sequence
         
         return output
     

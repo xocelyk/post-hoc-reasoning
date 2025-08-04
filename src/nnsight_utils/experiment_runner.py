@@ -36,6 +36,7 @@ from . import (
     smart_empty_cache,
     memory_cleanup_context
 )
+from .steering.kv_cached_generation import generate_with_kv_cached_steering, estimate_kv_cache_savings
 
 
 class UnifiedExperimentRunner:
@@ -401,39 +402,46 @@ class UnifiedExperimentRunner:
         alpha: float,
         config: ExperimentConfig,
     ) -> List[Dict]:
-        """Generate steered examples using unified steering interface."""
-        steered_results = []
-
+        """Generate steered examples using KV-cached generation for optimal performance."""
+        # Prepare prompts for batch processing
+        prompt_strings = [model.apply_chat_template(example["prompt"]) for example in test_data]
+        
+        # Estimate potential KV cache savings
+        cache_stats = estimate_kv_cache_savings(prompt_strings, model.cfg.n_layers)
+        if cache_stats['shared_prefix_length'] > 50:
+            self.logger.info(
+                f"Using KV caching - estimated speedup: {cache_stats['estimated_speedup']} "
+                f"(shared prefix: {cache_stats['shared_prefix_length']} chars)"
+            )
+        
         with memory_cleanup_context():
-            for example in test_data:
-                # Convert to tokens
-                prompt_string = model.apply_chat_template(example["prompt"])
-                tokens = model.to_tokens(prompt_string, prepend_bos=False)
-                
-                # Use unified steering interface (method-aware)
-                steered_response = generate_with_steering(
-                    model=model,
-                    tokens=tokens,
-                    probe_result=probe_result,
-                    alpha=alpha,
-                    max_new_tokens=config.max_new_tokens,
-                    temperature=config.temperature
-                )
-                
-                # Parse response
-                pred_letter, pred_answer = self.parse_response(steered_response)
-                
-                # Determine success
-                target_answer = "no" if alpha < 0 else "yes"
-                success = pred_answer == target_answer
-                
-                steered_results.append({
-                    "original_answer": example["pred_answer"],
-                    "steered_answer": pred_answer,
-                    "target_answer": target_answer,
-                    "success": success,
-                    "response": steered_response
-                })
+            # Use KV-cached generation for better performance
+            steered_responses = generate_with_kv_cached_steering(
+                model=model,
+                prompts=prompt_strings,
+                probe_result=probe_result,
+                alpha=alpha,
+                max_new_tokens=config.max_new_tokens,
+                temperature=config.temperature
+            )
+        
+        # Process results
+        steered_results = []
+        for example, steered_response in zip(test_data, steered_responses):
+            # Parse response
+            pred_letter, pred_answer = self.parse_response(steered_response)
+            
+            # Determine success
+            target_answer = "no" if alpha < 0 else "yes"
+            success = pred_answer == target_answer
+            
+            steered_results.append({
+                "original_answer": example["pred_answer"],
+                "steered_answer": pred_answer,
+                "target_answer": target_answer,
+                "success": success,
+                "response": steered_response
+            })
 
         return steered_results
 

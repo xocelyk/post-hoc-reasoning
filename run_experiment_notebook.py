@@ -118,6 +118,8 @@ use_nnsight = (backend == "nnsight" or
 
 print(f"🔧 Using {'nnsight' if use_nnsight else 'transformer_lens'} backend")
 
+# %%
+
 if use_nnsight:
     model = NNsightChatModel(model_name)
     print(f"✓ Loaded NNsight model: {model_name}")
@@ -126,6 +128,8 @@ else:
     print(f"✓ Loaded TransformerLens model: {model_name}")
     print(f"  Layers: {model.cfg.n_layers}")
     print(f"  Hidden size: {model.cfg.d_model}")
+
+#%%
 
 # Initialize cache for this experiment
 cache = exp_manager.add_experiment(exp_config)
@@ -739,9 +743,6 @@ print("STEERING METHOD: ", STEERING_METHOD)
 
 # for alpha in alpha_range:
 for alpha in alpha_range:
-    if alpha == 0.1:
-        print("Skipping alpha = 0.1")
-        continue
     print(f"\n🎮 Testing steering with alpha = {alpha}")
     
     # Alpha for steering "yes" to "no" (negative)
@@ -751,7 +752,7 @@ for alpha in alpha_range:
     
     steering_results[alpha] = {"yes_to_no": [], "no_to_yes": []}
     
-    max_gen = 2
+    max_gen = 10
     # Steer "yes" answers to "no"
     if yes_test_data:
         print(f"  🔄 Steering {len(yes_test_data)} 'yes' examples to 'no' (alpha={alpha_yes_to_no})")
@@ -838,8 +839,7 @@ for alpha in alpha_range:
                     "steered_response": resp
                 })
                 
-                if i < 2:  # Show first few examples
-                    print(f"    Example {i+1}: '{result['pred_answer']}' → '{steered_answer}' {'✓' if success else '✗'}")
+                print(f"    Example {i+1}: '{result['pred_answer']}' → '{steered_answer}' {'✓' if success else '✗'}")
     
     # Steer "no" answers to "yes"
     if no_test_data:
@@ -922,8 +922,7 @@ for alpha in alpha_range:
                 "steered_response": resp
             })
             
-            if i < 2:  # Show first few examples  
-                print(f"    Example {i+1}: '{result['pred_answer']}' → '{steered_answer}' {'✓' if success else '✗'}")
+            print(f"    Example {i+1}: '{result['pred_answer']}' → '{steered_answer}' {'✓' if success else '✗'}")
 
 # Calculate steering success rates
 print(f"\n📊 Steering Results Summary:")

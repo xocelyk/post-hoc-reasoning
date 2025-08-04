@@ -13,6 +13,8 @@ import torch
 from ..core.models import NNsightChatModel
 from ..probes.base import ProbeResult
 from .strategies import SteeringDispatcher, prepare_steering_vectors, determine_steering_layers, get_steering_config
+from .kv_cached_generation import generate_with_kv_cached_steering, generate_with_steering_single
+from ..caching.steering_cache import get_cached_steering_tensors
 
 # Set up logger
 logger = logging.getLogger(__name__)
@@ -33,7 +35,8 @@ def generate_with_steering(
     Generate text with steering using probe results (method-aware).
     
     This is the main steering interface that automatically configures
-    itself based on the probe method and results.
+    itself based on the probe method and results. Uses optimized
+    tensor caching for better performance.
     
     Args:
         model: NNsightChatModel instance
@@ -49,25 +52,16 @@ def generate_with_steering(
     Returns:
         Generated text string
     """
-    # Get steering configuration
-    config = get_steering_config(probe_result.method)
-    layers = determine_steering_layers(probe_result, config)
-    vectors = prepare_steering_vectors(probe_result, config)
-    
-    # Convert to format expected by low-level steering function
-    steering_vectors = np.array([vectors[layer] for layer in layers])
-    
-    # Use the low-level steering function
-    return generate_with_nnsight_steering(
+    # Use the optimized single-prompt generation function
+    return generate_with_steering_single(
         model=model,
         tokens=tokens,
-        steering_vectors=steering_vectors,
+        probe_result=probe_result,
         alpha=alpha,
-        instruction_pos=instruction_pos,
         max_new_tokens=max_new_tokens,
         temperature=temperature,
-        layers=layers,
         do_sample=do_sample,
+        instruction_pos=instruction_pos,
         **kwargs
     )
 
@@ -130,7 +124,16 @@ def generate_with_nnsight_steering(
         # Apply steering interventions during generation
         for layer in layers:
             # Get the residual stream output for this layer
-            residual = model.model.model.layers[layer].output[0]
+            # Handle different model architectures
+            if hasattr(model.model, 'transformer') and hasattr(model.model.transformer, 'h'):
+                # GPT-style models (GPT2, etc.)
+                layer_module = model.model.transformer.h[layer]
+                residual = layer_module.output[0]
+            elif hasattr(model.model, 'model') and hasattr(model.model.model, 'layers'):
+                # Llama/Gemma style models
+                residual = model.model.model.layers[layer].output[0]
+            else:
+                raise ValueError(f"Unsupported model architecture: {type(model.model)}")
             
             # Create intervention function for this layer
             def create_steering_intervention(layer_idx):
@@ -154,11 +157,33 @@ def generate_with_nnsight_steering(
             # Apply the intervention
             residual.intervene(create_steering_intervention(layer))
         
-        # Get the generated output
-        output = generator.output.save()
+        # Get the generated output through the correct path
+        if hasattr(model.model, 'lm_head'):
+            # For models with lm_head (GPT-style)
+            logits = model.model.lm_head.output.save()
+        elif hasattr(model.model, 'embed_out'):
+            # For models with embed_out
+            logits = model.model.embed_out.output.save()
+        else:
+            # Fallback: try to access through the last layer based on model type
+            last_layer_idx = model.cfg.n_layers - 1
+            if hasattr(model.model, 'transformer') and hasattr(model.model.transformer, 'h'):
+                # GPT-style models
+                logits = model.model.transformer.h[last_layer_idx].output[0].save()
+            elif hasattr(model.model, 'model') and hasattr(model.model.model, 'layers'):
+                # Llama/Gemma style models
+                logits = model.model.model.layers[last_layer_idx].output[0].save()
+            else:
+                raise ValueError(f"Cannot determine output access for model: {type(model.model)}")
+        
+        # Convert logits to tokens
+        if logits.dim() == 3:  # [batch, seq, vocab]
+            generated_tokens = torch.argmax(logits, dim=-1)
+        else:
+            generated_tokens = logits
     
     # Decode the full output and return as string
-    return model.to_string(output[0])
+    return model.to_string(generated_tokens[0])
 
 
 def generate_steered_batch(
