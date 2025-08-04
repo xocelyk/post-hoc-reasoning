@@ -40,7 +40,15 @@ def generate_text(
     """
     # Convert prompt to tokens if needed
     if isinstance(prompt, str):
-        tokens = model.to_tokens(prompt, prepend_bos=False)
+        try:
+            tokens = model.to_tokens(prompt)
+        except Exception as e:
+            print(f"Tokenization error: {e}")
+            print(f"Prompt type: {type(prompt)}")
+            print(f"Prompt: {prompt[:100]}...")  # First 100 chars
+            # If tokenization fails, try direct tokenizer call
+            # This handles cases where the model expects different input format
+            tokens = model.tokenizer(prompt, return_tensors="pt")["input_ids"]
     else:
         tokens = prompt
     
@@ -60,12 +68,24 @@ def generate_text(
     # Update with any additional kwargs
     gen_kwargs.update(kwargs)
     
-    # Generate using nnsight
-    with model.model.generate(tokens, **gen_kwargs) as generator:
-        output = generator.output.save()
+    # Generate using the model's generate method
+    # This calls the NNsightChatModel.generate() which handles nnsight properly
+    output = model.generate(tokens, **gen_kwargs)
     
-    # Decode and return
-    return model.to_string(output[0])
+    # Decode the full output (including prompt)
+    decoded = model.to_string(output)
+    if isinstance(decoded, list):
+        full_text = decoded[0]
+    else:
+        full_text = decoded
+    
+    # Extract only the generated part (not including the input prompt)
+    # This is done at the string level to match TransformerLens behavior
+    if full_text.startswith(prompt) and isinstance(prompt, str):
+        return full_text[len(prompt):]
+    else:
+        # If we can't cleanly extract, return the full text
+        return full_text
 
 
 def batch_generate_text(

@@ -219,34 +219,21 @@ class NNsightChatModel:
         Returns:
             Generated token tensor
         """
-        # Use nnsight's native generation with correct output access pattern
+        # For basic generation, we need to use nnsight's context manager properly
+        # The model.generate() returns a tracer, not actual output
+        
+        # Ensure we have pad_token_id set
+        if 'pad_token_id' not in kwargs and hasattr(self.tokenizer, 'eos_token_id'):
+            kwargs['pad_token_id'] = self.tokenizer.eos_token_id
+        
+        # Use nnsight's generate context manager like in the steering code
+        # We need to save some output to force materialization
         with self.model.generate(tokens, **kwargs) as generator:
-            # Access the generated tokens through the language modeling head
-            # The output tokens are accessible through the model's final layer
-            if hasattr(self.model, 'lm_head'):
-                # For models with lm_head (GPT-style)
-                output = self.model.lm_head.output.save()
-            elif hasattr(self.model, 'embed_out'):
-                # For models with embed_out
-                output = self.model.embed_out.output.save()
-            else:
-                # Fallback: try to access through the last layer
-                last_layer_idx = self.cfg.n_layers - 1
-                output = self.model.model.layers[last_layer_idx].output[0].save()
+            # Get the generated output from the model's generator
+            output = self.model.generator.output.save()
         
-        # Convert logits to tokens and combine with input
-        if output.dim() == 3:  # [batch, seq, vocab] - these are the newly generated logits
-            # Get the generated tokens by taking argmax of logits
-            generated_tokens = torch.argmax(output, dim=-1)
-            # Combine input tokens with generated tokens for full sequence
-            full_sequence = torch.cat([tokens, generated_tokens], dim=1)
-            return full_sequence
-        
-        # For other formats, concatenate with input tokens
-        if output.dim() == 2:  # [batch, seq] - already tokens
-            full_sequence = torch.cat([tokens, output], dim=1)
-            return full_sequence
-        
+        # The output contains the full sequence (input + generated)
+        # Return it as-is since generate_text expects the full sequence
         return output
     
     @property

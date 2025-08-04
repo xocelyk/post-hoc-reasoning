@@ -20,7 +20,7 @@ from torch.utils.data import DataLoader, Dataset
 from data_loading import load_all_datasets
 from models import ChatModel
 from parsing_utils import parse_response
-from utils import generate_with_hooks
+from utils import generate_with_steering
 
 # %%
 CACHE_DIR = "cache"
@@ -574,7 +574,7 @@ def generate_steered_examples(
         example_prompt = example["prompt"]
         example_tokens = model.to_tokens(example_prompt, prepend_bos=False)
 
-        generation = generate_with_hooks(
+        generation = generate_with_steering(
             model,
             example_tokens,
             temperature=temperature,

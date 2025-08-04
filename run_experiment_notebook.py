@@ -34,9 +34,8 @@ from data_loading import load_all_datasets
 from models import ChatModel
 from nnsight_models import NNsightChatModel
 from parsing_utils import parse_response
-from utils import generate_with_hooks
-from nnsight_utils import batch_get_resid_activations
-from nnsight_steering import generate_with_nnsight_steering
+from utils import generate_with_steering as generate_with_steering_utils
+from nnsight_utils import extract_activations, generate_with_steering, ProbeResult, train_probes, batch_generate_text
 from steering_methods import (
     CAASingleLayerSteering, 
     CAALayerIncrementalSteering, 
@@ -48,7 +47,7 @@ print("✓ All modules imported successfully")
 #%% Configuration and Setup
 print("📖 Setting up configuration...")
 
-config_path = "configs/caa_methods_comparison_detailed.yaml"
+config_path = "configs/test.yaml"
 if not os.path.exists(config_path):
     raise FileNotFoundError(f"Configuration file not found: {config_path}")
 
@@ -121,7 +120,12 @@ print(f"🔧 Using {'nnsight' if use_nnsight else 'transformer_lens'} backend")
 # %%
 
 if use_nnsight:
-    model = NNsightChatModel(model_name)
+    # Pass device and dtype configuration to avoid meta tensor issues
+    model = NNsightChatModel(
+        model_name,
+        device_map=model_config.device,
+        dtype=model_config.dtype
+    )
     print(f"✓ Loaded NNsight model: {model_name}")
 else:
     model = ChatModel(model_name)
@@ -251,13 +255,24 @@ else:
                     }
                 )
 
-            # 2) batched generation (TL takes care of everything else)
-            responses = model.generate(
-                prompt_strs,
-                max_new_tokens=exp_config.max_new_tokens,
-                temperature=exp_config.temperature,
-                do_sample=True,
-            )
+            # 2) batched generation
+            if use_nnsight:
+                # Use proper batch generation for nnsight
+                responses = batch_generate_text(
+                    model=model,
+                    prompts=prompt_strs,
+                    max_new_tokens=exp_config.max_new_tokens,
+                    temperature=exp_config.temperature,
+                    do_sample=True
+                )
+            else:
+                # TransformerLens handles batch generation directly
+                responses = model.generate(
+                    prompt_strs,
+                    max_new_tokens=exp_config.max_new_tokens,
+                    temperature=exp_config.temperature,
+                    do_sample=True,
+                )
             # generate() returns a single str if batch_size==1
             if isinstance(responses, str):
                 responses = [responses]
@@ -310,8 +325,8 @@ else:
         
         if use_nnsight:
             print("  Using NNsight for activation extraction...")
-            train_activations = batch_get_resid_activations(train_prompts, model)
-            test_activations = batch_get_resid_activations(test_prompts, model)
+            train_activations = extract_activations(model, train_prompts)
+            test_activations = extract_activations(model, test_prompts)
         else:
             print("  Using TransformerLens for activation extraction...")
             # Get activations using transformer lens with batched processing
@@ -668,7 +683,7 @@ def _steer_generated_token(
 # Main convenience wrapper
 # ─────────────────────────────────────────────────────────────────────────────
 @torch.inference_mode()
-def generate_with_steering(
+def generate_with_steering_transformer_lens(
     model,
     prompt_tokens: torch.LongTensor,      # [B, prompt_len]
     steering_vectors,                     # NumPy or torch, [n_layers, d_model]
@@ -761,23 +776,30 @@ for alpha in alpha_range:
             # Apply chat template to prompt
             prompt_string = model.apply_chat_template(result["prompt"])
             if use_nnsight:
-                # Use nnsight steering
+                # Use nnsight steering with ProbeResult
                 layers_to_steer = sorted(probe_coefficients.keys())
-                # Convert steering vectors to numpy array format
-                steering_vectors_array = np.array([probe_coefficients[layer] for layer in layers_to_steer])
+                # Convert steering vectors to the format expected by ProbeResult
+                steering_vectors_dict = probe_coefficients
+                
+                # Create ProbeResult object 
+                probe_result = ProbeResult(
+                    method=STEERING_METHOD,
+                    vectors=steering_vectors_dict,
+                    scores={layer: probe_results.get(layer, {}).get('test_auc', 0.0) for layer in layers_to_steer},
+                    best_layer=layers_to_steer[0] if layers_to_steer else None
+                )
+                
                 # Tokenize the prompt
                 tokens = model.to_tokens(prompt_string, prepend_bos=False)
                 
-                steered_response = generate_with_nnsight_steering(
+                steered_response = generate_with_steering(
                     model=model,
                     tokens=tokens,
-                    steering_vectors=torch.tensor(steering_vectors_array,   # ← here
-                                                dtype=model.W_E.dtype,
-                                                device=model.W_E.device),
+                    probe_result=probe_result,
                     alpha=alpha_yes_to_no,
                     max_new_tokens=exp_config.max_new_tokens,
                     temperature=exp_config.temperature,
-                    layers=layers_to_steer
+                    do_sample=True
                 )
             else:
                 # Use transformer lens steering
@@ -801,7 +823,7 @@ for alpha in alpha_range:
                 
                 tokens = model.to_tokens(prompt_string, prepend_bos=False)
                 
-                # steered_response = generate_with_hooks(
+                # steered_response = generate_with_steering(
                 #     model=model,
                 #     tokens=tokens,
                 #     steering_vectors=steering_vectors_array,
@@ -811,7 +833,7 @@ for alpha in alpha_range:
                 #     layers=layers_to_steer,
                 #     verbose=False
                 # )
-                steered_response = generate_with_steering(
+                steered_response = generate_with_steering_transformer_lens(
                     model=model,
                     prompt_tokens=tokens,
                     steering_vectors=torch.tensor(steering_vectors_array,
@@ -824,8 +846,9 @@ for alpha in alpha_range:
                 )
             print()
             print("Response: ", steered_response[-200:])
-            for resp in steered_response:           # list of strings
-                steered_letter, steered_answer = parse_response(resp, thinking=True)
+            if use_nnsight:
+                # NNsight returns a single string
+                steered_letter, steered_answer = parse_response(steered_response, thinking=True)
                 print("Pred Letter: ", steered_letter)
                 print("Pred Answer: ", steered_answer)
                 success = steered_answer == "no"
@@ -836,10 +859,28 @@ for alpha in alpha_range:
                     "target_answer": "no",
                     "success": success,
                     "original_response": result["response"],
-                    "steered_response": resp
+                    "steered_response": steered_response
                 })
                 
                 print(f"    Example {i+1}: '{result['pred_answer']}' → '{steered_answer}' {'✓' if success else '✗'}")
+            else:
+                # TransformerLens returns a list of strings
+                for resp in steered_response:           
+                    steered_letter, steered_answer = parse_response(resp, thinking=True)
+                    print("Pred Letter: ", steered_letter)
+                    print("Pred Answer: ", steered_answer)
+                    success = steered_answer == "no"
+                    
+                    steering_results[alpha]["yes_to_no"].append({
+                        "original_answer": result["pred_answer"],
+                        "steered_answer": steered_answer,
+                        "target_answer": "no",
+                        "success": success,
+                        "original_response": result["response"],
+                        "steered_response": resp
+                    })
+                    
+                    print(f"    Example {i+1}: '{result['pred_answer']}' → '{steered_answer}' {'✓' if success else '✗'}")
     
     # Steer "no" answers to "yes"
     if no_test_data:
@@ -849,23 +890,30 @@ for alpha in alpha_range:
             prompt_string = model.apply_chat_template(result["prompt"])
             
             if use_nnsight:
-                # Use nnsight steering
+                # Use nnsight steering with ProbeResult
                 layers_to_steer = sorted(probe_coefficients.keys())
-                # Convert steering vectors to numpy array format
-                steering_vectors_array = np.array([probe_coefficients[layer] for layer in layers_to_steer])
+                # Convert steering vectors to the format expected by ProbeResult
+                steering_vectors_dict = probe_coefficients
+                
+                # Create ProbeResult object 
+                probe_result = ProbeResult(
+                    method=STEERING_METHOD,
+                    vectors=steering_vectors_dict,
+                    scores={layer: probe_results.get(layer, {}).get('test_auc', 0.0) for layer in layers_to_steer},
+                    best_layer=layers_to_steer[0] if layers_to_steer else None
+                )
+                
                 # Tokenize the prompt
                 tokens = model.to_tokens(prompt_string, prepend_bos=False)
                 
-                steered_response = generate_with_nnsight_steering(
+                steered_response = generate_with_steering(
                     model=model,
                     tokens=tokens,
-                    steering_vectors=torch.tensor(steering_vectors_array,
-                                                dtype=model.W_E.dtype,
-                                                device=model.W_E.device),
+                    probe_result=probe_result,
                     alpha=alpha_no_to_yes,
                     max_new_tokens=exp_config.max_new_tokens,
                     temperature=exp_config.temperature,
-                    layers=layers_to_steer
+                    do_sample=True
                 )
             else:
                 # Use transformer lens steering
@@ -886,7 +934,7 @@ for alpha in alpha_range:
                 # Tokenize the prompt
                 tokens = model.to_tokens(prompt_string, prepend_bos=False)
                 
-                # steered_response = generate_with_hooks(
+                # steered_response = generate_with_steering(
                 #     model=model,
                 #     tokens=tokens,
                 #     steering_vectors=steering_vectors_array,
@@ -896,7 +944,7 @@ for alpha in alpha_range:
                 #     layers=layers_to_steer,
                 #     verbose=False
                 # )
-                steered_response = generate_with_steering(
+                steered_response = generate_with_steering_transformer_lens(
                     model=model,
                     prompt_tokens=tokens,
                     steering_vectors=steering_vectors_array,
@@ -907,22 +955,41 @@ for alpha in alpha_range:
                 )
             print()
             print("Response: ", steered_response[-200:])
-            for resp in steered_response:           # list of strings
-                steered_letter, steered_answer = parse_response(resp, thinking=True)
+            if use_nnsight:
+                # NNsight returns a single string
+                steered_letter, steered_answer = parse_response(steered_response, thinking=True)
                 print("Pred Letter: ", steered_letter)
                 print("Pred Answer: ", steered_answer)
                 success = steered_answer == "yes"
-            
-            steering_results[alpha]["no_to_yes"].append({
-                "original_answer": result["pred_answer"],
-                "steered_answer": steered_answer,
-                "target_answer": "yes",
-                "success": success,
-                "original_response": result["response"],
-                "steered_response": resp
-            })
-            
-            print(f"    Example {i+1}: '{result['pred_answer']}' → '{steered_answer}' {'✓' if success else '✗'}")
+                
+                steering_results[alpha]["no_to_yes"].append({
+                    "original_answer": result["pred_answer"],
+                    "steered_answer": steered_answer,
+                    "target_answer": "yes",
+                    "success": success,
+                    "original_response": result["response"],
+                    "steered_response": steered_response
+                })
+                
+                print(f"    Example {i+1}: '{result['pred_answer']}' → '{steered_answer}' {'✓' if success else '✗'}")
+            else:
+                # TransformerLens returns a list of strings
+                for resp in steered_response:           
+                    steered_letter, steered_answer = parse_response(resp, thinking=True)
+                    print("Pred Letter: ", steered_letter)
+                    print("Pred Answer: ", steered_answer)
+                    success = steered_answer == "yes"
+                
+                steering_results[alpha]["no_to_yes"].append({
+                    "original_answer": result["pred_answer"],
+                    "steered_answer": steered_answer,
+                    "target_answer": "yes",
+                    "success": success,
+                    "original_response": result["response"],
+                    "steered_response": resp
+                })
+                
+                print(f"    Example {i+1}: '{result['pred_answer']}' → '{steered_answer}' {'✓' if success else '✗'}")
 
 # Calculate steering success rates
 print(f"\n📊 Steering Results Summary:")

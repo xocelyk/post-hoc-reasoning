@@ -29,7 +29,7 @@ from transformer_lens.utils import Slice
 from data_loading import create_cot_dataset, create_dataset
 from models import ChatModel
 from parsing_utils import parse_response
-from utils import generate_with_hooks
+from utils import generate_with_steering
 
 THINKING = True
 DATASET_NAME = "logical_deduction"

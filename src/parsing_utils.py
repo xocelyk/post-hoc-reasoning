@@ -2,15 +2,15 @@
 Consolidated parsing utilities for model responses.
 """
 import re
-from typing import Tuple
+from typing import Tuple, Union, List
 
 
-def parse_response(response: str, thinking: bool = True) -> Tuple[str, str]:
+def parse_response(response: Union[str, List[str]], thinking: bool = True) -> Tuple[str, str]:
     """
     Parse model response to extract answer letter and text.
     
     Args:
-        response: Raw model response string
+        response: Raw model response string or list of strings
         thinking: Whether the response includes reasoning (default True)
         
     Returns:
@@ -18,6 +18,12 @@ def parse_response(response: str, thinking: bool = True) -> Tuple[str, str]:
         - letter: The choice letter (A, B, etc.) or empty string if not found
         - text_answer: The text answer or empty string if not found
     """
+    # Handle list input - take the first element
+    if isinstance(response, list):
+        if len(response) == 0:
+            return "", ""
+        response = response[0]
+    
     # Clean response by removing special tokens
     response = (
         response.strip()

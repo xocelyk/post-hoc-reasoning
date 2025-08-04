@@ -11,7 +11,6 @@ from ..core.models import NNsightChatModel
 def batch_tokenize(
     model: NNsightChatModel,
     texts: List[str],
-    prepend_bos: bool = False,
     max_length: Optional[int] = None,
     padding: str = "longest",
     truncation: bool = True

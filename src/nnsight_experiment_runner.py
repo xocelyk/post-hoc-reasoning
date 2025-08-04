@@ -131,7 +131,7 @@ class NNsightExperimentRunner:
                 do_sample=True,
                 pad_token_id=model.tokenizer.eos_token_id,
             ) as generator:
-                output = generator.output.save()
+                output = model.model.generator.output.save()
             
             # Decode the generated portion
             full_text = model.to_string(output[0])

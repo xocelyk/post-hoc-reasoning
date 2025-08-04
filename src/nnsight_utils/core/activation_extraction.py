@@ -18,7 +18,8 @@ def batch_get_resid_activations(
     model: NNsightChatModel, 
     prompts: List[str],
     layers: Optional[List[int]] = None,
-    position: str = "last"
+    position: str = "last",
+    batch_size: int = 4
 ) -> np.ndarray:
     """
     Extract residual stream activations for a batch of prompts using nnsight.
@@ -28,62 +29,84 @@ def batch_get_resid_activations(
         prompts: List of prompt strings
         layers: List of layer indices to extract (None for all layers)
         position: Position to extract ("last" for final token, "all" for all positions)
+        batch_size: Number of prompts to process at once (default: 4)
         
     Returns:
         Numpy array of shape (n_prompts, n_layers, d_model) containing activations
     """
-    # Tokenize prompts
-    tokens = model.to_tokens(prompts)
-    
     # Determine layers to extract
     if layers is None:
         layers = list(range(model.cfg.n_layers))
     
-    # Extract activations using nnsight tracing
-    with model.model.trace(tokens):
-        # Extract residual activations from specified layers
-        if position == "last":
-            # Extract only the final position (most common case)
-            residuals = {
-                layer: model.model.model.layers[layer].output[0][:, -1].save()
-                for layer in layers
-            }
-        elif position == "all":
-            # Extract all positions
-            residuals = {
-                layer: model.model.model.layers[layer].output[0].save()
-                for layer in layers
-            }
-        else:
-            raise ValueError(f"Unknown position: {position}. Use 'last' or 'all'")
-    
-    # Convert to numpy format matching original implementation
     n_prompts = len(prompts)
     n_layers = len(layers)
     d_model = model.cfg.d_model
     
+    # Pre-allocate output array
     if position == "last":
-        activations = np.zeros((n_prompts, n_layers, d_model))
-        for i, layer in enumerate(layers):
-            layer_acts = residuals[layer].detach().float().cpu().numpy()
-            activations[:, i, :] = layer_acts
-    else:  # position == "all"
-        # For "all" positions, we return the full sequence
-        seq_len = tokens.shape[1]
-        activations = np.zeros((n_prompts, seq_len, n_layers, d_model))
-        for i, layer in enumerate(layers):
-            layer_acts = residuals[layer].detach().float().cpu().numpy()
-            activations[:, :, i, :] = layer_acts
+        all_activations = np.zeros((n_prompts, n_layers, d_model))
+    else:
+        # We'll collect these and stack at the end for "all" positions
+        all_activations = []
     
-    # Clean up GPU memory
-    del residuals
-    if torch.cuda.is_available():
-        torch.cuda.empty_cache()
-    elif torch.backends.mps.is_available():
-        torch.mps.empty_cache()
-    gc.collect()
+    # Process in batches
+    for i in range(0, n_prompts, batch_size):
+        batch_prompts = prompts[i:i + batch_size]
+        batch_tokens = model.to_tokens(batch_prompts)
+        
+        # Add max length truncation to prevent very long sequences
+        max_length = 512  # Reasonable max length
+        if batch_tokens.shape[1] > max_length:
+            batch_tokens = batch_tokens[:, :max_length]
+        
+        # Extract activations using nnsight tracing
+        with model.model.trace(batch_tokens):
+            # Extract residual activations from specified layers
+            if position == "last":
+                # Extract only the final position (most common case)
+                residuals = {
+                    layer: model.model.model.layers[layer].output[:, -1].save()
+                    for layer in layers
+                }
+            elif position == "all":
+                # Extract all positions
+                residuals = {
+                    layer: model.model.model.layers[layer].output.save()
+                    for layer in layers
+                }
+            else:
+                raise ValueError(f"Unknown position: {position}. Use 'last' or 'all'")
     
-    return activations
+        # Process batch results
+        batch_size_actual = len(batch_prompts)
+        
+        if position == "last":
+            # Store activations for this batch
+            for j, layer in enumerate(layers):
+                layer_acts = residuals[layer].detach().float().cpu().numpy()
+                all_activations[i:i + batch_size_actual, j, :] = layer_acts
+        else:  # position == "all"
+            # Collect batch activations
+            batch_acts = np.zeros((batch_size_actual, batch_tokens.shape[1], n_layers, d_model))
+            for j, layer in enumerate(layers):
+                layer_acts = residuals[layer].detach().float().cpu().numpy()
+                batch_acts[:, :, j, :] = layer_acts
+            all_activations.append(batch_acts)
+        
+        # Clean up GPU memory after each batch
+        del residuals
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+        elif torch.backends.mps.is_available():
+            torch.mps.empty_cache()
+        gc.collect()
+    
+    # Final processing
+    if position == "all":
+        # Stack all batch results
+        all_activations = np.concatenate(all_activations, axis=0)
+    
+    return all_activations
 
 
 def extract_layer_activations(
@@ -106,9 +129,9 @@ def extract_layer_activations(
     """
     with model.model.trace(tokens):
         if position_slice is not None:
-            activations = model.model.model.layers[layer].output[0][:, position_slice].save()
+            activations = model.model.model.layers[layer].output[:, position_slice].save()
         else:
-            activations = model.model.model.layers[layer].output[0].save()
+            activations = model.model.model.layers[layer].output.save()
     
     return activations.detach()
 

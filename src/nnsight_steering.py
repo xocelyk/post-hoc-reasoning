@@ -62,47 +62,68 @@ def generate_with_nnsight_steering(
         for layer in layers
     }
     
-    # Generate with interventions
-    with model.model.generate(
-        tokens,
-        max_new_tokens=max_new_tokens,
-        temperature=temperature,
-        do_sample=do_sample,
-        pad_token_id=model.tokenizer.eos_token_id,
-    ) as generator:
-        
-        # Apply steering interventions during generation
-        for layer in layers:
-            # Get the residual stream output for this layer
-            residual = model.model.model.layers[layer].output[0]
-            
-            # Create intervention function for this layer
-            def create_steering_intervention(layer_idx):
-                def steer_residual(residual_tensor):
-                    batch_size, seq_len, hidden_size = residual_tensor.shape
-                    
-                    # Only apply steering to positions after instruction_pos
-                    if seq_len > instruction_pos:
-                        steering_vector = steering_tensors[layer_idx]
-                        # Broadcast steering vector to the right shape
-                        if steering_vector.dim() == 1:
-                            steering_vector = steering_vector.unsqueeze(0).unsqueeze(0)
-                        
-                        # Add steering to positions after instruction
-                        residual_tensor[:, instruction_pos:, :] += alpha * steering_vector
-                    
-                    return residual_tensor
-                
-                return steer_residual
-            
-            # Apply the intervention
-            residual.intervene(create_steering_intervention(layer))
-        
-        # Get the generated output
-        output = generator.output.save()
+    # Use the custom generation method from nnsight_models.py
+    # which already has a generation loop we can modify
+    # Clone tokens to avoid modifying input
+    toks = tokens.clone().to(tokens.device)
     
-    # Decode the full output and return as string
-    return model.to_string(output[0])
+    # Convert steering vectors to tensors
+    steering_tensors_list = [steering_tensors[layer] for layer in layers]
+    
+    # Custom generation loop with steering
+    for _ in range(max_new_tokens):
+        with model.model.trace(toks):
+            # Apply steering to each layer
+            for i, layer in enumerate(layers):
+                layer_output = model.model.model.layers[layer].output
+                steering_vec = steering_tensors_list[i]
+                
+                # Add steering vector to the last position
+                # Note: layer_output shape is [batch, seq_len, hidden]
+                if steering_vec.dim() == 1:
+                    steering_vec = steering_vec.unsqueeze(0).unsqueeze(0)
+                
+                # Only steer the last token position (the one being generated)
+                layer_output[:, -1:, :] = layer_output[:, -1:, :] + alpha * steering_vec
+            
+            # Get logits from the language model head
+            if hasattr(model.model, 'lm_head'):
+                logits = model.model.lm_head.output.save()
+            elif hasattr(model.model, 'embed_out'):
+                logits = model.model.embed_out.output.save()
+            else:
+                # For other architectures, try to find the output
+                logits = model.model.output.logits.save()
+        
+        # Get logits for the last position
+        next_token_logits = logits[:, -1, :]
+        
+        if do_sample and temperature > 0:
+            # Apply temperature and sample
+            probs = (next_token_logits / temperature).softmax(dim=-1)
+            next_tok = torch.multinomial(probs, 1)
+        else:
+            # Greedy decoding
+            next_tok = next_token_logits.argmax(dim=-1, keepdim=True)
+        
+        # Ensure next_tok is on the same device as toks
+        next_tok = next_tok.to(toks.device)
+        
+        # Append to sequence
+        toks = torch.cat([toks, next_tok], dim=-1)
+        
+        # Check for EOS
+        if model.tokenizer.eos_token_id is not None and (next_tok == model.tokenizer.eos_token_id).all():
+            break
+    
+    # Return only the generated portion as string
+    generated_tokens = toks[:, tokens.size(1):]
+    result = model.to_string(generated_tokens)
+    
+    # Handle both single string and list outputs
+    if isinstance(result, list):
+        return result[0] if result else ""
+    return result
 
 
 def generate_steered_batch(
@@ -181,7 +202,7 @@ def apply_steering_intervention(
     """
     with model.model.trace(tokens):
         # Get residual activations
-        residual = model.model.model.layers[layer].output[0]
+        residual = model.model.model.layers[layer].output
         
         # Apply intervention
         def steer_activation(activation_tensor):
@@ -229,7 +250,7 @@ def compute_steering_effects(
     # Get baseline activations (no steering)
     with model.model.trace(tokens):
         baseline_activations = {
-            layer: model.model.model.layers[layer].output[0].save()
+            layer: model.model.model.layers[layer].output.save()
             for layer in layers
         }
     

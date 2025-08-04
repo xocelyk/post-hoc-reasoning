@@ -1,13 +1,9 @@
 #!/usr/bin/env python3
 """
-Command-line interface for running post-hoc reasoning experiments using unified NNsight backend.
+NNsight-specific command-line interface for running post-hoc reasoning experiments.
 
-This script provides a comprehensive CLI for running probe and steering experiments
-with advanced caching, visualization, and resume functionality. It uses the unified 
-nnsight_utils system and supports all three probe methods:
-- logistic-regression: Traditional sklearn probes (all layers)
-- caa-single-layer: Contrastive activation analysis (best layer only)  
-- caa-multi-layer: Contrastive activation analysis (all layers, incremental)
+This script runs experiments using only the nnsight backend with the unified
+nnsight_utils implementation, supporting all probe methods and steering approaches.
 """
 
 import argparse
@@ -25,12 +21,12 @@ from nnsight_utils.experiment_runner import UnifiedExperimentRunner
 def create_parser() -> argparse.ArgumentParser:
     """Create the command-line argument parser."""
     parser = argparse.ArgumentParser(
-        description="Run post-hoc reasoning experiments using unified NNsight backend",
+        description="Run NNsight-based post-hoc reasoning experiments with unified implementation",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
   # Run with a configuration file
-  python run_nnsight_experiments.py --config configs/basic.yaml
+  python run_nnsight_experiments.py --config configs/nnsight.yaml
 
   # Resume incomplete experiments
   python run_nnsight_experiments.py --resume
@@ -38,20 +34,17 @@ Examples:
   # Create example configuration files
   python run_nnsight_experiments.py --create-configs
 
-  # Run with specific models and datasets (override config)
-  python run_nnsight_experiments.py --config configs/basic.yaml --models google/gemma-2-9b-it --datasets sports_understanding
+  # Run with specific models and datasets
+  python run_nnsight_experiments.py --config configs/nnsight.yaml --models deepseek-ai/DeepSeek-R1-Distill-Llama-8B --datasets sports_understanding
+
+  # Run with specific steering method
+  python run_nnsight_experiments.py --config configs/nnsight.yaml --steering-method caa-single-layer
 
   # Run in non-interactive mode
-  python run_nnsight_experiments.py --config configs/basic.yaml --no-interactive
+  python run_nnsight_experiments.py --config configs/nnsight.yaml --no-interactive
 
   # List existing experiments
   python run_nnsight_experiments.py --list-experiments
-
-Supported Probe Methods (configure in YAML):
-  steering:
-    method: caa-single-layer     # Best layer only
-    method: caa-multi-layer      # All layers, incremental
-    method: logistic-regression  # Traditional sklearn probes
         """,
     )
 
@@ -89,7 +82,11 @@ Supported Probe Methods (configure in YAML):
         nargs="+",
         help="Override datasets from config (space-separated list)",
     )
-# Backend argument removed - always uses nnsight
+    parser.add_argument(
+        "--backend",
+        choices=["auto", "nnsight", "transformer_lens"],
+        help="Override backend for all models (auto, nnsight, transformer_lens)",
+    )
     parser.add_argument(
         "--alpha-range",
         nargs="+",
@@ -160,11 +157,17 @@ def apply_overrides(
     config: ExperimentRunConfig, args: argparse.Namespace
 ) -> ExperimentRunConfig:
     """Apply command-line overrides to configuration."""
-    # Model overrides - always use nnsight backend
+    # Model overrides
     if args.models:
         from config import ModelConfig
-        
-        config.models = [ModelConfig(name=model, backend="nnsight") for model in args.models]
+
+        backend = args.backend if args.backend else "auto"
+        config.models = [ModelConfig(name=model, backend=backend) for model in args.models]
+    
+    # Backend override for existing models
+    if args.backend and not args.models:
+        for model in config.models:
+            model.backend = args.backend
 
     # Dataset overrides
     if args.datasets:
@@ -207,16 +210,7 @@ def apply_overrides(
     return config
 
 
-def print_method_info():
-    """Print information about supported probe methods."""
-    print("\n📋 Supported Probe Methods:")
-    print("  • logistic-regression: Traditional sklearn probes (all layers)")
-    print("  • caa-single-layer: Contrastive activation analysis (best layer only)")
-    print("  • caa-multi-layer: Contrastive activation analysis (all layers, incremental)")
-    print("\nConfigure method in YAML config:")
-    print("  steering:")
-    print("    method: caa-single-layer")
-    print()
+# Backend selection functions removed - this script only uses nnsight
 
 
 def list_experiments(cache_dir: str = "cache"):
@@ -298,6 +292,7 @@ def main():
         config.cache_dir = args.cache_dir
         config.interactive = not args.no_interactive
 
+        # Always use UnifiedExperimentRunner for nnsight
         runner = UnifiedExperimentRunner(config)
         runner.resume_experiments(args.resume_ids)
 
@@ -330,20 +325,21 @@ def main():
 
         print("✓ Configuration loaded and validated")
         print(f"  Models: {[m.name for m in config.models]}")
+        print(f"  Backends: {[m.backend for m in config.models]}")
         print(f"  Datasets: {[d.name for d in config.datasets]}")
-        print(f"  Steering method: {getattr(config.steering, 'method', 'caa-single-layer')}")
         print(f"  Alpha range: {config.steering.alpha_range}")
         print(f"  Cache directory: {config.cache_dir}")
 
-        # Show method information
-        print_method_info()
+        # Force all models to use nnsight backend
+        for model in config.models:
+            if model.backend != "nnsight":
+                print(f"📝 Setting {model.name} backend to nnsight")
+                model.backend = "nnsight"
 
-        # Create unified runner (always nnsight)
-        print("🔧 Using Unified NNsight experiment runner")
-        
-        # Create and run experiments
-        print("🚀 Starting experiments...")
+        # Create and run experiments with UnifiedExperimentRunner
+        print("\n🚀 Starting NNsight experiments...")
         runner = UnifiedExperimentRunner(config)
+        
         runner.run_all_experiments()
 
         # Save summary if requested

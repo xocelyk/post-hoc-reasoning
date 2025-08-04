@@ -237,74 +237,30 @@ def generate_with_steering_single(
         # Apply steering interventions during generation
         for layer in layers:
             # Get the residual stream output for this layer
-            # Handle different model architectures
+            # Apply steering - simplified approach matching the working example
+            steering_vector = steering_tensors[layer]
+            
             if hasattr(model.model, 'transformer') and hasattr(model.model.transformer, 'h'):
                 # GPT-style models (GPT2, etc.)
-                layer_module = model.model.transformer.h[layer]
-                # Access the first element of the output tuple for GPT2
-                residual = layer_module.output[0]
+                with model.model.transformer.h.all():
+                    model.model.transformer.h[layer].output[0] += alpha * steering_vector
             elif hasattr(model.model, 'model') and hasattr(model.model.model, 'layers'):
                 # Llama/Gemma style models
-                residual = model.model.model.layers[layer].output[0]
+                with model.model.model.layers.all():
+                    model.model.model.layers[layer].output[0] += alpha * steering_vector
             else:
                 # Generic fallback
                 raise ValueError(f"Unsupported model architecture: {type(model.model)}")
-            
-            # Create intervention function for this layer
-            def create_steering_intervention(layer_idx):
-                def steer_residual(residual_tensor):
-                    batch_size, seq_len, hidden_size = residual_tensor.shape
-                    
-                    # Only apply steering to positions after instruction_pos
-                    if seq_len > instruction_pos:
-                        steering_vector = steering_tensors[layer_idx]
-                        # Broadcast steering vector to the right shape
-                        if steering_vector.dim() == 1:
-                            steering_vector = steering_vector.unsqueeze(0).unsqueeze(0)
-                        
-                        # Add steering to positions after instruction
-                        residual_tensor[:, instruction_pos:, :] += steering_vector
-                    
-                    return residual_tensor
-                
-                return steer_residual
-            
-            # Apply the intervention
-            residual.intervene(create_steering_intervention(layer))
         
-        # Get the generated output through the correct path
-        if hasattr(model.model, 'lm_head'):
-            # For models with lm_head (GPT-style)
-            logits = model.model.lm_head.output.save()
-        elif hasattr(model.model, 'embed_out'):
-            # For models with embed_out
-            logits = model.model.embed_out.output.save()
-        else:
-            # Fallback: try to access through the last layer based on model type
-            last_layer_idx = model.cfg.n_layers - 1
-            if hasattr(model.model, 'transformer') and hasattr(model.model.transformer, 'h'):
-                # GPT-style models
-                logits = model.model.transformer.h[last_layer_idx].output[0].save()
-            elif hasattr(model.model, 'model') and hasattr(model.model.model, 'layers'):
-                # Llama/Gemma style models
-                logits = model.model.model.layers[last_layer_idx].output[0].save()
-            else:
-                raise ValueError(f"Cannot determine output access for model: {type(model.model)}")
+        # Get the generated output from the model's generator
+        out = model.generator.output.save()
     
-    # The logits from nnsight generation context only contain the newly generated tokens
-    # We need to combine with the original tokens to get the full sequence
-    if logits.dim() == 3:  # [batch, seq, vocab]
-        generated_tokens = torch.argmax(logits, dim=-1)
-        # Concatenate original tokens with generated tokens
-        full_sequence = torch.cat([tokens, generated_tokens], dim=1)
-    elif logits.dim() == 2:  # [batch, seq] - already tokens
-        full_sequence = torch.cat([tokens, logits], dim=1)
-    else:
-        # Handle unexpected tensor shapes - return just input
-        full_sequence = tokens
+    # Extract the generated tokens (excluding the input tokens)
+    seq_len = tokens.shape[1]
+    generated_tokens = out[0, seq_len:]  # Get the newly generated tokens
     
-    # Decode the full output and return as string
-    return model.to_string(full_sequence[0])
+    # Decode only the generated part
+    return model.tokenizer.decode(generated_tokens.cpu())
 
 
 def estimate_kv_cache_savings(

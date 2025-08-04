@@ -36,6 +36,7 @@ from . import (
     smart_empty_cache,
     memory_cleanup_context
 )
+from .core.generation import generate_text
 from .steering.kv_cached_generation import generate_with_kv_cached_steering, estimate_kv_cache_savings
 
 
@@ -92,15 +93,23 @@ class UnifiedExperimentRunner:
         self.logger.info(f"Generating for {len(prompts)} prompts")
         
         generations = []
-        for prompt in prompts:
-            # Use nnsight_utils generation
-            response = model.generate(
-                prompt,
+        for i, prompt in enumerate(prompts):
+            if i % 5 == 0:
+                self.logger.info(f"  Progress: {i}/{len(prompts)} prompts generated")
+            
+            # Use the basic generation function without steering
+            response = generate_text(
+                model=model,
+                prompt=prompt,  # generate_text handles tokenization
                 max_new_tokens=max_new_tokens,
                 temperature=temperature,
                 do_sample=True
             )
             generations.append(response)
+            
+            # Memory cleanup every few generations
+            if i % 5 == 0:
+                smart_empty_cache()
         
         return generations
 
@@ -154,7 +163,17 @@ class UnifiedExperimentRunner:
         # Generate data if not cached
         if not cache.has_generations():
             # Process training data
-            train_prompts = [model.apply_chat_template(item["prompt"]) for item in train_dataset]
+            train_prompts = []
+            for i, item in enumerate(train_dataset):
+                try:
+                    formatted = model.apply_chat_template(item["prompt"])
+                    train_prompts.append(formatted)
+                except Exception as e:
+                    self.logger.error(f"Error formatting prompt {i}: {e}")
+                    self.logger.error(f"Prompt type: {type(item['prompt'])}")
+                    self.logger.error(f"Prompt: {item['prompt']}")
+                    raise
+            
             train_generations = self.batch_get_generations(
                 train_prompts, model, config.temperature, config.max_new_tokens
             )
@@ -209,10 +228,18 @@ class UnifiedExperimentRunner:
             
             self.logger.info("Extracting activations...")
             
-            # Extract activations using nnsight_utils
+            # Extract activations using nnsight_utils with batching
             with memory_cleanup_context():
-                train_activations = extract_activations(model, train_prompts)
-                test_activations = extract_activations(model, test_prompts)
+                # Use smaller batch size for activation extraction to prevent OOM
+                batch_size = getattr(config, 'activation_batch_size', 4)
+                self.logger.info(f"Extracting train activations (batch_size={batch_size})...")
+                train_activations = extract_activations(model, train_prompts, batch_size=batch_size)
+                
+                # Clear memory between train and test
+                smart_empty_cache()
+                
+                self.logger.info(f"Extracting test activations (batch_size={batch_size})...")
+                test_activations = extract_activations(model, test_prompts, batch_size=batch_size)
             
             # Cache activations
             cache.save_pickle(train_activations, cache.get_train_activations_path())
@@ -257,11 +284,22 @@ class UnifiedExperimentRunner:
         
         # Extract correct predictions and corresponding activations
         correct_train_results = [train_results[i] for i in correct_train_indices]
-        correct_train_activations = train_activations[correct_train_indices]
+        
+        # Handle both list and array formats for activations
+        if isinstance(train_activations, list):
+            # If activations are a list of arrays, stack them
+            correct_train_activations = np.stack([train_activations[i] for i in correct_train_indices])
+        else:
+            # If already an array, use fancy indexing
+            correct_train_activations = train_activations[correct_train_indices]
         
         # Extract labels
         train_labels = [r["correct_answer"] for r in correct_train_results]
         test_labels = [r["correct_answer"] for r in test_results]
+        
+        # Convert test activations to numpy array if needed
+        if isinstance(test_activations, list):
+            test_activations = np.stack(test_activations)
         
         self.logger.info(f"Training on {len(train_labels)} correct predictions")
 
@@ -424,7 +462,13 @@ class UnifiedExperimentRunner:
     ) -> List[Dict]:
         """Generate steered examples using KV-cached generation for optimal performance."""
         # Prepare prompts for batch processing
-        prompt_strings = [model.apply_chat_template(example["prompt"]) for example in test_data]
+        # Check if prompts are already formatted strings or need formatting
+        if test_data and isinstance(test_data[0]["prompt"], str):
+            # Prompts are already formatted strings
+            prompt_strings = [example["prompt"] for example in test_data]
+        else:
+            # Prompts need formatting (they are message lists)
+            prompt_strings = [model.apply_chat_template(example["prompt"]) for example in test_data]
         
         # Estimate potential KV cache savings
         cache_stats = estimate_kv_cache_savings(prompt_strings, model.cfg.n_layers)
@@ -447,7 +491,7 @@ class UnifiedExperimentRunner:
         
         # Process results
         steered_results = []
-        for example, steered_response in zip(test_data, steered_responses):
+        for i, (example, steered_response) in enumerate(zip(test_data, steered_responses)):
             # Parse response
             pred_letter, pred_answer = self.parse_response(steered_response)
             
@@ -464,6 +508,15 @@ class UnifiedExperimentRunner:
             else:
                 category = "failure"
                 success = False
+            
+            # Log detailed steering result
+            self.logger.info(
+                f"Steering result {i+1}/{len(test_data)} (α={alpha}):\n"
+                f"  Original: {example['pred_answer']} → Target: {target_answer}\n"
+                f"  Full response:\n{steered_response}\n"
+                f"  Parsed letter: '{pred_letter}', Parsed answer: '{pred_answer}'\n"
+                f"  Result: {category} (valid_parse={is_valid_parse}, success={success})"
+            )
             
             steered_results.append({
                 "original_answer": example["pred_answer"],
@@ -522,10 +575,13 @@ class UnifiedExperimentRunner:
                 result = self.run_single_experiment(config, model)
                 results[f"{config.model_name}_{config.dataset_name}"] = result
             except Exception as e:
+                import traceback
                 self.logger.error(f"Experiment failed: {e}")
+                self.logger.error(f"Traceback:\n{traceback.format_exc()}")
                 results[f"{config.model_name}_{config.dataset_name}"] = {
                     "success": False,
-                    "error": str(e)
+                    "error": str(e),
+                    "traceback": traceback.format_exc()
                 }
             finally:
                 # Clean up model memory

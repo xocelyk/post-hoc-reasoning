@@ -35,7 +35,7 @@ from data_loading import create_cot_dataset, create_dataset
 from models import ChatModel
 from nnsight_models import NNsightChatModel
 from parsing_utils import parse_response
-from utils import generate_with_hooks
+from utils import generate_with_steering
 from nnsight_utils import batch_get_resid_activations
 from nnsight_steering import generate_with_nnsight_steering
 from steering_methods import CAASingleLayerSteering
@@ -356,7 +356,7 @@ for alpha in ALPHA_RANGE:
                     layers=layers_to_steer
                 )
             else:
-                steered_response = generate_with_hooks(
+                steered_response = generate_with_steering(
                     model=model,
                     tokens=tokens,
                     steering_vectors=steering_vectors_array,
@@ -402,7 +402,7 @@ for alpha in ALPHA_RANGE:
                     layers=layers_to_steer
                 )
             else:
-                steered_response = generate_with_hooks(
+                steered_response = generate_with_steering(
                     model=model,
                     tokens=tokens,
                     steering_vectors=steering_vectors_array,

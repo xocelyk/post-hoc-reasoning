@@ -53,6 +53,10 @@ class NNsightChatModel:
             **kwargs
         )
         
+        # Dispatch model to load actual weights (nnsight loads with meta tensors by default)
+        if hasattr(self.model, 'dispatch'):
+            self.model.dispatch()
+        
         # Model-specific formatting registry
         self.format_registry = {
             "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B": self._format_turns_deepseek,
@@ -172,19 +176,32 @@ class NNsightChatModel:
         Returns:
             Tokenized input as tensor
         """
-        # Handle both single strings and lists
+        # Ensure text is a list for consistent handling
         if isinstance(text, str):
             text = [text]
         
         # Default tokenizer arguments for compatibility
         tokenizer_kwargs = {
             "return_tensors": "pt",
-            "padding": True,
             **kwargs
         }
         
+        # Only add padding if we have multiple strings
+        if len(text) > 1:
+            tokenizer_kwargs["padding"] = True
+        
         result = self.model.tokenizer(text, **tokenizer_kwargs)
-        return result["input_ids"]
+        tokens = result["input_ids"]
+        
+        # Ensure tokens are on a real device (not meta)
+        # NNsight models are often loaded with meta tensors
+        if tokens.is_meta or str(tokens.device) == 'meta':
+            if torch.cuda.is_available():
+                tokens = tokens.to('cuda')
+            else:
+                tokens = tokens.to('cpu')
+        
+        return tokens
     
     def to_string(self, tokens: torch.Tensor, **kwargs) -> Union[str, List[str]]:
         """
@@ -199,31 +216,89 @@ class NNsightChatModel:
         """
         # Handle batch dimension
         if tokens.dim() == 1:
-            # Single sequence
-            return self.model.tokenizer.decode(tokens, **kwargs)
+            # Single sequence - ensure it's a proper tensor
+            return self.model.tokenizer.decode(tokens.tolist(), **kwargs)
         else:
             # Batch of sequences
             return [
-                self.model.tokenizer.decode(seq, **kwargs) 
+                self.model.tokenizer.decode(seq.tolist(), **kwargs) 
                 for seq in tokens
             ]
     
+    @torch.inference_mode()
     def generate(self, tokens: torch.Tensor, **kwargs) -> torch.Tensor:
         """
-        Generate text using the model.
+        Generate text using the model with custom sampling loop.
         
         Args:
             tokens: Input token tensor
-            **kwargs: Generation arguments
+            **kwargs: Generation arguments (max_new_tokens, temperature, do_sample, etc.)
             
         Returns:
             Generated token tensor
         """
-        # Use nnsight's native generation
-        with self.model.generate(tokens, **kwargs) as generator:
-            output = generator.output.save()
+        # Extract generation parameters
+        max_new_tokens = kwargs.get('max_new_tokens', 100)
+        temperature = kwargs.get('temperature', 0.7)
+        do_sample = kwargs.get('do_sample', True)
+        eos_token_id = kwargs.get('pad_token_id', self.tokenizer.eos_token_id)
         
-        return output
+        # Clone tokens to avoid modifying input and ensure correct device
+        toks = tokens.clone()
+        
+        # Ensure tokens is 2D tensor (batch_size, seq_len)
+        if toks.dim() == 1:
+            toks = toks.unsqueeze(0)
+        
+        # Determine the device from model parameters
+        try:
+            model_device = next(self.model.parameters()).device
+        except:
+            model_device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        
+        # Move tokens to the same device as the model
+        toks = toks.to(model_device)
+        
+        # Custom generation loop using model.trace()
+        for _ in range(max_new_tokens):
+            with self.model.trace(toks):
+                # Get logits from the language model head
+                if hasattr(self.model, 'lm_head'):
+                    logits = self.model.lm_head.output.save()
+                elif hasattr(self.model, 'embed_out'):
+                    logits = self.model.embed_out.output.save()
+                else:
+                    # Fallback for other architectures
+                    raise ValueError(f"Cannot determine output layer for model: {type(self.model)}")
+            
+            # Get logits for the last position
+            next_token_logits = logits[:, -1, :]
+            
+            if do_sample and temperature > 0:
+                # Apply temperature and sample
+                probs = (next_token_logits / temperature).softmax(dim=-1)
+                next_tok = torch.multinomial(probs, 1)
+            else:
+                # Greedy decoding
+                next_tok = next_token_logits.argmax(dim=-1, keepdim=True)
+            
+            # Ensure next_tok is on the same device as toks
+            next_tok = next_tok.to(toks.device)
+            
+            # Append to sequence
+            toks = torch.cat([toks, next_tok], dim=-1)
+            
+            # Check for EOS
+            if eos_token_id is not None and (next_tok == eos_token_id).all():
+                break
+            
+            # Clean up to save memory
+            del logits, next_token_logits
+            if do_sample and temperature > 0:
+                del probs
+            torch.cuda.empty_cache()
+        
+        return toks
     
     @property
     def tokenizer(self):

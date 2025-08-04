@@ -45,13 +45,13 @@ def batch_get_resid_activations(
         if position == "last":
             # Extract only the final position (most common case)
             residuals = {
-                layer: model.model.model.layers[layer].output[0][:, -1].save()
+                layer: model.model.model.layers[layer].output[:, -1].save()
                 for layer in layers
             }
         elif position == "all":
             # Extract all positions
             residuals = {
-                layer: model.model.model.layers[layer].output[0].save()
+                layer: model.model.model.layers[layer].output.save()
                 for layer in layers
             }
         else:
@@ -106,9 +106,9 @@ def extract_layer_activations(
     """
     with model.model.trace(tokens):
         if position_slice is not None:
-            activations = model.model.model.layers[layer].output[0][:, position_slice].save()
+            activations = model.model.model.layers[layer].output[:, position_slice].save()
         else:
-            activations = model.model.model.layers[layer].output[0].save()
+            activations = model.model.model.layers[layer].output.save()
     
     return activations.detach()
 

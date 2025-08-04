@@ -20,7 +20,7 @@ from config import ExperimentRunConfig, create_experiment_configs
 from data_loading import load_all_datasets
 from models import ChatModel
 from parsing_utils import parse_response
-from utils import generate_with_hooks
+from utils import generate_with_steering
 from visualizer import create_visualizer
 from steering_methods import create_steering_method, format_steering_results
 
@@ -718,7 +718,7 @@ class EnhancedExperimentRunner:
                 with torch.no_grad():
                     example_tokens = model.to_tokens(example_prompt, prepend_bos=False)
 
-                    generation = generate_with_hooks(
+                    generation = generate_with_steering(
                         model,
                         example_tokens,
                         temperature=config.temperature,
@@ -726,7 +726,6 @@ class EnhancedExperimentRunner:
                         alpha=alpha,
                         steering_vectors=steering_vectors,
                         layers=layers,
-                        verbose=True,
                     )
                     
                     # Clean up tokens immediately
@@ -734,6 +733,10 @@ class EnhancedExperimentRunner:
 
                 new_letter, new_answer = self.parse_response(generation)
                 orig = example["pred_answer"]
+                
+                # Log the generation and parsing results
+                self.logger.info(f"Generated response: {generation}")
+                self.logger.info(f"Parsed: letter='{new_letter}', answer='{new_answer}'")
                 
                 # Determine target answer based on original answer
                 target_answer = "no" if orig == "yes" else "yes"

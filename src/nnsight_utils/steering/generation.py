@@ -135,27 +135,14 @@ def generate_with_nnsight_steering(
             else:
                 raise ValueError(f"Unsupported model architecture: {type(model.model)}")
             
-            # Create intervention function for this layer
-            def create_steering_intervention(layer_idx):
-                def steer_residual(residual_tensor):
-                    batch_size, seq_len, hidden_size = residual_tensor.shape
-                    
-                    # Only apply steering to positions after instruction_pos
-                    if seq_len > instruction_pos:
-                        steering_vector = steering_tensors[layer_idx]
-                        # Broadcast steering vector to the right shape
-                        if steering_vector.dim() == 1:
-                            steering_vector = steering_vector.unsqueeze(0).unsqueeze(0)
-                        
-                        # Add steering to positions after instruction
-                        residual_tensor[:, instruction_pos:, :] += alpha * steering_vector
-                    
-                    return residual_tensor
-                
-                return steer_residual
+            # Apply steering directly using += operator
+            steering_vector = steering_tensors[layer]
+            # Broadcast steering vector to the right shape if needed
+            if steering_vector.dim() == 1:
+                steering_vector = steering_vector.unsqueeze(0).unsqueeze(0)
             
-            # Apply the intervention
-            residual.intervene(create_steering_intervention(layer))
+            # Apply steering to positions after instruction_pos
+            residual[:, instruction_pos:, :] += alpha * steering_vector
         
         # Get the generated output through the correct path
         if hasattr(model.model, 'lm_head'):
