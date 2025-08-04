@@ -915,6 +915,118 @@ class EnhancedExperimentRunner:
         # Print comprehensive final summary
         self.print_final_summary()
 
+    def print_final_summary(self):
+        """Print comprehensive summary statistics for all experiments."""
+        print(f"\n{'#'*80}")
+        print(f"🏆 FINAL EXPERIMENT SUMMARY")
+        print(f"{'#'*80}")
+        
+        successful_experiments = []
+        failed_experiments = []
+        
+        for config in self.experiment_configs:
+            exp_key = f"{config.model_name}_{config.dataset_name}"
+            if exp_key in self.experiments_status:
+                status = self.experiments_status[exp_key]
+                if status.get("generations", False) and status.get("probes", False):
+                    successful_experiments.append((config, exp_key))
+                else:
+                    failed_experiments.append((config, exp_key))
+            else:
+                failed_experiments.append((config, exp_key))
+        
+        print(f"📈 OVERALL STATISTICS:")
+        print(f"   Total experiments: {len(self.experiment_configs)}")
+        print(f"   Successful: {len(successful_experiments)}")
+        print(f"   Failed: {len(failed_experiments)}")
+        print(f"   Success rate: {len(successful_experiments) / len(self.experiment_configs):.1%}")
+        
+        if successful_experiments:
+            print(f"\n🎯 PROBE PERFORMANCE COMPARISON:")
+            
+            all_best_scores = []
+            all_avg_scores = []
+            model_scores = []
+            
+            for config, exp_key in successful_experiments:
+                cache = self.exp_manager.add_experiment(config)
+                try:
+                    auc_scores = cache.load_json(cache.get_auc_scores_path())
+                    best_score = float(max(auc_scores))
+                    avg_score = float(np.mean(auc_scores))
+                    best_layer = int(np.argmax(auc_scores))
+                    
+                    all_best_scores.append(best_score)
+                    all_avg_scores.append(avg_score)
+                    model_scores.append((config.model_name, best_score, avg_score, best_layer))
+                except:
+                    pass
+            
+            if model_scores:
+                # Sort by best score descending
+                model_scores.sort(key=lambda x: x[1], reverse=True)
+                
+                print(f"   📊 Model Rankings (by best layer performance):")
+                for i, (model_name, best_score, avg_score, best_layer) in enumerate(model_scores, 1):
+                    model_short = model_name.split('/')[-1] if '/' in model_name else model_name
+                    print(f"      {i}. {model_short[:30]:<30} | Best: {best_score:.4f} (L{best_layer}) | Avg: {avg_score:.4f}")
+                
+                print(f"\n   🔬 Cross-Model Statistics:")
+                print(f"      Best score across all models: {max(all_best_scores):.4f}")
+                print(f"      Average best score: {np.mean(all_best_scores):.4f}")
+                print(f"      Standard deviation: {np.std(all_best_scores):.4f}")
+                print(f"      Average layer performance: {np.mean(all_avg_scores):.4f}")
+        
+        if successful_experiments:
+            print(f"\n🎮 STEERING PERFORMANCE SUMMARY:")
+            
+            steering_success_by_alpha = {}
+            total_steering_experiments = 0
+            successful_steering_experiments = 0
+            
+            for config, exp_key in successful_experiments:
+                cache = self.exp_manager.add_experiment(config)
+                completed_steering = cache.get_completed_steering()
+                
+                for alpha, direction in completed_steering:
+                    if alpha not in steering_success_by_alpha:
+                        steering_success_by_alpha[alpha] = {'total': 0, 'successful': 0}
+                    
+                    try:
+                        results = cache.load_pickle(cache.get_steering_results_path(alpha, direction))
+                        if results:
+                            total_steering_experiments += len(results)
+                            successes = sum(1 for r in results if r.get("success", False))
+                            successful_steering_experiments += successes
+                            
+                            steering_success_by_alpha[alpha]['total'] += len(results)
+                            steering_success_by_alpha[alpha]['successful'] += successes
+                    except:
+                        pass
+            
+            if steering_success_by_alpha:
+                print(f"   📊 Steering Success Rates by Alpha:")
+                for alpha in sorted(steering_success_by_alpha.keys()):
+                    data = steering_success_by_alpha[alpha]
+                    if data['total'] > 0:
+                        success_rate = data['successful'] / data['total']
+                        alpha_display = f"{alpha:+.1f}" if alpha != 0 else "0.0"
+                        print(f"      α={alpha_display}: {success_rate:.1%} ({data['successful']}/{data['total']})")
+                
+                if total_steering_experiments > 0:
+                    overall_steering_rate = successful_steering_experiments / total_steering_experiments
+                    print(f"   🎯 Overall steering success rate: {overall_steering_rate:.1%} ({successful_steering_experiments}/{total_steering_experiments})")
+        
+        if failed_experiments:
+            print(f"\n❌ FAILED EXPERIMENTS:")
+            for config, exp_key in failed_experiments:
+                model_short = config.model_name.split('/')[-1] if '/' in config.model_name else config.model_name
+                print(f"   • {model_short} on {config.dataset_name}")
+        
+        print(f"\n{'#'*80}")
+        print(f"🎉 Experiment run completed!")
+        print(f"{'#'*80}\n")
+
     def _run_experiments_with_visualization(self, live):
         """Run experiments with live visualization."""
         for config in self.experiment_configs:
