@@ -28,16 +28,25 @@ def parse_response(response: str, thinking: bool = True) -> Tuple[str, str]:
     )
     
     if thinking:
-        # For responses with reasoning, look for "the best answer is:" pattern
-        start_answer_string = "the best answer is:"
+        # For responses with reasoning, look for "the best answer is:" or "the best answer is" patterns
+        start_answer_patterns = ["the best answer is:", "the best answer is"]
         response_lower = response.lower()
         
-        if start_answer_string not in response_lower:
+        # Try each pattern and use the one that appears last in the response
+        start_idx = -1
+        matching_pattern = None
+        
+        for pattern in start_answer_patterns:
+            idx = response_lower.rfind(pattern)
+            if idx > start_idx:
+                start_idx = idx
+                matching_pattern = pattern
+        
+        if start_idx == -1:
             return "", ""
         
         # Find the answer part using case-insensitive search but preserve original case
-        start_idx = response_lower.rfind(start_answer_string)
-        answer_part = response[start_idx + len(start_answer_string):]
+        answer_part = response[start_idx + len(matching_pattern):].strip()
     else:
         # For non-reasoning responses, use the entire cleaned response
         answer_part = response
@@ -63,28 +72,3 @@ def parse_response(response: str, thinking: bool = True) -> Tuple[str, str]:
     )
     
     return letter, text_answer
-
-
-def parse_response_simple(response: str) -> str:
-    """
-    Simple parsing that returns only the text answer.
-    Used by reasoning_probes.py for compatibility.
-    
-    Args:
-        response: Raw model response string
-        
-    Returns:
-        Text answer or empty string if not found
-    """
-    # Try to match letter in parentheses followed by yes/no or plausible/implausible
-    match = re.search(r"\(\s*[A-Za-z]\s*\)\s*(yes|no|plausible|implausible)", response, re.IGNORECASE)
-    if match:
-        text = match.group(1).lower()
-        if text in ["yes", "plausible"]:
-            return "yes"
-        elif text in ["no", "implausible"]:
-            return "no"
-    
-    # Fall back to standard parsing
-    letter, text_answer = parse_response(response, thinking=True)
-    return text_answer
