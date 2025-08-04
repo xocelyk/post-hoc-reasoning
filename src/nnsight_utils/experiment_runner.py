@@ -366,13 +366,23 @@ class UnifiedExperimentRunner:
                     results_yes, cache.get_steering_results_path(alpha_yes, "yes")
                 )
 
-                success_rate = (
-                    sum(r["success"] for r in results_yes) / len(results_yes)
-                    if results_yes else 0
-                )
-                self.logger.info(
-                    f"Alpha {alpha_yes:+.1f} (yes→no): {success_rate:.2f} success rate"
-                )
+                if results_yes:
+                    # Calculate category breakdown
+                    total = len(results_yes)
+                    success_count = sum(1 for r in results_yes if r["category"] == "success")
+                    failure_count = sum(1 for r in results_yes if r["category"] == "failure")
+                    unparsed_count = sum(1 for r in results_yes if r["category"] == "unparsed")
+                    
+                    success_rate = success_count / total
+                    failure_rate = failure_count / total
+                    unparsed_rate = unparsed_count / total
+                    
+                    self.logger.info(
+                        f"Alpha {alpha_yes:+.1f} (yes→no): {success_rate:.2f} success, "
+                        f"{failure_rate:.2f} failure, {unparsed_rate:.2f} unparsed"
+                    )
+                else:
+                    self.logger.info(f"Alpha {alpha_yes:+.1f} (yes→no): No results")
 
             # No to Yes steering (positive alpha)
             alpha_no = abs(alpha)
@@ -384,13 +394,23 @@ class UnifiedExperimentRunner:
                     results_no, cache.get_steering_results_path(alpha_no, "no")
                 )
 
-                success_rate = (
-                    sum(r["success"] for r in results_no) / len(results_no)
-                    if results_no else 0
-                )
-                self.logger.info(
-                    f"Alpha {alpha_no:+.1f} (no→yes): {success_rate:.2f} success rate"
-                )
+                if results_no:
+                    # Calculate category breakdown
+                    total = len(results_no)
+                    success_count = sum(1 for r in results_no if r["category"] == "success")
+                    failure_count = sum(1 for r in results_no if r["category"] == "failure")
+                    unparsed_count = sum(1 for r in results_no if r["category"] == "unparsed")
+                    
+                    success_rate = success_count / total
+                    failure_rate = failure_count / total
+                    unparsed_rate = unparsed_count / total
+                    
+                    self.logger.info(
+                        f"Alpha {alpha_no:+.1f} (no→yes): {success_rate:.2f} success, "
+                        f"{failure_rate:.2f} failure, {unparsed_rate:.2f} unparsed"
+                    )
+                else:
+                    self.logger.info(f"Alpha {alpha_no:+.1f} (no→yes): No results")
 
         return True
 
@@ -431,15 +451,27 @@ class UnifiedExperimentRunner:
             # Parse response
             pred_letter, pred_answer = self.parse_response(steered_response)
             
-            # Determine success
+            # Determine success and category
             target_answer = "no" if alpha < 0 else "yes"
-            success = pred_answer == target_answer
+            is_valid_parse = pred_answer in ["yes", "no"]
+            
+            if not is_valid_parse:
+                category = "unparsed"
+                success = False
+            elif pred_answer == target_answer:
+                category = "success"
+                success = True
+            else:
+                category = "failure"
+                success = False
             
             steered_results.append({
                 "original_answer": example["pred_answer"],
                 "steered_answer": pred_answer,
                 "target_answer": target_answer,
                 "success": success,
+                "category": category,
+                "is_valid_parse": is_valid_parse,
                 "response": steered_response
             })
 

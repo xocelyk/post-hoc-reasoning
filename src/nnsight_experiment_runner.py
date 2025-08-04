@@ -426,14 +426,24 @@ class NNsightExperimentRunner:
                     results_yes, cache.get_steering_results_path(alpha_yes, "yes")
                 )
 
-                success_rate = (
-                    sum(r["success"] for r in results_yes) / len(results_yes)
-                    if results_yes
-                    else 0
-                )
-                self.logger.info(
-                    f"Alpha {alpha_yes:+.1f} (yes): {success_rate:.2f} success rate"
-                )
+                if results_yes:
+                    # Calculate category breakdown
+                    total = len(results_yes)
+                    success_count = sum(1 for r in results_yes if r["category"] == "success")
+                    failure_count = sum(1 for r in results_yes if r["category"] == "failure")
+                    unparsed_count = sum(1 for r in results_yes if r["category"] == "unparsed")
+                    
+                    success_rate = success_count / total
+                    failure_rate = failure_count / total
+                    unparsed_rate = unparsed_count / total
+                    
+                    self.logger.info(
+                        f"Alpha {alpha_yes:+.1f} (yes): {success_rate:.2f} success, "
+                        f"{failure_rate:.2f} failure, {unparsed_rate:.2f} unparsed"
+                    )
+                else:
+                    success_rate = 0
+                    self.logger.info(f"Alpha {alpha_yes:+.1f} (yes): No results")
 
                 # Update visualizer
                 if hasattr(self.visualizer, "update_steering_results"):
@@ -455,14 +465,24 @@ class NNsightExperimentRunner:
                     results_no, cache.get_steering_results_path(alpha_no, "no")
                 )
 
-                success_rate = (
-                    sum(r["success"] for r in results_no) / len(results_no)
-                    if results_no
-                    else 0
-                )
-                self.logger.info(
-                    f"Alpha {alpha_no:+.1f} (no): {success_rate:.2f} success rate"
-                )
+                if results_no:
+                    # Calculate category breakdown
+                    total = len(results_no)
+                    success_count = sum(1 for r in results_no if r["category"] == "success")
+                    failure_count = sum(1 for r in results_no if r["category"] == "failure")
+                    unparsed_count = sum(1 for r in results_no if r["category"] == "unparsed")
+                    
+                    success_rate = success_count / total
+                    failure_rate = failure_count / total
+                    unparsed_rate = unparsed_count / total
+                    
+                    self.logger.info(
+                        f"Alpha {alpha_no:+.1f} (no): {success_rate:.2f} success, "
+                        f"{failure_rate:.2f} failure, {unparsed_rate:.2f} unparsed"
+                    )
+                else:
+                    success_rate = 0
+                    self.logger.info(f"Alpha {alpha_no:+.1f} (no): No results")
 
                 # Update visualizer
                 if hasattr(self.visualizer, "update_steering_results"):
@@ -507,9 +527,20 @@ class NNsightExperimentRunner:
 
             new_letter, new_answer = self.parse_response(generation)
             orig = example["pred_answer"]
-            success = (orig == "yes" and new_answer == "no") or (
-                orig == "no" and new_answer == "yes"
-            )
+            
+            # Determine target answer based on original answer
+            target_answer = "no" if orig == "yes" else "yes"
+            is_valid_parse = new_answer in ["yes", "no"]
+            
+            if not is_valid_parse:
+                category = "unparsed"
+                success = False
+            elif new_answer == target_answer:
+                category = "success"
+                success = True
+            else:
+                category = "failure"
+                success = False
 
             steered_results.append(
                 {
@@ -517,10 +548,13 @@ class NNsightExperimentRunner:
                     "steered_generation": generation,
                     "original_answer": orig,
                     "new_answer": new_answer,
+                    "target_answer": target_answer,
                     "original_letter": example["pred_letter"],
                     "new_letter": new_letter,
                     "alpha": alpha,
                     "success": success,
+                    "category": category,
+                    "is_valid_parse": is_valid_parse,
                 }
             )
 
