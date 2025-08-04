@@ -14,20 +14,20 @@ use_cache: true
 models:
 - name: google/gemma-2-9b-it
   backend: auto
-  batch_size: 2
+  batch_size: 4
   device: auto
   dtype: bfloat16
 
 datasets:
-- name: sports_understanding
+- name: anachronisms
   train_size: 200
   test_size: 100
   split_seed: 42
 
 # CAA steering configuration - automatically scans both methods
 steering:
-  methods_to_scan: ["caa-single-layer", "caa-layer-incremental"]
-  alpha_range: [0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0]
+  methods_to_scan: ["caa-layer-incremental", "caa-single-layer"]
+  alpha_range: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
   temperature: 0.7
   max_new_tokens: 100
 

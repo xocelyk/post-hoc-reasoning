@@ -36,7 +36,7 @@ def parse_response(response: str, thinking: bool = True) -> Tuple[str, str]:
             return "", ""
         
         # Find the answer part using case-insensitive search but preserve original case
-        start_idx = response_lower.find(start_answer_string)
+        start_idx = response_lower.rfind(start_answer_string)
         answer_part = response[start_idx + len(start_answer_string):]
     else:
         # For non-reasoning responses, use the entire cleaned response

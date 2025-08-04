@@ -27,7 +27,7 @@ datasets:
     split_seed: 42
 
 steering:
-  alpha_range: [10]  # Single alpha value for quick testing
+  alpha_range: [0.18]  # Single alpha value for quick testing
 
 # Optional: Experiment metadata
 experiment:

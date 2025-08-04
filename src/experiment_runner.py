@@ -134,6 +134,7 @@ class EnhancedExperimentRunner:
         self, prompts: List[str], model: ChatModel, temperature=0.7, max_new_tokens=100
     ):
         """Get generations for a batch of prompts with memory optimization."""
+        
         with torch.no_grad():  # Ensure no gradients are computed
             tokens = model.to_tokens(prompts, prepend_bos=True)
             token_generations = model.generate(

@@ -23,11 +23,11 @@ class ExperimentConfig:
 
     def get_hash(self) -> str:
         """Generate a unique hash for this experiment configuration."""
-        # Include steering method in hash if available
-        steering_method = getattr(self, 'steering_method', 'default')
+        # Exclude steering method from hash to allow shared cache for data
+        # Only include core experiment parameters that affect data generation
         config_str = (
             f"{self.model_name}_{self.dataset_name}_{self.train_size}_{self.test_size}_"
-            f"{self.split_seed}_{self.temperature}_{self.max_new_tokens}_{steering_method}"
+            f"{self.split_seed}_{self.temperature}_{self.max_new_tokens}"
         )
         return hashlib.md5(config_str.encode()).hexdigest()[:12]
 
@@ -112,14 +112,29 @@ class ExperimentCache:
     def get_probes_path(self) -> str:
         return os.path.join(self.cache_dir, "probes", "trained_probes.pkl")
 
-    def get_probe_coefficients_path(self) -> str:
-        return os.path.join(self.cache_dir, "probes", "coefficients.pkl")
+    def get_probe_coefficients_path(self, method: Optional[str] = None) -> str:
+        """Get path for probe coefficients, optionally method-specific."""
+        if method and method != "logistic-regression":
+            filename = f"coefficients_{method}.pkl"
+        else:
+            filename = "coefficients.pkl"
+        return os.path.join(self.cache_dir, "probes", filename)
 
-    def get_auc_scores_path(self) -> str:
-        return os.path.join(self.cache_dir, "probes", "auc_scores.json")
+    def get_auc_scores_path(self, method: Optional[str] = None) -> str:
+        """Get path for AUC scores, optionally method-specific."""
+        if method and method != "logistic-regression":
+            filename = f"auc_scores_{method}.json"
+        else:
+            filename = "auc_scores.json"
+        return os.path.join(self.cache_dir, "probes", filename)
 
-    def get_probe_metadata_path(self) -> str:
-        return os.path.join(self.cache_dir, "probes", "metadata.json")
+    def get_probe_metadata_path(self, method: Optional[str] = None) -> str:
+        """Get path for probe metadata, optionally method-specific."""
+        if method and method != "logistic-regression":
+            filename = f"metadata_{method}.json"
+        else:
+            filename = "metadata.json"
+        return os.path.join(self.cache_dir, "probes", filename)
 
     # Steering caching methods
     def get_steering_results_path(self, alpha: float, label: str) -> str:
@@ -178,17 +193,45 @@ class ExperimentCache:
             self.get_test_activations_path()
         )
 
-    def has_probes(self) -> bool:
-        """Check if probes are trained and cached."""
-        return (
-            os.path.exists(self.get_probes_path())
-            and os.path.exists(self.get_probe_coefficients_path())
-            and os.path.exists(self.get_auc_scores_path())
-        )
+    def has_probes(self, method: Optional[str] = None) -> bool:
+        """Check if probes are trained and cached for a specific method."""
+        if method:
+            return (
+                os.path.exists(self.get_probe_coefficients_path(method))
+                and os.path.exists(self.get_auc_scores_path(method))
+            )
+        else:
+            # Check default/logistic regression probes
+            return (
+                os.path.exists(self.get_probes_path())
+                and os.path.exists(self.get_probe_coefficients_path())
+                and os.path.exists(self.get_auc_scores_path())
+            )
 
     def has_steering_results(self, alpha: float, label: str) -> bool:
         """Check if steering results exist for specific alpha and label."""
         return os.path.exists(self.get_steering_results_path(alpha, label))
+
+    def list_cached_probe_methods(self) -> List[str]:
+        """List all steering/probe methods that have cached data."""
+        methods = []
+        probes_dir = os.path.join(self.cache_dir, "probes")
+        
+        if not os.path.exists(probes_dir):
+            return methods
+            
+        # Check for default logistic regression
+        if self.has_probes():
+            methods.append("logistic-regression")
+            
+        # Check for method-specific files
+        for filename in os.listdir(probes_dir):
+            if filename.startswith("coefficients_") and filename.endswith(".pkl"):
+                method = filename[len("coefficients_"):-len(".pkl")]
+                if self.has_probes(method):
+                    methods.append(method)
+                    
+        return sorted(set(methods))
 
     def get_completed_steering(self) -> List[Tuple[float, str]]:
         """Get list of completed steering experiments (alpha, label) pairs."""
