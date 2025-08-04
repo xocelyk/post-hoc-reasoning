@@ -23,7 +23,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from cache_manager import ExperimentCache, ExperimentConfig, ExperimentManager
 from config import ExperimentRunConfig, create_experiment_configs
 from data_loading import load_all_datasets
-from parsing_utils import parse_response
+from parsing_utils import parse_response, filter_think_tags
 from visualizer import create_visualizer
 
 # Import from nnsight_utils
@@ -107,6 +107,21 @@ class UnifiedExperimentRunner:
             )
             generations.append(response)
             
+            # Log the first prompt and response for debugging
+            if i == 0:
+                # Filter think tags for DeepSeek models when displaying
+                display_response = response
+                if hasattr(model, 'model_name') and model.model_name.lower().startswith('deepseek'):
+                    display_response = filter_think_tags(response)
+                    
+                self.logger.info("=" * 80)
+                self.logger.info("FIRST PROMPT AND RESPONSE:")
+                self.logger.info("=" * 80)
+                self.logger.info(f"Full Prompt:\n{prompt}")
+                self.logger.info("-" * 80)
+                self.logger.info(f"Response (filtered for DeepSeek):\n{display_response}")
+                self.logger.info("=" * 80)
+            
             # Memory cleanup every few generations
             if i % 5 == 0:
                 smart_empty_cache()
@@ -166,6 +181,8 @@ class UnifiedExperimentRunner:
             train_prompts = []
             for i, item in enumerate(train_dataset):
                 try:
+                    # For prompts with incomplete assistant messages, don't use add_generation_prompt
+                    # as it conflicts with continue_final_message
                     formatted = model.apply_chat_template(item["prompt"])
                     train_prompts.append(formatted)
                 except Exception as e:
@@ -181,7 +198,12 @@ class UnifiedExperimentRunner:
             # Parse training responses
             train_results = []
             for i, (item, generation) in enumerate(zip(train_dataset, train_generations)):
-                pred_letter, pred_answer = self.parse_response(generation)
+                # Filter think tags for DeepSeek models before parsing
+                response_to_parse = generation
+                if hasattr(model, 'model_name') and model.model_name.lower().startswith('deepseek'):
+                    response_to_parse = filter_think_tags(generation)
+                
+                pred_letter, pred_answer = self.parse_response(response_to_parse)
                 train_results.append({
                     "prompt": item["prompt"],
                     "response": generation,
@@ -200,7 +222,12 @@ class UnifiedExperimentRunner:
             # Parse test responses
             test_results = []
             for i, (item, generation) in enumerate(zip(test_dataset, test_generations)):
-                pred_letter, pred_answer = self.parse_response(generation)
+                # Filter think tags for DeepSeek models before parsing
+                response_to_parse = generation
+                if hasattr(model, 'model_name') and model.model_name.lower().startswith('deepseek'):
+                    response_to_parse = filter_think_tags(generation)
+                
+                pred_letter, pred_answer = self.parse_response(response_to_parse)
                 test_results.append({
                     "prompt": item["prompt"],
                     "response": generation,
@@ -226,6 +253,11 @@ class UnifiedExperimentRunner:
             train_prompts = [model.apply_chat_template(r["prompt"]) for r in train_results]
             test_prompts = [model.apply_chat_template(r["prompt"]) for r in test_results]
             
+            # Log first activation prompt to verify formatting
+            if train_prompts:
+                self.logger.info("First activation extraction prompt:")
+                self.logger.info(f"{train_prompts[0][:500]}...")  # First 500 chars
+                
             self.logger.info("Extracting activations...")
             
             # Extract activations using nnsight_utils with batching
@@ -492,8 +524,13 @@ class UnifiedExperimentRunner:
         # Process results
         steered_results = []
         for i, (example, steered_response) in enumerate(zip(test_data, steered_responses)):
+            # Filter think tags for DeepSeek models before parsing
+            response_to_parse = steered_response
+            if hasattr(model, 'model_name') and model.model_name.lower().startswith('deepseek'):
+                response_to_parse = filter_think_tags(steered_response)
+            
             # Parse response
-            pred_letter, pred_answer = self.parse_response(steered_response)
+            pred_letter, pred_answer = self.parse_response(response_to_parse)
             
             # Determine success and category
             target_answer = "no" if alpha < 0 else "yes"
@@ -510,10 +547,15 @@ class UnifiedExperimentRunner:
                 success = False
             
             # Log detailed steering result
+            # Filter think tags for DeepSeek models when displaying
+            display_response = steered_response
+            if hasattr(model, 'model_name') and model.model_name.lower().startswith('deepseek'):
+                display_response = filter_think_tags(steered_response)
+                
             self.logger.info(
                 f"Steering result {i+1}/{len(test_data)} (α={alpha}):\n"
                 f"  Original: {example['pred_answer']} → Target: {target_answer}\n"
-                f"  Full response:\n{steered_response}\n"
+                f"  Response (filtered):\n{display_response}\n"
                 f"  Parsed letter: '{pred_letter}', Parsed answer: '{pred_answer}'\n"
                 f"  Result: {category} (valid_parse={is_valid_parse}, success={success})"
             )

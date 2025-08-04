@@ -396,7 +396,12 @@ def create_visualizer(
     interactive: bool = True,
 ) -> RealTimeVisualizer | SimpleProgressTracker:
     """Factory function to create appropriate visualizer based on environment."""
-    if interactive and os.isatty(0):  # Check if running in terminal
-        return RealTimeVisualizer()
+    if interactive:
+        try:
+            # Try to create RealTimeVisualizer, fall back to simple if it fails
+            return RealTimeVisualizer()
+        except Exception as e:
+            print(f"Warning: Could not create interactive visualizer ({e}), using simple tracker")
+            return SimpleProgressTracker()
     else:
         return SimpleProgressTracker()

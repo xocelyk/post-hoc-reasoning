@@ -5,6 +5,26 @@ import re
 from typing import Tuple, Union, List
 
 
+def filter_think_tags(response: str) -> str:
+    """
+    Remove content between <think> and </think> tags from response.
+    
+    Args:
+        response: Raw model response that may contain think tags
+        
+    Returns:
+        Response with think content removed
+    """
+    # Remove content between <think> and </think> tags
+    pattern = r'<think>.*?</think>\s*'
+    filtered = re.sub(pattern, '', response, flags=re.DOTALL)
+    
+    # Clean up any double newlines left behind
+    filtered = re.sub(r'\n\n+', '\n\n', filtered)
+    
+    return filtered.strip()
+
+
 def parse_response(response: Union[str, List[str]], thinking: bool = True) -> Tuple[str, str]:
     """
     Parse model response to extract answer letter and text.

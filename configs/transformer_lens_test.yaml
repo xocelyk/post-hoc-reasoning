@@ -2,10 +2,23 @@ cache_dir: cache
 datasets:
 - name: anachronisms
   split_seed: 42
-  test_size: 100
-  train_size: 100
+  test_size: 5
+  train_size: 5
+# - name: sports_understanding
+#   split_seed: 42
+#   test_size: 5
+#   train_size: 5
+# - name: logical_deduction
+#   split_seed: 42
+#   test_size: 5
+#   train_size: 5
+# - name: social_chemistry
+#   split_seed: 42
+#   test_size: 5
+#   train_size: 5
+
 evaluate_confabulation: false
-interactive: false
+interactive: true
 max_concurrent_models: 1
 models:
 - backend: auto
@@ -37,27 +50,11 @@ models:
   batch_size: 1
   device: auto
   dtype: bfloat16
-  name: mistralai/Mistral-7B-Instruct-v0.1
+  name: Llama-2-7b-chat
 save_generations: true
 steering:
   alpha_range:
-  - 0
-  - 1
-  - 2
-  - 3
-  - 4
-  - 5
-  - 6
-  - 7
-  - 8
-  - 9
   - 10
-  - 11
-  - 12
-  - 13
-  - 14
-  - 15
-  - 16
   max_new_tokens: 100
   temperature: 0.7
   steering_method: caa-single-layer
