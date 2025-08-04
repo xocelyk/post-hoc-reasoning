@@ -449,6 +449,12 @@ except Exception as e:
     print("🔄 Computing fresh steering vectors...")
     USE_CACHE = False
 
+#%%
+
+STEERING_METHOD = "caa-single-layer"
+print(USE_CACHE)
+#%%
+
 if not USE_CACHE:
     print(f"\n🎯 Computing {STEERING_METHOD} steering vectors...")
     
@@ -732,8 +738,7 @@ steering_results = {}
 print("STEERING METHOD: ", STEERING_METHOD)
 
 # for alpha in alpha_range:
-new_alpha_range = [0]
-for alpha in new_alpha_range:
+for alpha in alpha_range:
     if alpha == 0.1:
         print("Skipping alpha = 0.1")
         continue
@@ -746,7 +751,7 @@ for alpha in new_alpha_range:
     
     steering_results[alpha] = {"yes_to_no": [], "no_to_yes": []}
     
-    max_gen = 1
+    max_gen = 2
     # Steer "yes" answers to "no"
     if yes_test_data:
         print(f"  🔄 Steering {len(yes_test_data)} 'yes' examples to 'no' (alpha={alpha_yes_to_no})")
@@ -926,7 +931,7 @@ print("Alpha | Yes→No Success | No→Yes Success | Overall Success")
 print("-" * 55)
 
 # for alpha in alpha_range:
-for alpha in new_alpha_range:
+for alpha in alpha_range:
     yes_to_no_results = steering_results[alpha]["yes_to_no"]
     no_to_yes_results = steering_results[alpha]["no_to_yes"]
     

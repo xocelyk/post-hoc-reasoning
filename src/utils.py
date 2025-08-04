@@ -18,148 +18,76 @@ load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 # Only check for API key when actually using OpenAI functions
 
+import torch
+from functools import partial
+from transformer_lens import utils
+from transformer_lens.hook_points import HookPoint
 
-def steer_residual_stream(
-    residual_component: torch.FloatTensor,
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Steering hook: fires only when generate is in single-token mode (seq_len == 1)
+# ─────────────────────────────────────────────────────────────────────────────
+def _steer_generated_token(
+    resid: torch.Tensor,            # [B, 1, d_model] during generation
     hook: HookPoint,
-    steering_vectors: torch.Tensor,
-    alpha: int = 5,
-    instruction_pos: int = 0,
-) -> torch.FloatTensor:
-    """
-    Steer the residual stream by adding a scaled steering vector only to positions after instruction_pos.
-
-    Args:
-        residual_component: The current residual activation (batch_size, seq_len, d_model).
-        hook: The HookPoint.
-        steering_vectors: Pre-computed steering vectors for each layer.
-        alpha: Scaling factor for the steering vector.
-        instruction_pos: Token position after which to apply the steering.
-
-    Returns:
-        Modified residual component after steering.
-    """
-    steering_vector = steering_vectors[hook.layer()]  # Shape: (d_model,)
-    add_act = torch.tensor(alpha * steering_vector).to(residual_component.device)
-
-    # Apply steering only to positions after the instruction
-    batch_size, seq_len, _ = residual_component.shape
-    if seq_len > instruction_pos:
-        residual_component[:, instruction_pos:, :] += add_act
-
-    add_act.detach_()
-    return residual_component
+    *,
+    steering_vectors: torch.Tensor, # [n_layers, d_model]
+    alpha: float,
+) -> torch.Tensor:
+    if resid.size(1) == 1:          # skip the prompt pass (seq_len > 1)
+        resid += alpha * steering_vectors[hook.layer()][None, None, :]
+    return resid
 
 
-def generate_with_hooks(
+# ─────────────────────────────────────────────────────────────────────────────
+# Main convenience wrapper
+# ─────────────────────────────────────────────────────────────────────────────
+@torch.inference_mode()
+def generate_with_steering(
     model,
-    tokens: torch.Tensor,
-    steering_vectors: torch.Tensor,
+    prompt_tokens: torch.LongTensor,      # [B, prompt_len]
+    steering_vectors,                     # NumPy or torch, [n_layers, d_model]
     max_new_tokens: int = 100,
     temperature: float = 0.7,
-    verbose: bool = True,
     alpha: float = 5.0,
-    layers: Optional[List[int]] = None,
-) -> str:
-    """
-    Generate text while steering the residual stream (through hooks).
-
-    The steering function (steer_residual_stream) only applies additions to residual
-    positions strictly beyond the initial `instruction_pos`.
-    """
-
-
-    # --------------------------------------------------------------------------
-    # 1) Figure out which layers we want to steer
-    # --------------------------------------------------------------------------
-    # If no layers are specified, we steer all layers
-    if layers is None:
-        layers = range(model.cfg.n_layers)
-
-    # The "instruction_pos" is the boundary token index beyond which
-    # we apply the steering
-    instruction_pos = tokens.size(1)
-
-    # --------------------------------------------------------------------------
-    # 2) Build our hook function that adds the "steering_vectors" in the
-    #    residual stream after `instruction_pos`.
-    # --------------------------------------------------------------------------
-    partial_steer_func = partial(
-        steer_residual_stream,
-        steering_vectors=steering_vectors,
-        alpha=alpha,
-        instruction_pos=instruction_pos,
+    layers=None,
+):
+    # 1. Normalise steering_vectors to correct dtype / device
+    steering_vectors = torch.as_tensor(
+        steering_vectors,
+        dtype=model.W_E.dtype,
+        device=model.W_E.device,
     )
 
-    # Each layer's "resid_post" will register the same partial function
-    # (or different ones, if needed).
-    hooks = [
-        (utils.get_act_name("resid_post", layer), partial_steer_func)
-        for layer in layers
-    ]
+    # 2. Decide which layers to steer
+    if layers is None:
+        layers = list(range(model.cfg.n_layers))
+
+    steer_hook = partial(_steer_generated_token,
+                         steering_vectors=steering_vectors,
+                         alpha=alpha)
+
+    # 3. Register hooks once, generate, then clear hooks
+    for l in layers:
+        name = utils.get_act_name("resid_post", l)
+        model.add_hook(name, steer_hook, dir="fwd")   # returns None on PyPI build
+
+    # run generate (steering active)
+    full_tokens = model.generate(
+        prompt_tokens,
+        max_new_tokens=max_new_tokens,
+        temperature=temperature,
+        do_sample=True,
+        prepend_bos=False,
+    )
+
+    model.reset_hooks()            # ← one call clears every registered hook
+
+    # Return only the freshly generated part
+    gen_only = full_tokens[:, prompt_tokens.size(1):]
+    return model.to_string(gen_only)
 
 
-    generated_tokens = []
-
-    # --------------------------------------------------------------------------
-    # 3) Generate new tokens, one step at a time
-    # --------------------------------------------------------------------------
-    with memory_cleanup_context(
-        initial_cleanup=True,
-        final_cleanup=True,
-        monitor=verbose
-    ):
-        for step in range(max_new_tokens):
-            # Run forward on the full sequence to apply steering correctly
-            with torch.no_grad():
-                logits_step = model.run_with_hooks(
-                    tokens,
-                    fwd_hooks=hooks,
-                    return_type="logits",
-                )
-            model.reset_hooks()
-
-            # logits_step shape: [batch, seq_len, vocab_size]
-            next_logits = logits_step[:, -1, :]
-            # Apply temperature
-            next_logits = next_logits / temperature
-            probs = torch.nn.functional.softmax(next_logits, dim=-1)
-
-            # Sample next token. (Assuming batch_size = 1 for simplicity)
-            next_token_id = torch.multinomial(probs, num_samples=1).item()
-            generated_tokens.append(next_token_id)
-
-            # Append new token to the existing tokens
-            next_token_tensor = torch.tensor([[next_token_id]], device=tokens.device)
-            tokens = torch.cat([tokens, next_token_tensor], dim=1)
-
-            # Clean up intermediate tensors
-            del logits_step, next_logits, probs, next_token_tensor
-            
-            # Memory cleanup after every step
-            smart_empty_cache(threshold_gb=0.5)
-            gc.collect()
-
-            # Stop if eos token is generated
-            # TODO: Other stop conditions? Depends on dataset?
-            if next_token_id == model.tokenizer.eos_token_id:
-                break
-
-            if verbose:
-                print(
-                    model.tokenizer.decode([next_token_id], skip_special_tokens=False),
-                    end="",
-                )
-
-    # --------------------------------------------------------------------------
-    # 4) Decode the newly added tokens into text
-    # --------------------------------------------------------------------------
-    generated_text = model.tokenizer.decode(generated_tokens, skip_special_tokens=False)
-
-    if verbose:
-        print()
-
-    return generated_text
 
 
 def evaluate_confabulation(original_prompt, generation):
