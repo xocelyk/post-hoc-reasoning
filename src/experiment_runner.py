@@ -77,24 +77,9 @@ class EnhancedExperimentRunner:
         # Track experiment status
         self.experiments_status = {}
 
-        # Initialize W&B logger
+        # W&B logger will be initialized per experiment
         self.wandb_logger = None
-        if WANDB_AVAILABLE and not os.environ.get("WANDB_DISABLED", "false").lower() == "true":
-            try:
-                self.wandb_logger = WandbExperimentLogger(
-                    experiment_config={
-                        "models": [m.name for m in run_config.models],
-                        "datasets": [d.name for d in run_config.datasets],
-                        "steering_method": getattr(run_config.steering, 'method', 'caa-single-layer'),
-                        "alpha_range": run_config.steering.alpha_range,
-                        "cache_dir": run_config.cache_dir,
-                        "backend": "transformer_lens"
-                    }
-                )
-                self.logger.info("W&B logging initialized")
-            except Exception as e:
-                self.logger.warning(f"Failed to initialize W&B: {e}")
-                self.wandb_logger = None
+        self.wandb_available = WANDB_AVAILABLE and not os.environ.get("WANDB_DISABLED", "false").lower() == "true"
 
     def setup_logging(self):
         """Setup logging configuration."""
@@ -720,7 +705,7 @@ class EnhancedExperimentRunner:
                     if self.wandb_logger:
                         self.wandb_logger.log_steering_summary(
                             alpha=abs(alpha_yes),
-                            direction="yes",
+                            direction="yes_to_no",
                             total_examples=total,
                             success_count=success_count,
                             failure_count=failure_count,
@@ -731,7 +716,7 @@ class EnhancedExperimentRunner:
                         self.wandb_logger.log_steering_results_table(
                             results=results_yes[:20],
                             alpha=alpha_yes,
-                            direction="yes"
+                            direction="yes_to_no"
                         )
                 else:
                     success_rate = 0
@@ -778,7 +763,7 @@ class EnhancedExperimentRunner:
                     if self.wandb_logger:
                         self.wandb_logger.log_steering_summary(
                             alpha=alpha_no,
-                            direction="no",
+                            direction="no_to_yes",
                             total_examples=total,
                             success_count=success_count,
                             failure_count=failure_count,
@@ -789,7 +774,7 @@ class EnhancedExperimentRunner:
                         self.wandb_logger.log_steering_results_table(
                             results=results_no[:20],
                             alpha=alpha_no,
-                            direction="no"
+                            direction="no_to_yes"
                         )
                 else:
                     success_rate = 0
@@ -1031,6 +1016,29 @@ class EnhancedExperimentRunner:
         cache = self.exp_manager.add_experiment(config)
         exp_key = f"{config.model_name}_{config.dataset_name}"
 
+        # Initialize W&B for this specific experiment
+        if self.wandb_available:
+            try:
+                steering_method = getattr(self.run_config.steering, 'method', 'caa-single-layer')
+                self.wandb_logger = WandbExperimentLogger(
+                    experiment_config={
+                        "model_name": config.model_name,
+                        "dataset_name": config.dataset_name,
+                        "steering_method": steering_method,
+                        "train_size": config.train_size,
+                        "test_size": config.test_size,
+                        "split_seed": config.split_seed,
+                        "temperature": config.temperature,
+                        "max_new_tokens": config.max_new_tokens,
+                        "alpha_range": config.alpha_range,
+                        "runner": "transformer_lens"
+                    }
+                )
+                self.logger.info(f"W&B logging initialized for {exp_key}")
+            except Exception as e:
+                self.logger.warning(f"Failed to initialize W&B for {exp_key}: {e}")
+                self.wandb_logger = None
+
         try:
             # Load model
             self.logger.info(f"Loading model: {config.model_name}")
@@ -1062,6 +1070,11 @@ class EnhancedExperimentRunner:
             return {"success": False, "error": str(e)}
 
         finally:
+            # Finish W&B run for this experiment
+            if self.wandb_logger:
+                self.wandb_logger.finish()
+                self.wandb_logger = None
+                
             # Clean up GPU memory
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
@@ -1091,10 +1104,6 @@ class EnhancedExperimentRunner:
         
         # Print comprehensive final summary
         self.print_final_summary()
-        
-        # Finish W&B run
-        if self.wandb_logger:
-            self.wandb_logger.finish()
 
     def print_final_summary(self):
         """Print comprehensive summary statistics for all experiments."""

@@ -47,12 +47,26 @@ class WandbExperimentLogger:
                 # Generate run name from config
                 run_name = self._generate_run_name(experiment_config)
                 
+                # Generate tags as per guide
+                tags = []
+                if "model_name" in experiment_config:
+                    tags.append(experiment_config["model_name"].split("/")[-1])
+                if "dataset_name" in experiment_config:
+                    tags.append(experiment_config["dataset_name"])
+                if "steering_method" in experiment_config:
+                    tags.append(experiment_config["steering_method"])
+                if "split_seed" in experiment_config:
+                    tags.append(f"split_{experiment_config['split_seed']}")
+                if "runner" in experiment_config:
+                    tags.append(experiment_config["runner"])
+                
                 # Initialize W&B run
                 self.run = wandb.init(
                     project=project,
                     entity=entity,
                     config=experiment_config,
                     name=run_name,
+                    tags=tags,
                     reinit=True,
                     settings=wandb.Settings(start_method="thread")
                 )
@@ -81,6 +95,10 @@ class WandbExperimentLogger:
             parts.append(config["dataset_name"])
         if "steering_method" in config:
             parts.append(config["steering_method"])
+            
+        # Add timestamp as per guide
+        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        parts.append(timestamp)
             
         if parts:
             return "-".join(parts)

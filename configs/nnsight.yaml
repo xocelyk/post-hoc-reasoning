@@ -29,7 +29,7 @@ models:
   batch_size: 1
   device: auto
   dtype: bfloat16
-  name: deepseek-ai_DeepSeek-R1-Distill-Llama-8B/
+  name: deepseek-ai/DeepSeek-R1-Distill-Llama-8B
 save_generations: true
 steering:
   alpha_range:
@@ -46,5 +46,5 @@ steering:
   - 20
   max_new_tokens: 200
   temperature: 0.7
-  steering_method: caa-single-layer
+  method: caa-single-layer
 use_cache: true
