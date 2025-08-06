@@ -94,6 +94,11 @@ class UnifiedExperimentRunner:
         max_new_tokens: int = 100
     ) -> List[str]:
         """Generate responses for a batch of prompts."""
+        # Override max_new_tokens for DeepSeek models
+        if hasattr(model, 'model_name') and model.model_name.lower().startswith('deepseek'):
+            max_new_tokens = 2000
+            self.logger.info(f"Using DeepSeek model, overriding max_new_tokens to {max_new_tokens}")
+        
         self.logger.info(f"Generating for {len(prompts)} prompts")
         
         generations = []
@@ -150,7 +155,7 @@ class UnifiedExperimentRunner:
         if cache.has_dataset():
             dataset = cache.load_pickle(cache.get_dataset_path())
         else:
-            datasets = load_all_datasets()
+            datasets = load_all_datasets(model_name=config.model_name)
             dataset = datasets[config.dataset_name]
             cache.save_pickle(dataset, cache.get_dataset_path())
 
@@ -540,6 +545,12 @@ class UnifiedExperimentRunner:
         config: ExperimentConfig,
     ) -> List[Dict]:
         """Generate steered examples using KV-cached generation for optimal performance."""
+        # Override max_new_tokens for DeepSeek models
+        max_new_tokens = config.max_new_tokens
+        if hasattr(model, 'model_name') and model.model_name.lower().startswith('deepseek'):
+            max_new_tokens = 2000
+            self.logger.info(f"Using DeepSeek model for steering, overriding max_new_tokens to {max_new_tokens}")
+        
         # Prepare prompts for batch processing
         # Check if prompts are already formatted strings or need formatting
         if test_data and isinstance(test_data[0]["prompt"], str):
@@ -564,7 +575,7 @@ class UnifiedExperimentRunner:
                 prompts=prompt_strings,
                 probe_result=probe_result,
                 alpha=alpha,
-                max_new_tokens=config.max_new_tokens,
+                max_new_tokens=max_new_tokens,
                 temperature=config.temperature
             )
         

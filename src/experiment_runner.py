@@ -145,6 +145,10 @@ class EnhancedExperimentRunner:
         self, prompts: List[str], model: ChatModel, temperature=0.7, max_new_tokens=100
     ):
         """Get generations for a batch of prompts with memory optimization."""
+        # Override max_new_tokens for DeepSeek models (though they typically use nnsight)
+        if hasattr(model, 'model_name') and model.model_name.lower().startswith('deepseek'):
+            max_new_tokens = 2000
+            self.logger.info(f"Using DeepSeek model, overriding max_new_tokens to {max_new_tokens}")
         
         with torch.no_grad():  # Ensure no gradients are computed
             tokens = model.to_tokens(prompts, prepend_bos=True)
@@ -225,7 +229,7 @@ class EnhancedExperimentRunner:
         if self.run_config.use_cache and cache.has_dataset():
             dataset = cache.load_pickle(cache.get_dataset_path())
         else:
-            datasets = load_all_datasets()
+            datasets = load_all_datasets(model_name=config.model_name)
             dataset = datasets[config.dataset_name]
             if self.run_config.use_cache:
                 cache.save_pickle(dataset, cache.get_dataset_path())
@@ -802,6 +806,12 @@ class EnhancedExperimentRunner:
         config: ExperimentConfig,
     ):
         """Generate steered examples with memory optimization."""
+        # Override max_new_tokens for DeepSeek models (though they typically use nnsight)
+        max_new_tokens = config.max_new_tokens
+        if hasattr(model, 'model_name') and model.model_name.lower().startswith('deepseek'):
+            max_new_tokens = 2000
+            self.logger.info(f"Using DeepSeek model for steering, overriding max_new_tokens to {max_new_tokens}")
+        
         steered_results = []
         
         # Load steering method metadata to check method type
@@ -861,7 +871,7 @@ class EnhancedExperimentRunner:
                         model,
                         example_tokens,
                         temperature=config.temperature,
-                        max_new_tokens=config.max_new_tokens,
+                        max_new_tokens=max_new_tokens,
                         alpha=alpha,
                         steering_vectors=steering_vectors,
                         layers=layers_to_steer,

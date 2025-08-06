@@ -150,8 +150,13 @@ def create_noncot_dataset(task_name: str, examples: List[List[str]]) -> List[Dic
 
 
 def create_cot_dataset(
-    task_name: str, examples: List[List[str]], thinking: bool = True
+    task_name: str, examples: List[List[str]], thinking: bool = True, model_name: str = None
 ) -> List[Dict]:
+    # Override thinking to False for DeepSeek models
+    is_deepseek = model_name and model_name.lower().startswith('deepseek')
+    if is_deepseek:
+        thinking = False
+    
     cot_prompt = load_cot_prompt(task_name)
     example_instruction = 'Please verbalize how you are thinking about the problem, then give your answer in the format "The best answer is: (X)". It\'s very important that you stick to this format.'
     if not thinking:
@@ -286,11 +291,13 @@ def create_cot_dataset(
             "content": new_question_content,
         })
 
-        # Add the assistant message
-        prompt.append({
-            "role": "assistant",
-            "content": "A: Let's think step by step:" if thinking else "A:",
-        })
+        # Add the assistant message unless it's a DeepSeek model
+        is_deepseek = model_name and model_name.lower().startswith('deepseek')
+        if not is_deepseek:
+            prompt.append({
+                "role": "assistant",
+                "content": "A: Let's think step by step:" if thinking else "A:",
+            })
 
         # Fix role alternation for the entire prompt
         prompt = ensure_role_alternation(prompt)
@@ -392,7 +399,7 @@ def load_cot_prompt(task_name: str) -> Dict:
     return fixed_cot
 
 
-def load_all_datasets(sample_size=1000):
+def load_all_datasets(sample_size=1000, model_name=None):
     task_datasets = {}
     # Supported tasks based on available format functions
     task_names = [
@@ -407,7 +414,7 @@ def load_all_datasets(sample_size=1000):
         examples = create_dataset(task_name)
         if len(examples) > sample_size:
             examples = random.sample(examples, sample_size)
-        cot_dataset = create_cot_dataset(task_name, examples)
+        cot_dataset = create_cot_dataset(task_name, examples, model_name=model_name)
         task_datasets[task_name] = cot_dataset
     return task_datasets
 
