@@ -25,6 +25,7 @@ from config import ExperimentRunConfig, create_experiment_configs
 from data_loading import load_all_datasets
 from parsing_utils import parse_response, filter_think_tags
 from visualizer import create_visualizer
+from wandb_integration import WandbExperimentLogger
 
 # Import from nnsight_utils
 from . import (
@@ -59,6 +60,9 @@ class UnifiedExperimentRunner:
 
         # Track experiment status
         self.experiments_status = {}
+        
+        # W&B logger will be created per experiment
+        self.wandb_logger = None
 
     def setup_logging(self):
         """Setup logging configuration."""
@@ -377,6 +381,27 @@ class UnifiedExperimentRunner:
             self.visualizer.update_auc_scores(
                 config.model_name, config.dataset_name, scores_list
             )
+            
+        # Log to W&B
+        if self.wandb_logger:
+            # Log probe training results for each layer
+            for layer, score in probe_result.scores.items():
+                self.wandb_logger.log_probe_training(
+                    layer=int(layer),
+                    train_auc=score,  # Using score as train AUC
+                    test_auc=score,   # For now, using same score
+                    method=method
+                )
+            
+            # Log best layer selection
+            if probe_result.best_layer is not None:
+                all_scores = [probe_result.scores.get(i, 0) for i in range(model.cfg.n_layers)]
+                self.wandb_logger.log_best_layer_selection(
+                    best_layer=probe_result.best_layer,
+                    best_score=probe_result.scores[probe_result.best_layer],
+                    method=method,
+                    all_scores=all_scores
+                )
 
         return True
 
@@ -451,6 +476,17 @@ class UnifiedExperimentRunner:
                         f"Alpha {alpha_yes:+.1f} (yes→no): {success_rate:.2f} success, "
                         f"{failure_rate:.2f} failure, {unparsed_rate:.2f} unparsed"
                     )
+                    
+                    # Log to W&B
+                    if self.wandb_logger:
+                        self.wandb_logger.log_steering_summary(
+                            alpha=alpha_yes,
+                            direction="yes_to_no",
+                            total_examples=total,
+                            success_count=success_count,
+                            failure_count=failure_count,
+                            unparsed_count=unparsed_count
+                        )
                 else:
                     self.logger.info(f"Alpha {alpha_yes:+.1f} (yes→no): No results")
 
@@ -479,6 +515,17 @@ class UnifiedExperimentRunner:
                         f"Alpha {alpha_no:+.1f} (no→yes): {success_rate:.2f} success, "
                         f"{failure_rate:.2f} failure, {unparsed_rate:.2f} unparsed"
                     )
+                    
+                    # Log to W&B
+                    if self.wandb_logger:
+                        self.wandb_logger.log_steering_summary(
+                            alpha=alpha_no,
+                            direction="no_to_yes",
+                            total_examples=total,
+                            success_count=success_count,
+                            failure_count=failure_count,
+                            unparsed_count=unparsed_count
+                        )
                 else:
                     self.logger.info(f"Alpha {alpha_no:+.1f} (no→yes): No results")
 
@@ -569,6 +616,21 @@ class UnifiedExperimentRunner:
                 "is_valid_parse": is_valid_parse,
                 "response": steered_response
             })
+            
+            # Log to W&B
+            if self.wandb_logger:
+                direction = "yes_to_no" if alpha < 0 else "no_to_yes"
+                self.wandb_logger.log_steering_example(
+                    alpha=abs(alpha),
+                    direction=direction,
+                    prompt=example.get("prompt", ""),
+                    original_answer=example["pred_answer"],
+                    steered_response=steered_response,
+                    steered_answer=pred_answer,
+                    target_answer=target_answer,
+                    category=category,
+                    example_idx=i
+                )
 
         return steered_results
 
@@ -578,31 +640,64 @@ class UnifiedExperimentRunner:
         """Run a single experiment with the given configuration."""
         cache = self.exp_manager.add_experiment(config)
         
-        self.logger.info(f"Starting experiment: {config.model_name} on {config.dataset_name}")
-        
-        # Phase 1: Generate and cache data
-        if not self.generate_and_cache_data(model, config, cache):
-            self.logger.error("Failed to generate and cache data")
-            return {"success": False, "error": "Data generation failed"}
-        
-        # Phase 2: Train and cache probes
-        if not self.train_and_cache_probes(model, config, cache):
-            self.logger.error("Failed to train and cache probes")
-            return {"success": False, "error": "Probe training failed"}
-        
-        # Phase 3: Run steering experiments
-        if not self.run_steering_experiments(model, config, cache):
-            self.logger.error("Failed to run steering experiments")
-            return {"success": False, "error": "Steering experiments failed"}
-        
-        self.logger.info(f"Completed experiment: {config.model_name} on {config.dataset_name}")
-        
-        return {
-            "success": True,
+        # Initialize W&B for this experiment
+        steering_method = getattr(self.run_config.steering, 'method', 'caa-single-layer')
+        wandb_config = {
             "model_name": config.model_name,
             "dataset_name": config.dataset_name,
-            "cache_dir": cache.cache_dir
+            "steering_method": steering_method,
+            "train_size": config.train_size,
+            "test_size": config.test_size,
+            "split_seed": config.split_seed,
+            "temperature": config.temperature,
+            "max_new_tokens": config.max_new_tokens,
+            "alpha_range": config.alpha_range,
+            "runner": "nnsight"
         }
+        self.wandb_logger = WandbExperimentLogger(experiment_config=wandb_config)
+        
+        self.logger.info(f"Starting experiment: {config.model_name} on {config.dataset_name}")
+        
+        try:
+            # Phase 1: Generate and cache data
+            if not self.generate_and_cache_data(model, config, cache):
+                self.logger.error("Failed to generate and cache data")
+                return {"success": False, "error": "Data generation failed"}
+            
+            # Phase 2: Train and cache probes
+            if not self.train_and_cache_probes(model, config, cache):
+                self.logger.error("Failed to train and cache probes")
+                return {"success": False, "error": "Probe training failed"}
+            
+            # Phase 3: Run steering experiments
+            if not self.run_steering_experiments(model, config, cache):
+                self.logger.error("Failed to run steering experiments")
+                return {"success": False, "error": "Steering experiments failed"}
+            
+            self.logger.info(f"Completed experiment: {config.model_name} on {config.dataset_name}")
+            
+            # Log experiment summary to W&B
+            if self.wandb_logger:
+                self.wandb_logger.log_experiment_summary({
+                    "experiment_completed": True,
+                    "model_name": config.model_name,
+                    "dataset_name": config.dataset_name,
+                    "steering_method": steering_method,
+                    "cache_dir": cache.cache_dir
+                })
+            
+            return {
+                "success": True,
+                "model_name": config.model_name,
+                "dataset_name": config.dataset_name,
+                "cache_dir": cache.cache_dir
+            }
+            
+        finally:
+            # Finish W&B run
+            if self.wandb_logger:
+                self.wandb_logger.finish()
+                self.wandb_logger = None
 
     def run_all_experiments(self) -> Dict[str, Any]:
         """Run all configured experiments."""

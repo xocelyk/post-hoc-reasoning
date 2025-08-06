@@ -24,6 +24,13 @@ from utils import generate_with_steering
 from visualizer import create_visualizer
 from steering_methods import create_steering_method, format_steering_results
 
+# W&B integration
+try:
+    from wandb_integration import WandbExperimentLogger
+    WANDB_AVAILABLE = True
+except ImportError:
+    WANDB_AVAILABLE = False
+
 
 class PromptDataset(Dataset):
     """Dataset wrapper for prompts."""
@@ -69,6 +76,25 @@ class EnhancedExperimentRunner:
 
         # Track experiment status
         self.experiments_status = {}
+
+        # Initialize W&B logger
+        self.wandb_logger = None
+        if WANDB_AVAILABLE and not os.environ.get("WANDB_DISABLED", "false").lower() == "true":
+            try:
+                self.wandb_logger = WandbExperimentLogger(
+                    experiment_config={
+                        "models": [m.name for m in run_config.models],
+                        "datasets": [d.name for d in run_config.datasets],
+                        "steering_method": getattr(run_config.steering, 'method', 'caa-single-layer'),
+                        "alpha_range": run_config.steering.alpha_range,
+                        "cache_dir": run_config.cache_dir,
+                        "backend": "transformer_lens"
+                    }
+                )
+                self.logger.info("W&B logging initialized")
+            except Exception as e:
+                self.logger.warning(f"Failed to initialize W&B: {e}")
+                self.wandb_logger = None
 
     def setup_logging(self):
         """Setup logging configuration."""
@@ -377,7 +403,7 @@ class EnhancedExperimentRunner:
 
         layers = list(range(model.cfg.n_layers))
         all_contrastive_vectors = []
-        similarity_scores = []
+        auc_scores = []
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
@@ -409,13 +435,13 @@ class EnhancedExperimentRunner:
                         test_layer_activations.append(activation)
                         test_labels.append(result["pred_answer"])
 
-                # Compute similarity score as evaluation metric
-                similarity_score = self.evaluate_contrastive_vector(
+                # Compute AUC score as evaluation metric
+                auc_score = self.evaluate_contrastive_vector(
                     contrastive_vector, test_layer_activations, test_labels
                 )
-                similarity_scores.append(similarity_score)
+                auc_scores.append(auc_score)
 
-                self.logger.info(f"Layer {layer} Similarity Score: {similarity_score:.4f}")
+                self.logger.info(f"Layer {layer} AUC Score: {auc_score:.4f}")
 
         # Create and apply steering method
         try:
@@ -450,14 +476,14 @@ class EnhancedExperimentRunner:
             else:
                 steering_method = create_steering_method(
                     steering_method_name, 
-                    similarity_scores=similarity_scores
+                    similarity_scores=auc_scores
                 )
                 final_steering_vectors = steering_method.compute_steering_vectors(all_contrastive_vectors)
             
             # Log method-specific information
             if steering_method_name == "caa-single-layer":
-                best_score = max(similarity_scores)
-                best_layers = [i for i, score in enumerate(similarity_scores) if score == best_score]
+                best_score = max(auc_scores)
+                best_layers = [i for i, score in enumerate(auc_scores) if score == best_score]
                 best_layer = layers[max(best_layers)]
                 
                 self.logger.info(
@@ -480,14 +506,14 @@ class EnhancedExperimentRunner:
         except Exception as e:
             self.logger.error(f"Error creating steering method '{steering_method_name}': {e}")
             # Fallback to single-layer method
-            steering_method = create_steering_method("caa-single-layer", similarity_scores=similarity_scores)
+            steering_method = create_steering_method("caa-single-layer", similarity_scores=auc_scores)
             final_steering_vectors = steering_method.compute_steering_vectors(all_contrastive_vectors)
         
         # Save results for downstream use
         # Special handling for single-layer method
         if steering_method_name == "caa-single-layer":
             # Find best layer
-            best_layer_idx = np.argmax(similarity_scores)
+            best_layer_idx = np.argmax(auc_scores)
             best_layer = layers[best_layer_idx]
             
             # Only save the best layer's vector as a dict
@@ -501,22 +527,43 @@ class EnhancedExperimentRunner:
             # For other methods, save all vectors
             cache.save_pickle(final_steering_vectors, cache.get_probe_coefficients_path())
         
-        cache.save_json(similarity_scores, cache.get_auc_scores_path())
+        cache.save_json(auc_scores, cache.get_auc_scores_path())
         
         # Save steering method metadata
         steering_metadata = format_steering_results(final_steering_vectors, steering_method_name)
         steering_metadata.update({
             "method": steering_method_name,
-            "all_layer_scores": [float(score) for score in similarity_scores],
-            "best_score": float(max(similarity_scores)),
-            "best_layer": int(layers[np.argmax(similarity_scores)])
+            "all_layer_scores": [float(score) for score in auc_scores],
+            "best_score": float(max(auc_scores)),
+            "best_layer": int(layers[np.argmax(auc_scores)])
         })
         cache.save_json(steering_metadata, os.path.join(cache.cache_dir, "steering_metadata.json"))
+
+        # Log to W&B
+        if self.wandb_logger:
+            # Log probe results for each layer
+            for i, (layer, score) in enumerate(zip(layers, auc_scores)):
+                self.wandb_logger.log_probe_training(
+                    layer=layer,
+                    train_auc=score,  # Using similarity score as proxy
+                    test_auc=score,
+                    similarity_score=score,
+                    method=steering_method_name
+                )
+            
+            # Log best layer selection
+            best_idx = np.argmax(auc_scores)
+            self.wandb_logger.log_best_layer_selection(
+                best_layer=layers[best_idx],
+                best_score=auc_scores[best_idx],
+                method=steering_method_name,
+                all_scores=auc_scores
+            )
 
         # Update visualizer
         if hasattr(self.visualizer, "update_auc_scores"):
             self.visualizer.update_auc_scores(
-                config.model_name, config.dataset_name, similarity_scores
+                config.model_name, config.dataset_name, auc_scores
             )
 
         return True
@@ -561,7 +608,7 @@ class EnhancedExperimentRunner:
         return difference_vector
 
     def evaluate_contrastive_vector(self, contrastive_vector, activations, labels):
-        """Evaluate contrastive vector using similarity scores.
+        """Evaluate contrastive vector using AUC-ROC score.
         
         Args:
             contrastive_vector: The computed contrastive vector
@@ -569,10 +616,12 @@ class EnhancedExperimentRunner:
             labels: Test labels ("yes" or "no")
             
         Returns:
-            float: Similarity score (higher is better)
+            float: AUC-ROC score (higher is better, 0.5 is random)
         """
+        from sklearn.metrics import roc_auc_score
+        
         if len(activations) == 0:
-            return 0.0
+            return 0.5  # Return random baseline for empty data
             
         activations_array = np.array(activations)
         labels_array = np.array(labels)
@@ -583,16 +632,18 @@ class EnhancedExperimentRunner:
         # Convert labels to binary (1 for "yes", 0 for "no")
         binary_labels = (labels_array == "yes").astype(int)
         
-        # Compute correlation between similarities and labels
-        # Higher correlation means the contrastive vector better separates the classes
+        # Check if we have both classes
         if len(set(binary_labels)) < 2:
-            # If all labels are the same, return 0
-            return 0.0
+            # If all labels are the same, return random baseline
+            return 0.5
             
-        correlation = np.corrcoef(similarities, binary_labels)[0, 1]
-        
-        # Return absolute correlation (we care about separation, not direction)
-        return abs(correlation) if not np.isnan(correlation) else 0.0
+        try:
+            # Compute AUC-ROC score
+            auc_score = roc_auc_score(binary_labels, similarities)
+            return auc_score
+        except ValueError:
+            # Handle edge cases
+            return 0.5
 
     def run_steering_experiments(
         self, model: ChatModel, config: ExperimentConfig, cache: ExperimentCache
@@ -664,6 +715,24 @@ class EnhancedExperimentRunner:
                         f"Alpha {alpha_yes:+.1f} (yes): {success_rate:.2f} success, "
                         f"{failure_rate:.2f} failure, {unparsed_rate:.2f} unparsed"
                     )
+                    
+                    # Log summary to W&B
+                    if self.wandb_logger:
+                        self.wandb_logger.log_steering_summary(
+                            alpha=abs(alpha_yes),
+                            direction="yes",
+                            total_examples=total,
+                            success_count=success_count,
+                            failure_count=failure_count,
+                            unparsed_count=unparsed_count
+                        )
+                        
+                        # Log results table
+                        self.wandb_logger.log_steering_results_table(
+                            results=results_yes[:20],
+                            alpha=alpha_yes,
+                            direction="yes"
+                        )
                 else:
                     success_rate = 0
                     self.logger.info(f"Alpha {alpha_yes:+.1f} (yes): No results")
@@ -704,6 +773,24 @@ class EnhancedExperimentRunner:
                         f"Alpha {alpha_no:+.1f} (no): {success_rate:.2f} success, "
                         f"{failure_rate:.2f} failure, {unparsed_rate:.2f} unparsed"
                     )
+                    
+                    # Log summary to W&B
+                    if self.wandb_logger:
+                        self.wandb_logger.log_steering_summary(
+                            alpha=alpha_no,
+                            direction="no",
+                            total_examples=total,
+                            success_count=success_count,
+                            failure_count=failure_count,
+                            unparsed_count=unparsed_count
+                        )
+                        
+                        # Log results table
+                        self.wandb_logger.log_steering_results_table(
+                            results=results_no[:20],
+                            alpha=alpha_no,
+                            direction="no"
+                        )
                 else:
                     success_rate = 0
                     self.logger.info(f"Alpha {alpha_no:+.1f} (no): No results")
@@ -819,21 +906,37 @@ class EnhancedExperimentRunner:
                     category = "failure"
                     success = False
 
-                steered_results.append(
-                    {
-                        "original_prompt": example_prompt,
-                        "steered_generation": generation,
-                        "original_answer": orig,
-                        "new_answer": new_answer,
-                        "target_answer": target_answer,
-                        "original_letter": example["pred_letter"],
-                        "new_letter": new_letter,
-                        "alpha": alpha,
-                        "success": success,
-                        "category": category,
-                        "is_valid_parse": is_valid_parse,
-                    }
-                )
+                result = {
+                    "original_prompt": example_prompt,
+                    "steered_generation": generation,
+                    "original_answer": orig,
+                    "new_answer": new_answer,
+                    "target_answer": target_answer,
+                    "original_letter": example["pred_letter"],
+                    "new_letter": new_letter,
+                    "alpha": alpha,
+                    "success": success,
+                    "category": category,
+                    "is_valid_parse": is_valid_parse,
+                }
+                steered_results.append(result)
+                
+                # Log to W&B
+                if self.wandb_logger:
+                    direction = "yes_to_no" if orig == "yes" else "no_to_yes"
+                    self.wandb_logger.log_steering_example(
+                        alpha=alpha,
+                        direction=direction,
+                        prompt=str(example_prompt) if not isinstance(example_prompt, str) else example_prompt,
+                        original_answer=orig,
+                        steered_response=generation,
+                        steered_answer=new_answer,
+                        target_answer=target_answer,
+                        category=category,
+                        example_idx=global_idx,
+                        model_name=config.model_name,
+                        dataset_name=config.dataset_name
+                    )
                 
                 # Clear variables and cache after each generation
                 del generation, new_letter, new_answer
@@ -988,6 +1091,10 @@ class EnhancedExperimentRunner:
         
         # Print comprehensive final summary
         self.print_final_summary()
+        
+        # Finish W&B run
+        if self.wandb_logger:
+            self.wandb_logger.finish()
 
     def print_final_summary(self):
         """Print comprehensive summary statistics for all experiments."""
