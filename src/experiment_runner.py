@@ -851,8 +851,15 @@ class EnhancedExperimentRunner:
                             # Load steering results to get success rates
                             results = cache.load_pickle(cache.get_steering_results_path(alpha, direction))
                             if results:
-                                success_rate = sum(1 for r in results if r.get("success", False)) / len(results)
-                                direction_summary.append(f"{direction}: {success_rate:.2%}")
+                                total = len(results)
+                                success_count = sum(1 for r in results if r.get("success", False))
+                                parsed_count = sum(1 for r in results if r.get("category") != "unparsed")
+                                
+                                if parsed_count > 0:
+                                    success_rate_parsed = success_count / parsed_count
+                                    direction_summary.append(f"{direction}: {success_rate_parsed:.0%} ({parsed_count} parsed)")
+                                else:
+                                    direction_summary.append(f"{direction}: 0% (0 parsed)")
                             else:
                                 direction_summary.append(f"{direction}: no data")
                         except:
@@ -1000,6 +1007,9 @@ class EnhancedExperimentRunner:
             steering_success_by_alpha = {}
             total_steering_experiments = 0
             successful_steering_experiments = 0
+            total_parsed = 0
+            total_unparsed = 0
+            total_failures = 0
             
             for config, exp_key in successful_experiments:
                 cache = self.exp_manager.add_experiment(config)
@@ -1007,32 +1017,76 @@ class EnhancedExperimentRunner:
                 
                 for alpha, direction in completed_steering:
                     if alpha not in steering_success_by_alpha:
-                        steering_success_by_alpha[alpha] = {'total': 0, 'successful': 0}
+                        steering_success_by_alpha[alpha] = {
+                            'total': 0, 
+                            'successful': 0, 
+                            'parsed': 0, 
+                            'unparsed': 0,
+                            'failures': 0
+                        }
                     
                     try:
                         results = cache.load_pickle(cache.get_steering_results_path(alpha, direction))
                         if results:
                             total_steering_experiments += len(results)
                             successes = sum(1 for r in results if r.get("success", False))
+                            parsed = sum(1 for r in results if r.get("category") != "unparsed")
+                            unparsed = sum(1 for r in results if r.get("category") == "unparsed")
+                            failures = sum(1 for r in results if r.get("category") == "failure")
+                            
                             successful_steering_experiments += successes
+                            total_parsed += parsed
+                            total_unparsed += unparsed
+                            total_failures += failures
                             
                             steering_success_by_alpha[alpha]['total'] += len(results)
                             steering_success_by_alpha[alpha]['successful'] += successes
+                            steering_success_by_alpha[alpha]['parsed'] += parsed
+                            steering_success_by_alpha[alpha]['unparsed'] += unparsed
+                            steering_success_by_alpha[alpha]['failures'] += failures
                     except:
                         pass
             
             if steering_success_by_alpha:
-                print(f"   📊 Steering Success Rates by Alpha:")
+                print(f"   📊 Steering Results by Alpha:")
                 for alpha in sorted(steering_success_by_alpha.keys()):
                     data = steering_success_by_alpha[alpha]
                     if data['total'] > 0:
-                        success_rate = data['successful'] / data['total']
                         alpha_display = f"{alpha:+.1f}" if alpha != 0 else "0.0"
-                        print(f"      α={alpha_display}: {success_rate:.1%} ({data['successful']}/{data['total']})")
+                        parsed_rate = data['parsed'] / data['total']
+                        unparsed_rate = data['unparsed'] / data['total']
+                        
+                        # Success rate among all attempts
+                        success_rate_all = data['successful'] / data['total']
+                        
+                        # Success rate among parsed responses only
+                        if data['parsed'] > 0:
+                            success_rate_parsed = data['successful'] / data['parsed']
+                            failure_rate_parsed = data['failures'] / data['parsed']
+                            print(f"      α={alpha_display}: {success_rate_all:.1%} success overall | "
+                                  f"Parsed: {parsed_rate:.1%} ({data['parsed']}/{data['total']}) | "
+                                  f"Among parsed: {success_rate_parsed:.1%} success, {failure_rate_parsed:.1%} failure")
+                        else:
+                            print(f"      α={alpha_display}: {success_rate_all:.1%} success overall | "
+                                  f"Parsed: {parsed_rate:.1%} ({data['parsed']}/{data['total']}) | "
+                                  f"No parsed responses")
                 
+                print(f"\n   📈 Overall Steering Statistics:")
                 if total_steering_experiments > 0:
                     overall_steering_rate = successful_steering_experiments / total_steering_experiments
-                    print(f"   🎯 Overall steering success rate: {overall_steering_rate:.1%} ({successful_steering_experiments}/{total_steering_experiments})")
+                    overall_parsed_rate = total_parsed / total_steering_experiments
+                    overall_unparsed_rate = total_unparsed / total_steering_experiments
+                    
+                    print(f"      Total steering attempts: {total_steering_experiments}")
+                    print(f"      Overall success rate: {overall_steering_rate:.1%} ({successful_steering_experiments}/{total_steering_experiments})")
+                    print(f"      Parsing rate: {overall_parsed_rate:.1%} parsed, {overall_unparsed_rate:.1%} unparsed")
+                    
+                    if total_parsed > 0:
+                        success_rate_among_parsed = successful_steering_experiments / total_parsed
+                        failure_rate_among_parsed = total_failures / total_parsed
+                        print(f"      Among parsed responses: {success_rate_among_parsed:.1%} success, {failure_rate_among_parsed:.1%} failure")
+                    else:
+                        print(f"      Among parsed responses: No parsed responses available")
         
         if failed_experiments:
             print(f"\n❌ FAILED EXPERIMENTS:")
