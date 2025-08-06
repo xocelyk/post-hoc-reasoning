@@ -39,6 +39,7 @@ class SteeringConfig:
     )
     temperature: float = 0.7
     max_new_tokens: int = 100
+    max_gen: Optional[int] = None  # Limit number of steering examples per alpha value and direction
 
 
 @dataclass

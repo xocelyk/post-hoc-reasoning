@@ -1,21 +1,21 @@
-cache_dir: results_cache
+cache_dir: cache
 datasets:
 - name: anachronisms
   split_seed: 42
-  test_size: 500
-  train_size: 500
+  test_size: 100
+  train_size: 100
 - name: sports_understanding
   split_seed: 42
-  test_size: 500
-  train_size: 500
-- name: social_chemistry
-  split_seed: 42
-  test_size: 500
-  train_size: 500
+  test_size: 100
+  train_size: 100
 - name: logical_deduction
   split_seed: 42
-  test_size: 500
-  train_size: 500
+  test_size: 100
+  train_size: 100
+# - name: social_chemistry
+#   split_seed: 42
+#   test_size: 200
+#   train_size: 200
 evaluate_confabulation: false
 interactive: false
 max_concurrent_models: 1
@@ -44,7 +44,7 @@ steering:
   - 16
   - 18
   - 20
-  max_new_tokens: 100
+  max_new_tokens: 200
   temperature: 0.7
   steering_method: caa-single-layer
 use_cache: true

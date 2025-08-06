@@ -47,7 +47,7 @@ print("✓ All modules imported successfully")
 #%% Configuration and Setup
 print("📖 Setting up configuration...")
 
-config_path = "configs/test.yaml"
+config_path = "configs/transformer_lens_test.yaml"
 if not os.path.exists(config_path):
     raise FileNotFoundError(f"Configuration file not found: {config_path}")
 
@@ -56,8 +56,8 @@ if not os.path.exists(config_path):
 STEERING_METHOD = "caa-single-layer"
 
 # Cache control - set to False to force recomputation even if cache exists
-USE_CACHED_DATASET = False  # Set to False to recompute dataset
-USE_CACHED_GENERATIONS = False  # Set to False to recompute generations
+USE_CACHED_DATASET = True  # Set to False to recompute dataset
+USE_CACHED_GENERATIONS = True  # Set to False to recompute generations
 USE_CACHED_ACTIVATIONS = False  # Set to False to recompute activations
 USE_CACHED_PROBES = False  # Set to False to recompute steering vectors  
 
@@ -215,6 +215,9 @@ if USE_CACHED_GENERATIONS and cache_status['generations']:
     print("📁 Using cached data...")
     train_results = cache.load_pickle(cache.get_train_generations_path())
     test_results = cache.load_pickle(cache.get_test_generations_path())
+    
+    train_activations = cache.load_pickle(cache.get_train_activations_path())
+    test_activations = cache.load_pickle(cache.get_test_activations_path())
 else:
     print("🔄 Generating fresh data...")
     
@@ -378,23 +381,23 @@ else:
     print("✓ Activations cached")
     
 #%%
-new_train_results = []
-for result in train_results:
-    pred_letter, pred_answer = parse_response(result["response"], thinking=True)
-    result["pred_answer"] = pred_answer
-    result["pred_letter"] = pred_letter
-    print(result["pred_answer"], result["correct_answer"])
-    new_train_results.append(result)
+# new_train_results = []
+# for result in train_results:
+#     pred_letter, pred_answer = parse_response(result["response"], thinking=True)
+#     result["pred_answer"] = pred_answer
+#     result["pred_letter"] = pred_letter
+#     print(result["pred_answer"], result["correct_answer"])
+#     new_train_results.append(result)
 
-new_test_results = []
-for result in test_results:
-    pred_letter, pred_answer = parse_response(result["response"], thinking=True)
-    result["pred_answer"] = pred_answer
-    result["pred_letter"] = pred_letter
-    new_test_results.append(result)
+# new_test_results = []
+# for result in test_results:
+#     pred_letter, pred_answer = parse_response(result["response"], thinking=True)
+#     result["pred_answer"] = pred_answer
+#     result["pred_letter"] = pred_letter
+#     new_test_results.append(result)
 
-train_results = new_train_results
-test_results = new_test_results
+# train_results = new_train_results
+# test_results = new_test_results
 
 #%%
 # Display generation results
@@ -756,6 +759,8 @@ steering_results = {}
 
 print("STEERING METHOD: ", STEERING_METHOD)
 
+alpha_range = [2, 4, 6]
+
 # for alpha in alpha_range:
 for alpha in alpha_range:
     print(f"\n🎮 Testing steering with alpha = {alpha}")
@@ -818,8 +823,6 @@ for alpha in alpha_range:
                     steering_vectors_array = np.array([probe_coefficients[layer] for layer in layers_to_steer])
                 
                 # Tokenize the prompt
-                print(f"Layers to steer: {len(layers_to_steer)} layers")
-                print(f"Steering vectors shape: {steering_vectors_array.shape}")
                 
                 tokens = model.to_tokens(prompt_string, prepend_bos=False)
                 

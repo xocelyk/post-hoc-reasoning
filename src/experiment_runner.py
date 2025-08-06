@@ -601,6 +601,23 @@ class EnhancedExperimentRunner:
             if result["pred_answer"] == "no" and result["correct_answer"] == "no"
         ]
 
+        # Apply max_gen limit if specified
+        max_gen = self.run_config.steering.max_gen
+        if max_gen is not None:
+            original_yes_count = len(yes_test_data)
+            original_no_count = len(no_test_data)
+            yes_test_data = yes_test_data[:max_gen]
+            no_test_data = no_test_data[:max_gen]
+            
+            self.logger.info(
+                f"Applied max_gen limit: Using {len(yes_test_data)}/{original_yes_count} yes examples, "
+                f"{len(no_test_data)}/{original_no_count} no examples (max_gen={max_gen})"
+            )
+        else:
+            self.logger.info(
+                f"Using all available examples: {len(yes_test_data)} yes examples, {len(no_test_data)} no examples"
+            )
+
         layers = list(range(model.cfg.n_layers))
 
         for alpha in config.alpha_range:
