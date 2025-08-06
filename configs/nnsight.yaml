@@ -12,10 +12,11 @@ datasets:
   split_seed: 42
   test_size: 100
   train_size: 100
-# - name: social_chemistry
-#   split_seed: 42
-#   test_size: 200
-#   train_size: 200
+- name: social_chemistry
+  split_seed: 42
+  test_size: 100
+  train_size: 100
+
 evaluate_confabulation: false
 interactive: false
 max_concurrent_models: 1
@@ -47,4 +48,5 @@ steering:
   max_new_tokens: 200
   temperature: 0.7
   method: caa-single-layer
+  max_gen: 10
 use_cache: true
