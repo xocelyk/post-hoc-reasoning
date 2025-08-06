@@ -189,7 +189,7 @@ class NNsightExperimentRunner:
         if cache.has_dataset():
             dataset = cache.load_pickle(cache.get_dataset_path())
         else:
-            datasets = load_all_datasets()
+            datasets = load_all_datasets(model_name=config.model_name)
             dataset = datasets[config.dataset_name]
             cache.save_pickle(dataset, cache.get_dataset_path())
 
