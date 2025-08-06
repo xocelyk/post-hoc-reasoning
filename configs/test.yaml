@@ -2,8 +2,8 @@ cache_dir: cache
 datasets:
 - name: anachronisms
   split_seed: 42
-  test_size: 100
-  train_size: 100
+  test_size: 5
+  train_size: 5
 # - name: sports_understanding
 #   split_seed: 42
 #   test_size: 100
@@ -54,21 +54,9 @@ models:
 save_generations: true
 steering:
   alpha_range:
-  - 0
-  - 0.5
-  - 1
   - 2
-  - 4
-  - 6
-  - 8
-  - 10
-  - 12
-  - 14
-  - 16
-  - 18
-  - 20
   max_new_tokens: 200
   temperature: 0.7
   method: caa-single-layer
-  max_gen: 10
+  max_gen: 2
 use_cache: true

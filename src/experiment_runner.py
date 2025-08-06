@@ -815,10 +815,8 @@ class EnhancedExperimentRunner:
         steered_results = []
         
         # Load steering method metadata to check method type
-        metadata_path = os.path.join(config.cache_dir, "experiments", 
-                                    config.model_name.replace("/", "_"),
-                                    config.dataset_name, "default",
-                                    config.experiment_id, "steering_metadata.json")
+        cache_dir = config.get_cache_dir(self.run_config.cache_dir)
+        metadata_path = os.path.join(cache_dir, "steering_metadata.json")
         
         steering_method = "unknown"
         if os.path.exists(metadata_path):
