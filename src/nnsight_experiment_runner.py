@@ -507,6 +507,13 @@ class NNsightExperimentRunner:
     ):
         """Generate steered examples using nnsight."""
         steered_results = []
+        
+        # Note: NNsight implementation currently only supports logistic regression
+        # TODO: Add support for CAA steering methods
+        self.logger.warning(
+            "NNsight implementation uses logistic regression only. "
+            "CAA single-layer steering is not yet implemented for nnsight."
+        )
 
         for i, example in enumerate(test_data):
             example_prompt = example["prompt"]

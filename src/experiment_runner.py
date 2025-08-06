@@ -484,12 +484,29 @@ class EnhancedExperimentRunner:
             final_steering_vectors = steering_method.compute_steering_vectors(all_contrastive_vectors)
         
         # Save results for downstream use
-        cache.save_pickle(final_steering_vectors, cache.get_probe_coefficients_path())
+        # Special handling for single-layer method
+        if steering_method_name == "caa-single-layer":
+            # Find best layer
+            best_layer_idx = np.argmax(similarity_scores)
+            best_layer = layers[best_layer_idx]
+            
+            # Only save the best layer's vector as a dict
+            single_layer_vectors = {best_layer: final_steering_vectors[best_layer_idx]}
+            cache.save_pickle(single_layer_vectors, cache.get_probe_coefficients_path())
+            
+            self.logger.info(
+                f"CAA Single-Layer: Saved only layer {best_layer} steering vector"
+            )
+        else:
+            # For other methods, save all vectors
+            cache.save_pickle(final_steering_vectors, cache.get_probe_coefficients_path())
+        
         cache.save_json(similarity_scores, cache.get_auc_scores_path())
         
         # Save steering method metadata
         steering_metadata = format_steering_results(final_steering_vectors, steering_method_name)
         steering_metadata.update({
+            "method": steering_method_name,
             "all_layer_scores": [float(score) for score in similarity_scores],
             "best_score": float(max(similarity_scores)),
             "best_layer": int(layers[np.argmax(similarity_scores)])
@@ -715,8 +732,41 @@ class EnhancedExperimentRunner:
         """Generate steered examples with memory optimization."""
         steered_results = []
         
-        # Convert to tensor once and reuse
-        steering_vectors = np.array(all_contrastive_vectors)
+        # Load steering method metadata to check method type
+        metadata_path = os.path.join(config.cache_dir, "experiments", 
+                                    config.model_name.replace("/", "_"),
+                                    config.dataset_name, "default",
+                                    config.experiment_id, "steering_metadata.json")
+        
+        steering_method = "unknown"
+        if os.path.exists(metadata_path):
+            with open(metadata_path, 'r') as f:
+                metadata = json.load(f)
+                steering_method = metadata.get("method", "unknown")
+        
+        # Handle single-layer method specially
+        if steering_method == "caa-single-layer" and isinstance(all_contrastive_vectors, dict):
+            # For single-layer, all_contrastive_vectors is a dict with only the best layer
+            # Create zero array for all layers
+            num_layers = len(layers)
+            best_layer = list(all_contrastive_vectors.keys())[0]
+            d_model = all_contrastive_vectors[best_layer].shape[0]
+            steering_vectors = np.zeros((num_layers, d_model))
+            
+            # Only fill in the selected layer
+            if best_layer < num_layers:
+                steering_vectors[best_layer] = all_contrastive_vectors[best_layer]
+            
+            # Only steer at the best layer
+            layers_to_steer = [best_layer]
+            
+            self.logger.info(
+                f"CAA Single-Layer: Steering only at layer {best_layer} (alpha={alpha})"
+            )
+        else:
+            # For other methods, use vectors as-is
+            steering_vectors = np.array(all_contrastive_vectors)
+            layers_to_steer = layers
         
         # Process in smaller batches to reduce memory pressure
         batch_size = min(10, len(test_data))  # Process max 10 examples at once
@@ -742,7 +792,7 @@ class EnhancedExperimentRunner:
                         max_new_tokens=config.max_new_tokens,
                         alpha=alpha,
                         steering_vectors=steering_vectors,
-                        layers=layers,
+                        layers=layers_to_steer,
                     )
                     
                     # Clean up tokens immediately

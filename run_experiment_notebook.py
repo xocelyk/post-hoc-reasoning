@@ -47,7 +47,7 @@ print("✓ All modules imported successfully")
 #%% Configuration and Setup
 print("📖 Setting up configuration...")
 
-config_path = "configs/transformer_lens_test.yaml"
+config_path = "configs/test.yaml"
 if not os.path.exists(config_path):
     raise FileNotFoundError(f"Configuration file not found: {config_path}")
 
@@ -102,7 +102,7 @@ print("\n🤖 Model Loading...")
 # For this playground, let's work with the first experiment config
 exp_config = experiment_configs[0]
 print(f"Working with: {exp_config.model_name} + {exp_config.dataset_name}")
-
+#%%
 # Determine backend and load model
 model_name = exp_config.model_name
 
@@ -216,8 +216,6 @@ if USE_CACHED_GENERATIONS and cache_status['generations']:
     train_results = cache.load_pickle(cache.get_train_generations_path())
     test_results = cache.load_pickle(cache.get_test_generations_path())
     
-    train_activations = cache.load_pickle(cache.get_train_activations_path())
-    test_activations = cache.load_pickle(cache.get_test_activations_path())
 else:
     print("🔄 Generating fresh data...")
     
@@ -314,71 +312,77 @@ else:
     
     # Extract activations
     print(f"\n🧠 Extracting activations...")
+
+# %%    
+
+if USE_CACHED_ACTIVATIONS and cache_status['activations']:
+    print("📁 Using cached activations...")
+    train_activations = cache.load_pickle(cache.get_train_activations_path())
+    test_activations = cache.load_pickle(cache.get_test_activations_path())
+else:
+    print("🔄 Extracting activations...")
+
+    # Prepare prompts for activation extraction
+    # train_prompts = [model.apply_chat_template(r["prompt"]) for r in train_results]
+    # test_prompts = [model.apply_chat_template(r["prompt"]) for r in test_results]
+    train_prompts = [r["prompt"] for r in train_results]
+    test_prompts = [r["prompt"] for r in test_results]
     
-    if USE_CACHED_ACTIVATIONS and cache_status['activations']:
-        print("📁 Using cached activations...")
-        train_activations = cache.load_pickle(cache.get_train_activations_path())
-        test_activations = cache.load_pickle(cache.get_test_activations_path())
+    if use_nnsight:
+        print("  Using NNsight for activation extraction...")
+        train_activations = extract_activations(model, train_prompts)
+        test_activations = extract_activations(model, test_prompts)
     else:
-        print("🔄 Extracting activations...")
-    
-        # Prepare prompts for activation extraction
-        train_prompts = [model.apply_chat_template(r["prompt"]) for r in train_results]
-        test_prompts = [model.apply_chat_template(r["prompt"]) for r in test_results]
+        print("  Using TransformerLens for activation extraction...")
+        # Get activations using transformer lens with batched processing
+        layers = list(range(model.cfg.n_layers))
         
-        if use_nnsight:
-            print("  Using NNsight for activation extraction...")
-            train_activations = extract_activations(model, train_prompts)
-            test_activations = extract_activations(model, test_prompts)
-        else:
-            print("  Using TransformerLens for activation extraction...")
-            # Get activations using transformer lens with batched processing
-            layers = list(range(model.cfg.n_layers))
+        # Process in smaller batches to avoid OOM
+        def get_activations_batched(prompts, model, batch_size=1):
+            """Extract activations in batches to avoid OOM"""
+            all_activations = {layer: [] for layer in layers}
             
-            # Process in smaller batches to avoid OOM
-            def get_activations_batched(prompts, model, batch_size=1):
-                """Extract activations in batches to avoid OOM"""
-                all_activations = {layer: [] for layer in layers}
+            for i in range(0, len(prompts), batch_size):
+                batch_prompts = prompts[i:i+batch_size]
+                print(f"    Processing batch {i//batch_size + 1}/{(len(prompts) + batch_size - 1)//batch_size}")
                 
-                for i in range(0, len(prompts), batch_size):
-                    batch_prompts = prompts[i:i+batch_size]
-                    print(f"    Processing batch {i//batch_size + 1}/{(len(prompts) + batch_size - 1)//batch_size}")
+                with torch.no_grad():
+                    if isinstance(batch_prompts[0], list):
+                        batch_prompts = [model.apply_chat_template(prompt) for prompt in batch_prompts]
+                    tokens = model.to_tokens(batch_prompts, prepend_bos=False)
+                    _, cache = model.run_with_cache(tokens, pos_slice=-1)
                     
-                    with torch.no_grad():
-                        tokens = model.to_tokens(batch_prompts, prepend_bos=False)
-                        _, cache = model.run_with_cache(tokens, pos_slice=-1)
-                        
-                        for layer in layers:
-                            layer_acts = cache[f"blocks.{layer}.hook_resid_post"].cpu().float().numpy()
-                            all_activations[layer].append(layer_acts)
-                        
-                        # Clean up immediately
-                        del cache, tokens
-                        gc.collect()
-                        if torch.cuda.is_available():
-                            torch.cuda.empty_cache()
-                        elif torch.backends.mps.is_available():
-                            torch.mps.empty_cache()
-                
-                # Concatenate all batches
-                for layer in layers:
-                    all_activations[layer] = np.vstack(all_activations[layer])
-                
-                return all_activations
+                    for layer in layers:
+                        layer_acts = cache[f"blocks.{layer}.hook_resid_post"].cpu().float().numpy()
+                        all_activations[layer].append(layer_acts)
+                    
+                    # Clean up immediately
+                    del cache, tokens
+                    gc.collect()
+                    if torch.cuda.is_available():
+                        torch.cuda.empty_cache()
+                    elif torch.backends.mps.is_available():
+                        torch.mps.empty_cache()
             
-            print("  Processing training activations...")
-            train_activations = get_activations_batched(train_prompts, model, batch_size=1)
+            # Concatenate all batches
+            for layer in layers:
+                all_activations[layer] = np.vstack(all_activations[layer])
             
-            print("  Processing test activations...")
-            test_activations = get_activations_batched(test_prompts, model, batch_size=1)
+            return all_activations
         
-        print("✓ Activations extracted")
+        print("  Processing training activations...")
+        train_activations = get_activations_batched(train_prompts, model, batch_size=1)
+        
+        print("  Processing test activations...")
+        test_activations = get_activations_batched(test_prompts, model, batch_size=1)
     
-    # Cache the results
-    print("\n💾 Caching extracted activations...")
-    cache.save_pickle(train_activations, cache.get_train_activations_path())
-    cache.save_pickle(test_activations, cache.get_test_activations_path())
-    print("✓ Activations cached")
+    print("✓ Activations extracted")
+
+# Cache the results
+print("\n💾 Caching extracted activations...")
+cache.save_pickle(train_activations, cache.get_train_activations_path())
+cache.save_pickle(test_activations, cache.get_test_activations_path())
+print("✓ Activations cached")
     
 #%%
 # new_train_results = []
@@ -513,6 +517,7 @@ if not USE_CACHE:
             print(f"\n🔍 Computing contrastive vector for layer {layer}...")
             
             # Get activations for this layer
+            print(len(train_activations))
             X_train = train_activations[layer].squeeze()  # Remove batch dimension if present
             X_test = test_activations[layer].squeeze()
             
@@ -526,6 +531,8 @@ if not USE_CACHE:
             train_labels_array = np.array(train_labels)
             yes_mask = train_labels_array == 1
             no_mask = train_labels_array == 0
+            
+            print(X_train.shape)
             
             mean_yes = np.mean(X_train[yes_mask], axis=0)
             mean_no = np.mean(X_train[no_mask], axis=0)
@@ -759,8 +766,6 @@ steering_results = {}
 
 print("STEERING METHOD: ", STEERING_METHOD)
 
-alpha_range = [2, 4, 6]
-
 # for alpha in alpha_range:
 for alpha in alpha_range:
     print(f"\n🎮 Testing steering with alpha = {alpha}")
@@ -779,7 +784,11 @@ for alpha in alpha_range:
         
         for i, result in enumerate(yes_test_data[:max_gen]):  # Limit for demo
             # Apply chat template to prompt
-            prompt_string = model.apply_chat_template(result["prompt"])
+            if isinstance(result["prompt"], list):
+                prompt_string = model.apply_chat_template(result["prompt"])
+            else:
+                prompt_string = result["prompt"]
+            
             if use_nnsight:
                 # Use nnsight steering with ProbeResult
                 layers_to_steer = sorted(probe_coefficients.keys())
@@ -890,7 +899,11 @@ for alpha in alpha_range:
         print(f"  🔄 Steering {len(no_test_data)} 'no' examples to 'yes' (alpha={alpha_no_to_yes})")
         
         for i, result in enumerate(no_test_data[:max_gen]):  # Limit for demo
-            prompt_string = model.apply_chat_template(result["prompt"])
+            
+            if isinstance(result["prompt"], list):
+                prompt_string = model.apply_chat_template(result["prompt"])
+            else:
+                prompt_string = result["prompt"]
             
             if use_nnsight:
                 # Use nnsight steering with ProbeResult
