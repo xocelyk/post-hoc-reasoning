@@ -341,6 +341,7 @@ def run_steering_experiment(
     dataset_name: str,
     alpha_range: List[int] = [0, 1, 2, 3, 5, 7],
     use_cache: bool = True,
+    stop_alpha_early: bool = False,
 ):
     model_name = getattr(model, "model_name", "google/gemma-2-9b-it")
     setup_logging(model_name, dataset_name)
@@ -403,6 +404,7 @@ def run_steering_experiment(
         dataset_name,
         alpha_range=alpha_range,
         use_cache=use_cache,
+        stop_alpha_early=stop_alpha_early,
     )
     print(f"Steering experiment completed for dataset: {dataset_name}")
 
@@ -479,6 +481,7 @@ def perform_steering(
     use_cache: bool = True,
     steer_temperature: float = 0.7,
     max_new_tokens: int = 100,
+    stop_alpha_early: bool = False,
     **kwargs,
 ):
     torch.cuda.empty_cache()
@@ -495,9 +498,16 @@ def perform_steering(
     else:
         steering_results = {"yes": {}, "no": {}}
 
-    for alpha in alpha_range:
+    # Early stopping state - track per direction
+    should_stop_yes_to_no = False
+    should_stop_no_to_yes = False
+
+    # Process alphas in sorted order to ensure proper early stopping
+    for alpha in sorted(alpha_range):
         alpha_yes = -alpha
-        if alpha_yes in steering_results.get("yes", {}):
+        if should_stop_yes_to_no and stop_alpha_early and alpha > 0:
+            print(f"Skipping alpha {alpha_yes} (yes→no): Early stopping due to 100% unparsed rate")
+        elif alpha_yes in steering_results.get("yes", {}):
             print(
                 f"Steering results for alpha {alpha_yes} already exist for 'yes' data, skipping..."
             )
@@ -524,9 +534,22 @@ def perform_steering(
             print(
                 f"Success rate for 'yes' data with alpha = {alpha_yes}: {success_rate:.2f}"
             )
+            
+            # Check for early stopping - 100% unparsed rate
+            if results_yes and stop_alpha_early and alpha > 0:
+                # Count cases where new_answer is empty or not "yes"/"no"
+                unparsed_count = sum(1 for r in results_yes if r.get("new_answer", "") not in ["yes", "no"])
+                total = len(results_yes)
+                unparsed_rate = unparsed_count / total if total > 0 else 0
+                
+                if unparsed_rate >= 1.0:  # 100% unparsed
+                    should_stop_yes_to_no = True
+                    print(f"Early stopping yes→no direction: 100% unparsed rate at alpha {alpha_yes}")
 
         alpha_no = alpha
-        if alpha_no in steering_results.get("no", {}):
+        if should_stop_no_to_yes and stop_alpha_early and alpha > 0:
+            print(f"Skipping alpha {alpha_no} (no→yes): Early stopping due to 100% unparsed rate")
+        elif alpha_no in steering_results.get("no", {}):
             print(
                 f"Steering results for alpha {alpha_no} already exist for 'no' data, skipping..."
             )
@@ -551,6 +574,17 @@ def perform_steering(
             print(
                 f"Success rate for 'no' data with alpha = {alpha_no}: {success_rate:.2f}"
             )
+            
+            # Check for early stopping - 100% unparsed rate
+            if results_no and stop_alpha_early and alpha > 0:
+                # Count cases where new_answer is empty or not "yes"/"no"
+                unparsed_count = sum(1 for r in results_no if r.get("new_answer", "") not in ["yes", "no"])
+                total = len(results_no)
+                unparsed_rate = unparsed_count / total if total > 0 else 0
+                
+                if unparsed_rate >= 1.0:  # 100% unparsed
+                    should_stop_no_to_yes = True
+                    print(f"Early stopping no→yes direction: 100% unparsed rate at alpha {alpha_no}")
 
     if use_cache:
         save_pickle(steering_results, steering_cache_path)
@@ -704,6 +738,11 @@ def main():
     parser.add_argument(
         "--use_cache", action="store_true", help="Use cached generations if available."
     )
+    parser.add_argument(
+        "--stop-alpha-early", 
+        action="store_true", 
+        help="Stop running higher alpha values in same direction if 100%% unparsed rate is encountered."
+    )
     args = parser.parse_args()
 
     model = ChatModel(args.model)
@@ -720,7 +759,8 @@ def main():
         )
     if args.mode in ["steer", "all"]:
         run_steering_experiment(
-            model, args.dataset, alpha_range=args.alpha_range, use_cache=args.use_cache
+            model, args.dataset, alpha_range=args.alpha_range, use_cache=args.use_cache, 
+            stop_alpha_early=args.stop_alpha_early
         )
 
 

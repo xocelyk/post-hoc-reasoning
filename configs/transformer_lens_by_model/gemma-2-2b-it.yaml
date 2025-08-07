@@ -26,31 +26,6 @@ models:
   device: auto
   dtype: bfloat16
   name: google/gemma-2-2b-it
-- backend: auto
-  batch_size: 1
-  device: auto
-  dtype: bfloat16
-  name: google/gemma-2-9b-it
-- backend: auto
-  batch_size: 1
-  device: auto
-  dtype: bfloat16
-  name: Qwen/Qwen2.5-3B-Instruct
-- backend: auto
-  batch_size: 1
-  device: auto
-  dtype: bfloat16
-  name: Qwen/Qwen2.5-7B-Instruct
-- backend: auto
-  batch_size: 1
-  device: auto
-  dtype: bfloat16
-  name: microsoft/Phi-3-mini-4k-instruct
-- backend: auto
-  batch_size: 1
-  device: auto
-  dtype: bfloat16
-  name: Llama-2-7b-chat
 save_generations: true
 steering:
   alpha_range:

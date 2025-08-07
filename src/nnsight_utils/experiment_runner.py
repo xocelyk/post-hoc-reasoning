@@ -513,11 +513,17 @@ class UnifiedExperimentRunner:
                 f"Using all available examples: {len(yes_test_data)} yes examples, {len(no_test_data)} no examples"
             )
 
-        # Run steering for each alpha
-        for alpha in config.alpha_range:
+        # Early stopping state - track per direction
+        should_stop_yes_to_no = False
+        should_stop_no_to_yes = False
+
+        # Run steering for each alpha in sorted order for proper early stopping
+        for alpha in sorted(config.alpha_range):
             # Yes to No steering (negative alpha)
             alpha_yes = -abs(alpha)
-            if not cache.has_steering_results(alpha_yes, "yes"):
+            if should_stop_yes_to_no and self.run_config.steering.stop_alpha_early and alpha > 0:
+                self.logger.info(f"Skipping alpha {alpha_yes} (yes→no): Early stopping due to 100% unparsed rate")
+            elif not cache.has_steering_results(alpha_yes, "yes"):
                 results_yes = self.generate_steered_examples(
                     model, yes_test_data, probe_result, alpha_yes, config
                 )
@@ -541,6 +547,11 @@ class UnifiedExperimentRunner:
                         f"{failure_rate:.2f} failure, {unparsed_rate:.2f} unparsed"
                     )
                     
+                    # Check for early stopping - 100% unparsed rate
+                    if self.run_config.steering.stop_alpha_early and alpha > 0 and unparsed_rate >= 1.0:
+                        should_stop_yes_to_no = True
+                        self.logger.info(f"Early stopping yes→no direction: 100% unparsed rate at alpha {alpha_yes}")
+                    
                     # Log to W&B
                     if self.wandb_logger:
                         self.wandb_logger.log_steering_summary(
@@ -556,7 +567,9 @@ class UnifiedExperimentRunner:
 
             # No to Yes steering (positive alpha)
             alpha_no = abs(alpha)
-            if not cache.has_steering_results(alpha_no, "no"):
+            if should_stop_no_to_yes and self.run_config.steering.stop_alpha_early and alpha > 0:
+                self.logger.info(f"Skipping alpha {alpha_no} (no→yes): Early stopping due to 100% unparsed rate")
+            elif not cache.has_steering_results(alpha_no, "no"):
                 results_no = self.generate_steered_examples(
                     model, no_test_data, probe_result, alpha_no, config
                 )
@@ -579,6 +592,11 @@ class UnifiedExperimentRunner:
                         f"Alpha {alpha_no:+.1f} (no→yes): {success_rate:.2f} success, "
                         f"{failure_rate:.2f} failure, {unparsed_rate:.2f} unparsed"
                     )
+                    
+                    # Check for early stopping - 100% unparsed rate
+                    if self.run_config.steering.stop_alpha_early and alpha > 0 and unparsed_rate >= 1.0:
+                        should_stop_no_to_yes = True
+                        self.logger.info(f"Early stopping no→yes direction: 100% unparsed rate at alpha {alpha_no}")
                     
                     # Log to W&B
                     if self.wandb_logger:

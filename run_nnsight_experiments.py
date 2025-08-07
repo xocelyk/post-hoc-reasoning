@@ -43,6 +43,9 @@ Examples:
   # Run in non-interactive mode
   python run_nnsight_experiments.py --config configs/nnsight.yaml --no-interactive
 
+  # Run with early stopping for unparsed responses
+  python run_nnsight_experiments.py --config configs/nnsight.yaml --stop-alpha-early
+
   # List existing experiments
   python run_nnsight_experiments.py --list-experiments
         """,
@@ -137,6 +140,13 @@ Examples:
         help="Specific experiment IDs to resume (space-separated)",
     )
 
+    # Steering options
+    parser.add_argument(
+        "--stop-alpha-early",
+        action="store_true",
+        help="Stop running higher alpha values in same direction if 100%% unparsed rate is encountered",
+    )
+
     # Output options
     parser.add_argument(
         "--output-summary",
@@ -198,6 +208,8 @@ def apply_overrides(
     # Steering overrides
     if args.alpha_range:
         config.steering.alpha_range = args.alpha_range
+    if hasattr(args, 'stop_alpha_early') and args.stop_alpha_early:
+        config.steering.stop_alpha_early = True
 
     # Runtime overrides
     config.cache_dir = args.cache_dir

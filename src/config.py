@@ -40,6 +40,7 @@ class SteeringConfig:
     temperature: float = 0.7
     max_new_tokens: int = 100
     max_gen: Optional[int] = None  # Limit number of steering examples per alpha value and direction
+    stop_alpha_early: bool = False  # Stop running higher alpha values in same direction if 100% unparsed rate is encountered
 
 
 @dataclass
