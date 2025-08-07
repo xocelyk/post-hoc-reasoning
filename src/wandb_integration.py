@@ -75,7 +75,11 @@ class WandbExperimentLogger:
                 wandb.define_metric("layer")
                 wandb.define_metric("probe/*", step_metric="layer")
                 wandb.define_metric("steering/example_idx")
-                wandb.define_metric("steering/individual/*", step_metric="steering/example_idx")
+                # Don't define steering/individual/* as step metrics - they are simple scalars
+                wandb.define_metric("steering/individual/alpha")
+                wandb.define_metric("steering/individual/success")
+                wandb.define_metric("steering/individual/parsable") 
+                wandb.define_metric("steering/individual/answer_changed")
                 
                 print(f"✓ W&B initialized: {self.run.url}")
                 
@@ -174,13 +178,13 @@ class WandbExperimentLogger:
         parsable = (category != "unparsed")
         answer_changed = (steered_answer != original_answer)
         
-        # Log metrics
+        # Log metrics - convert booleans to int for proper W&B handling
         wandb.log({
             "steering/example_idx": example_idx,
             "steering/individual/alpha": alpha,
-            "steering/individual/success": success,
-            "steering/individual/parsable": parsable,
-            "steering/individual/answer_changed": answer_changed,
+            "steering/individual/success": int(success),
+            "steering/individual/parsable": int(parsable),
+            "steering/individual/answer_changed": int(answer_changed),
         })
         
         # Log detailed example every N examples to avoid overwhelming the UI
@@ -292,6 +296,50 @@ class WandbExperimentLogger:
         
         wandb.log({"steering/success_rate_plot": wandb.Image(fig)})
         plt.close()
+    
+    def log_training_example(self,
+                            example_idx: int,
+                            prompt: Union[str, List[Dict[str, str]]],
+                            response: str,
+                            predicted_answer: str,
+                            correct_answer: str,
+                            is_correct: bool):
+        """Log a training example with full prompt and response."""
+        if self.disabled:
+            return
+        
+        # Convert prompt to string if it's a list of messages
+        if isinstance(prompt, list):
+            prompt_str = "\n".join([f"{msg['role']}: {msg['content']}" for msg in prompt])
+        else:
+            prompt_str = prompt
+        
+        # Truncate response for display if too long
+        display_response = response
+        if len(display_response) > 1000:
+            display_response = display_response[:1000] + "... [truncated]"
+        
+        # Create HTML for better formatting
+        html_content = f"""
+        <div style="font-family: monospace; padding: 10px; background: #f5f5f5;">
+            <h4>Training Example {example_idx + 1}</h4>
+            <p><strong>Correct Answer:</strong> {correct_answer}</p>
+            <p><strong>Predicted Answer:</strong> <span style="color: {'green' if is_correct else 'red'}">{predicted_answer}</span></p>
+            <details>
+                <summary>Show Full Prompt</summary>
+                <pre style="white-space: pre-wrap; background: #e8e8e8; padding: 10px;">{prompt_str}</pre>
+            </details>
+            <details>
+                <summary>Show Response (first 1000 chars)</summary>
+                <pre style="white-space: pre-wrap; background: #e8e8e8; padding: 10px;">{display_response}</pre>
+            </details>
+        </div>
+        """
+        
+        wandb.log({
+            f"training/examples/example_{example_idx}": wandb.Html(html_content),
+            f"training/accuracy_first_{example_idx + 1}": int(is_correct)
+        })
     
     def log_experiment_summary(self, summary: Dict[str, Any]):
         """Log final experiment summary."""

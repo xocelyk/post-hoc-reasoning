@@ -2,8 +2,8 @@ cache_dir: cache
 datasets:
 - name: anachronisms
   split_seed: 42
-  test_size: 5
-  train_size: 5
+  test_size: 20
+  train_size: 20
 # - name: sports_understanding
 #   split_seed: 42
 #   test_size: 100
@@ -37,7 +37,7 @@ models:
 #   dtype: bfloat16
 #   name: Qwen/Qwen2.5-3B-Instruct
 - backend: auto
-  batch_size: 1
+  batch_size: 4
   device: auto
   dtype: bfloat16
   name: Qwen/Qwen2.5-7B-Instruct
@@ -58,5 +58,5 @@ steering:
   max_new_tokens: 200
   temperature: 0.7
   method: caa-single-layer
-  max_gen: 2
+  max_gen: 12
 use_cache: true

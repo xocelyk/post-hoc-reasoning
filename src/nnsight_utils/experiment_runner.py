@@ -221,6 +221,47 @@ class UnifiedExperimentRunner:
                     "correct_answer": item["correct_answer"],
                     "correct_letter": item["correct_letter"]
                 })
+                
+                # Log first 5 training examples to W&B and console
+                if i < 5:
+                    is_correct = pred_answer == item["correct_answer"]
+                    
+                    # Log to W&B
+                    if self.wandb_logger:
+                        self.wandb_logger.log_training_example(
+                            example_idx=i,
+                            prompt=item["prompt"],
+                            response=generation,
+                            predicted_answer=pred_answer,
+                            correct_answer=item["correct_answer"],
+                            is_correct=is_correct
+                        )
+                    
+                    # Also print to console
+                    self.logger.info("=" * 80)
+                    self.logger.info(f"TRAINING EXAMPLE {i + 1}/5")
+                    self.logger.info("=" * 80)
+                    
+                    # Format prompt for display
+                    if isinstance(item["prompt"], list):
+                        prompt_str = "\n".join([f"{msg['role'].upper()}: {msg['content']}" for msg in item["prompt"]])
+                    else:
+                        prompt_str = str(item["prompt"])
+                    
+                    self.logger.info(f"FULL PROMPT:\n{prompt_str}")
+                    self.logger.info("-" * 80)
+                    
+                    # Filter think tags for DeepSeek models when displaying
+                    display_response = generation
+                    if hasattr(model, 'model_name') and model.model_name.lower().startswith('deepseek'):
+                        display_response = filter_think_tags(generation)
+                    
+                    self.logger.info(f"RESPONSE (filtered for DeepSeek):\n{display_response}")
+                    self.logger.info("-" * 80)
+                    self.logger.info(f"PARSED ANSWER: {pred_answer}")
+                    self.logger.info(f"CORRECT ANSWER: {item['correct_answer']}")
+                    self.logger.info(f"RESULT: {'✓ CORRECT' if is_correct else '✗ INCORRECT'}")
+                    self.logger.info("=" * 80)
 
             # Process test data
             test_prompts = [model.apply_chat_template(item["prompt"]) for item in test_dataset]
@@ -452,7 +493,22 @@ class UnifiedExperimentRunner:
             if result["pred_answer"] == "no" and result["correct_answer"] == "no"
         ]
 
-        self.logger.info(f"Test data: {len(yes_test_data)} yes, {len(no_test_data)} no")
+        # Apply max_gen limit if specified
+        max_gen = self.run_config.steering.max_gen
+        if max_gen is not None:
+            original_yes_count = len(yes_test_data)
+            original_no_count = len(no_test_data)
+            yes_test_data = yes_test_data[:max_gen]
+            no_test_data = no_test_data[:max_gen]
+            
+            self.logger.info(
+                f"Applied max_gen limit: Using {len(yes_test_data)}/{original_yes_count} yes examples, "
+                f"{len(no_test_data)}/{original_no_count} no examples (max_gen={max_gen})"
+            )
+        else:
+            self.logger.info(
+                f"Using all available examples: {len(yes_test_data)} yes examples, {len(no_test_data)} no examples"
+            )
 
         # Run steering for each alpha
         for alpha in config.alpha_range:

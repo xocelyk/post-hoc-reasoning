@@ -343,6 +343,43 @@ class EnhancedExperimentRunner:
                 if activations is not None:
                     activations_list.append(activations[i])
                 
+                # Log first 5 training examples to W&B and console
+                if phase == "train" and len(results) <= 5:
+                    is_correct = pred_answers[i] == correct_tups[0][i]
+                    # Need to get the actual generation text for logging
+                    generation_text = generations[i] if i < len(generations) else ""
+                    
+                    # Log to W&B
+                    if self.wandb_logger:
+                        self.wandb_logger.log_training_example(
+                            example_idx=len(results) - 1,
+                            prompt=prompt,
+                            response=generation_text,
+                            predicted_answer=pred_answers[i],
+                            correct_answer=correct_tups[0][i],
+                            is_correct=is_correct
+                        )
+                    
+                    # Also print to console
+                    self.logger.info("=" * 80)
+                    self.logger.info(f"TRAINING EXAMPLE {len(results)}/5")
+                    self.logger.info("=" * 80)
+                    
+                    # Format prompt for display
+                    if isinstance(prompt, list):
+                        prompt_str = "\n".join([f"{msg['role'].upper()}: {msg['content']}" for msg in prompt])
+                    else:
+                        prompt_str = str(prompt)
+                    
+                    self.logger.info(f"FULL PROMPT:\n{prompt_str}")
+                    self.logger.info("-" * 80)
+                    self.logger.info(f"RESPONSE:\n{generation_text}")
+                    self.logger.info("-" * 80)
+                    self.logger.info(f"PARSED ANSWER: {pred_answers[i]}")
+                    self.logger.info(f"CORRECT ANSWER: {correct_tups[0][i]}")
+                    self.logger.info(f"RESULT: {'✓ CORRECT' if is_correct else '✗ INCORRECT'}")
+                    self.logger.info("=" * 80)
+                
                 # Log individual sample details
                 correct_mark = "✓" if corrects[i] else "✗"
                 self.logger.info(
