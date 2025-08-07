@@ -50,3 +50,10 @@ build/
 # OS
 Thumbs.db
 desktop.ini
+
+# Misc
+.backup_old_files/
+.claude/
+scratch.txt
+wandb/
+data_archive/
