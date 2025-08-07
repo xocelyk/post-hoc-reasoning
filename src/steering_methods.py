@@ -48,10 +48,10 @@ class CAASingleLayerSteering(SteeringMethod):
         
     def compute_steering_vectors(self, layer_vectors: List[np.ndarray]) -> List[np.ndarray]:
         """Select best layer without normalization."""
-        # Find best layer with tiebreaker (latest layer wins ties)
+        # Find best layer with tiebreaker (earliest layer wins ties)
         best_score = max(self.similarity_scores)
         best_layers = [i for i, score in enumerate(self.similarity_scores) if score == best_score]
-        best_layer_idx = max(best_layers)  # Latest layer wins ties
+        best_layer_idx = min(best_layers)  # EARLIEST layer wins ties
         
         # Get the best vector without normalization
         best_vector = layer_vectors[best_layer_idx].copy()

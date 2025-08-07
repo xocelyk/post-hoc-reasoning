@@ -510,7 +510,7 @@ class EnhancedExperimentRunner:
             if steering_method_name == "caa-single-layer":
                 best_score = max(auc_scores)
                 best_layers = [i for i, score in enumerate(auc_scores) if score == best_score]
-                best_layer = layers[max(best_layers)]
+                best_layer = layers[min(best_layers)]  # EARLIEST layer wins ties
                 
                 self.logger.info(
                     f"Best Similarity Score: {best_score:.4f} at layer {best_layer} for {config.model_name} on {config.dataset_name}"
@@ -518,7 +518,7 @@ class EnhancedExperimentRunner:
                 
                 if len(best_layers) > 1:
                     self.logger.info(
-                        f"Tie between layers {[layers[i] for i in best_layers]} - selecting latest layer {best_layer}"
+                        f"Tie between layers {[layers[i] for i in best_layers]} - selecting earliest layer {best_layer}"
                     )
             elif steering_method_name == "caa-layer-incremental":
                 self.logger.info(
@@ -538,8 +538,10 @@ class EnhancedExperimentRunner:
         # Save results for downstream use
         # Special handling for single-layer method
         if steering_method_name == "caa-single-layer":
-            # Find best layer
-            best_layer_idx = np.argmax(auc_scores)
+            # Find best layer (earliest wins ties)
+            best_score = max(auc_scores)
+            best_indices = [i for i, score in enumerate(auc_scores) if score == best_score]
+            best_layer_idx = min(best_indices)  # EARLIEST layer wins ties
             best_layer = layers[best_layer_idx]
             
             # Only save the best layer's vector as a dict
@@ -561,7 +563,7 @@ class EnhancedExperimentRunner:
             "method": steering_method_name,
             "all_layer_scores": [float(score) for score in auc_scores],
             "best_score": float(max(auc_scores)),
-            "best_layer": int(layers[np.argmax(auc_scores)])
+            "best_layer": int(layers[min([i for i, s in enumerate(auc_scores) if s == max(auc_scores)])])
         })
         cache.save_json(steering_metadata, os.path.join(cache.cache_dir, "steering_metadata.json"))
 
@@ -578,7 +580,9 @@ class EnhancedExperimentRunner:
                 )
             
             # Log best layer selection
-            best_idx = np.argmax(auc_scores)
+            best_score = max(auc_scores)
+            best_indices = [i for i, score in enumerate(auc_scores) if score == best_score]
+            best_idx = min(best_indices)  # EARLIEST layer wins ties
             self.wandb_logger.log_best_layer_selection(
                 best_layer=layers[best_idx],
                 best_score=auc_scores[best_idx],
@@ -1000,8 +1004,9 @@ class EnhancedExperimentRunner:
         # Load and summarize probe results
         try:
             auc_scores = cache.load_json(cache.get_auc_scores_path())
-            best_layer = int(np.argmax(auc_scores))
             best_score = float(max(auc_scores))
+            best_indices = [i for i, s in enumerate(auc_scores) if s == best_score]
+            best_layer = int(min(best_indices))  # EARLIEST layer wins ties
             avg_score = float(np.mean(auc_scores))
             
             print(f"🎯 PROBE PERFORMANCE:")
@@ -1189,7 +1194,8 @@ class EnhancedExperimentRunner:
                     auc_scores = cache.load_json(cache.get_auc_scores_path())
                     best_score = float(max(auc_scores))
                     avg_score = float(np.mean(auc_scores))
-                    best_layer = int(np.argmax(auc_scores))
+                    best_indices = [i for i, s in enumerate(auc_scores) if s == best_score]
+                    best_layer = int(min(best_indices))  # EARLIEST layer wins ties
                     
                     all_best_scores.append(best_score)
                     all_avg_scores.append(avg_score)

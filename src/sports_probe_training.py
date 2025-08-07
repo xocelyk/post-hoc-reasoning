@@ -385,16 +385,16 @@ def train_probes_all_layers(model, train_dataset, test_dataset, run_name: str = 
 
     print(f"\nContrastive vector computation completed for {len(layers)} layers")
     
-    # Select best layer with tiebreaker (latest layer wins ties)
+    # Select best layer with tiebreaker (earliest layer wins ties)
     best_score = max(similarity_scores)
     best_layers = [i for i, score in enumerate(similarity_scores) if score == best_score]
-    best_layer_idx = max(best_layers)  # Latest layer wins ties
+    best_layer_idx = min(best_layers)  # EARLIEST layer wins ties
     best_layer = layers[best_layer_idx]
     
     print(f"Best Similarity Score: {best_score:.4f} at layer {best_layer}")
     
     if len(best_layers) > 1:
-        print(f"Tie between layers {[layers[i] for i in best_layers]} - selecting latest layer {best_layer}")
+        print(f"Tie between layers {[layers[i] for i in best_layers]} - selecting earliest layer {best_layer}")
     
     # Use only the best vector for all layer positions (maintains steering compatibility)
     best_contrastive_vector = all_contrastive_vectors[best_layer_idx]
