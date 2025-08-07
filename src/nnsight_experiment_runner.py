@@ -24,14 +24,14 @@ from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader, Dataset
 
-from cache_manager import ExperimentCache, ExperimentConfig, ExperimentManager
-from config import ExperimentRunConfig, create_experiment_configs
-from data_loading import load_all_datasets
-from nnsight_models import NNsightChatModel
-from parsing_utils import parse_response
-from nnsight_utils import batch_get_resid_activations
-from nnsight_steering import generate_with_nnsight_steering
-from visualizer import create_visualizer
+from core.cache_manager import ExperimentCache, ExperimentConfig, ExperimentManager
+from core.config import ExperimentRunConfig, create_experiment_configs
+from core.data_loading import load_all_datasets
+from backends.nnsight.models import NNsightChatModel
+from core.parsing_utils import parse_response
+from backends.nnsight.utils import batch_get_resid_activations
+from backends.nnsight.steering import generate_with_nnsight_steering
+from core.visualizer import create_visualizer
 
 
 class NNsightPromptDataset(Dataset):

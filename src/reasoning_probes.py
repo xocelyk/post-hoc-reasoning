@@ -34,10 +34,10 @@ from nnsight import LanguageModel
 from openai import OpenAI
 from transformer_lens.utils import Slice
 
-from data_loading import create_cot_dataset, create_dataset
-from models import ChatModel
-from parsing_utils import parse_response_simple
-from utils import generate_with_steering
+from core.data_loading import create_cot_dataset, create_dataset
+from backends.transformer_lens.models import ChatModel
+from core.parsing_utils import parse_response as parse_response_simple  # parse_response_simple doesn't exist anymore
+from backends.transformer_lens.utils import generate_with_steering
 
 WORKSPACE_PATH = "/workspace/post-hoc-reasoning"
 

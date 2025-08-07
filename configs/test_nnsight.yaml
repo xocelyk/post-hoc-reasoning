@@ -1,0 +1,27 @@
+cache_dir: cache
+datasets:
+- name: anachronisms
+  split_seed: 42
+  test_size: 10
+  train_size: 10
+
+evaluate_confabulation: false
+interactive: false
+max_concurrent_models: 1
+models:
+- backend: nnsight
+  batch_size: 1
+  device: auto
+  dtype: bfloat16
+  name: google/gemma-2-2b-it
+
+save_generations: true
+steering:
+  alpha_range:
+  - 0
+  - 2
+  max_new_tokens: 200
+  temperature: 0.7
+  method: caa-single-layer
+  max_gen: 2
+use_cache: false

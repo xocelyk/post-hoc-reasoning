@@ -11,7 +11,7 @@ from typing import Dict, List, Optional, Tuple, Union
 import numpy as np
 import torch
 
-from nnsight_models import NNsightChatModel
+from .models import NNsightChatModel
 
 
 def batch_get_resid_activations(

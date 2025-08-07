@@ -10,7 +10,7 @@ import logging
 import numpy as np
 import torch
 
-from nnsight_models import NNsightChatModel
+from .models import NNsightChatModel
 
 # Set up logger
 logger = logging.getLogger(__name__)

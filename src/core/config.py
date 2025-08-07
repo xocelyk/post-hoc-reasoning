@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional, Union
 
 import yaml
 
-from cache_manager import ExperimentConfig
+from .cache_manager import ExperimentConfig
 
 
 @dataclass

@@ -19,13 +19,13 @@ import torch
 from sklearn.model_selection import train_test_split
 
 # Import from parent directories
-sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
-from cache_manager import ExperimentCache, ExperimentConfig, ExperimentManager
-from config import ExperimentRunConfig, create_experiment_configs
-from data_loading import load_all_datasets
-from parsing_utils import parse_response, filter_think_tags
-from visualizer import create_visualizer
-from wandb_integration import WandbExperimentLogger
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../.."))
+from core.cache_manager import ExperimentCache, ExperimentConfig, ExperimentManager
+from core.config import ExperimentRunConfig, create_experiment_configs
+from core.data_loading import load_all_datasets
+from core.parsing_utils import parse_response, filter_think_tags
+from core.visualizer import create_visualizer
+from integrations.wandb import WandbExperimentLogger
 
 # Import from nnsight_utils
 from . import (

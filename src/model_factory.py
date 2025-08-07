@@ -9,8 +9,9 @@ detection.
 import logging
 from typing import Dict, Optional, Union, Any
 
-from models import ChatModel
-from nnsight_models import NNsightChatModel, is_model_supported_by_nnsight, get_model_info
+from backends.transformer_lens.models import ChatModel
+from backends.nnsight.models import NNsightChatModel
+from backends.nnsight.models import is_model_supported_by_nnsight, get_model_info
 
 logger = logging.getLogger(__name__)
 

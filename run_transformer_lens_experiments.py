@@ -14,7 +14,7 @@ from typing import List, Optional
 # Add src directory to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), "src"))
 
-from config import ConfigLoader, ExperimentRunConfig, save_default_configs, suggest_backend_optimization
+from core.config import ConfigLoader, ExperimentRunConfig, save_default_configs, suggest_backend_optimization
 from experiment_runner import EnhancedExperimentRunner
 from nnsight_experiment_runner import NNsightExperimentRunner
 from model_factory import get_recommended_backend
@@ -151,6 +151,11 @@ Examples:
         action="store_true",
         help="Enable verbose logging",
     )
+    parser.add_argument(
+        "--unified",
+        action="store_true",
+        help="Use unified experiment runner (experimental)",
+    )
 
     return parser
 
@@ -161,7 +166,7 @@ def apply_overrides(
     """Apply command-line overrides to configuration."""
     # Model overrides
     if args.models:
-        from config import ModelConfig
+        from core.config import ModelConfig
 
         backend = args.backend if args.backend else "auto"
         config.models = [ModelConfig(name=model, backend=backend) for model in args.models]
@@ -173,7 +178,7 @@ def apply_overrides(
 
     # Dataset overrides
     if args.datasets:
-        from config import DatasetConfig
+        from core.config import DatasetConfig
 
         new_datasets = []
         for dataset in args.datasets:
@@ -334,7 +339,7 @@ def main():
         print("🔄 Resuming incomplete experiments...")
 
         # Create a minimal config for resume functionality
-        from config import create_default_config
+        from core.config import create_default_config
 
         config = create_default_config()
         config.cache_dir = args.cache_dir
@@ -380,16 +385,23 @@ def main():
         # Analyze backend configuration
         analyze_backend_configuration(config)
 
-        # Select appropriate runner
-        runner_type = select_experiment_runner(config)
-        print(f"🔧 Using {runner_type} experiment runner")
-
         # Create and run experiments
         print("\n🚀 Starting experiments...")
-        if runner_type == "nnsight":
-            runner = NNsightExperimentRunner(config)
+        
+        if args.unified:
+            # Use the new unified runner
+            print("🔧 Using unified experiment runner")
+            from runners import UnifiedExperimentRunner
+            runner = UnifiedExperimentRunner(config)
         else:
-            runner = EnhancedExperimentRunner(config)
+            # Use the traditional runner selection
+            runner_type = select_experiment_runner(config)
+            print(f"🔧 Using {runner_type} experiment runner")
+            
+            if runner_type == "nnsight":
+                runner = NNsightExperimentRunner(config)
+            else:
+                runner = EnhancedExperimentRunner(config)
         
         runner.run_all_experiments()
 

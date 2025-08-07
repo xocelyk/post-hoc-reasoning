@@ -15,18 +15,18 @@ from rich.live import Live
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader, Dataset
 
-from cache_manager import ExperimentCache, ExperimentConfig, ExperimentManager
-from config import ExperimentRunConfig, create_experiment_configs
-from data_loading import load_all_datasets
-from models import ChatModel
-from parsing_utils import parse_response
-from utils import generate_with_steering
-from visualizer import create_visualizer
-from steering_methods import create_steering_method, format_steering_results
+from core.cache_manager import ExperimentCache, ExperimentConfig, ExperimentManager
+from core.config import ExperimentRunConfig, create_experiment_configs
+from core.data_loading import load_all_datasets
+from backends.transformer_lens.models import ChatModel
+from core.parsing_utils import parse_response
+from backends.transformer_lens.utils import generate_with_steering
+from core.visualizer import create_visualizer
+from methods.steering import create_steering_method, format_steering_results
 
 # W&B integration
 try:
-    from wandb_integration import WandbExperimentLogger
+    from integrations.wandb import WandbExperimentLogger
     WANDB_AVAILABLE = True
 except ImportError:
     WANDB_AVAILABLE = False

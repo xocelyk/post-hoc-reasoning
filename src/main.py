@@ -17,10 +17,10 @@ from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader, Dataset
 
-from data_loading import load_all_datasets
-from models import ChatModel
-from parsing_utils import parse_response
-from utils import generate_with_steering
+from core.data_loading import load_all_datasets
+from backends.transformer_lens.models import ChatModel
+from core.parsing_utils import parse_response
+from backends.transformer_lens.utils import generate_with_steering
 
 # %%
 CACHE_DIR = "cache"
