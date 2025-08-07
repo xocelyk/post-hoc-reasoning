@@ -117,6 +117,50 @@ Handles various dataset formats:
 - **KV Cache** - Optimizes steering by caching key-value pairs
 - **Resume Capability** - Continue interrupted experiments from checkpoint
 
+#### Cache Organization Structure
+The cache directory follows a hierarchical organization pattern:
+
+```
+cache/
+├── experiments/
+│   ├── {model_name}/              # e.g., Qwen_Qwen2.5-3B-Instruct, deepseek-ai_DeepSeek-R1-Distill-Llama-8B
+│   │   ├── {dataset_name}/        # e.g., anachronisms, logical_deduction, sports_understanding
+│   │   │   ├── split_{seed}_{train}_{test}/  # e.g., split_42_100_100
+│   │   │   │   ├── {cache_hash}/   # 12-character hex hash (e.g., a845ca8f8180)
+│   │   │   │   │   ├── data/
+│   │   │   │   │   │   ├── dataset.pkl
+│   │   │   │   │   │   ├── train_test_split.pkl
+│   │   │   │   │   │   ├── train_activations.pkl (~29MB)
+│   │   │   │   │   │   ├── test_activations.pkl (~29MB)
+│   │   │   │   │   │   ├── train_generations.pkl (~436KB)
+│   │   │   │   │   │   └── test_generations.pkl (~436KB)
+│   │   │   │   │   ├── metadata/
+│   │   │   │   │   │   └── config.json
+│   │   │   │   │   ├── probes/
+│   │   │   │   │   │   ├── auc_scores.json (or auc_scores_{method}.json)
+│   │   │   │   │   │   └── coefficients.pkl (or coefficients_{method}.pkl)
+│   │   │   │   │   └── steering/
+│   │   │   │   │       ├── steering_alpha_{value}_{direction}.pkl
+│   │   │   │   │       └── steering_metadata.json
+└── logs/
+    ├── experiment_run_{timestamp}.log
+    └── unified_experiment_run_{timestamp}.log
+```
+
+**Key Cache Components:**
+- **Cache Hash**: 12-character hex identifier uniquely identifying experiment configuration
+- **Data Files**: PKL format storing datasets, activations (~58MB total per experiment), and generations
+- **Metadata Files**: JSON format containing experiment configuration and steering method details
+- **Probe Files**: AUC scores per layer and trained coefficients/vectors
+- **Steering Files**: Results for each alpha value and direction, with separate files for positive/negative steering
+- **Log Files**: Timestamped execution logs with detailed experiment tracking
+
+The caching system enables:
+- **Incremental Processing**: Each stage cached separately for efficient resume
+- **Memory Efficiency**: Large tensors stored as compressed PKL files
+- **Experiment Isolation**: Unique hashes prevent configuration conflicts
+- **Performance Optimization**: Avoid recomputing expensive operations
+
 ## Configuration Files
 
 ### Example Config Structure
