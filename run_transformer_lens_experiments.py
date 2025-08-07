@@ -18,6 +18,7 @@ from core.config import ConfigLoader, ExperimentRunConfig, save_default_configs,
 from experiment_runner import EnhancedExperimentRunner
 from nnsight_experiment_runner import NNsightExperimentRunner
 from model_factory import get_recommended_backend
+from parallel_transformer_lens_runner import A6000ParallelRunner
 
 
 def create_parser() -> argparse.ArgumentParser:
@@ -29,6 +30,9 @@ def create_parser() -> argparse.ArgumentParser:
 Examples:
   # Run with a configuration file
   python run_experiments.py --config configs/basic.yaml
+
+  # Run with parallel execution (RTX A6000 optimized)
+  python run_experiments.py --config configs/basic.yaml --parallel
 
   # Resume incomplete experiments
   python run_experiments.py --resume
@@ -155,6 +159,11 @@ Examples:
         "--unified",
         action="store_true",
         help="Use unified experiment runner (experimental)",
+    )
+    parser.add_argument(
+        "--parallel",
+        action="store_true",
+        help="Use parallel execution optimized for RTX A6000",
     )
 
     return parser
@@ -393,6 +402,11 @@ def main():
             print("🔧 Using unified experiment runner")
             from runners import UnifiedExperimentRunner
             runner = UnifiedExperimentRunner(config)
+        elif args.parallel:
+            # Use parallel execution optimized for RTX A6000
+            print("🔧 Using parallel execution runner (RTX A6000 optimized)")
+            print(f"  Max concurrent models: {config.max_concurrent_models}")
+            runner = A6000ParallelRunner(config)
         else:
             # Use the traditional runner selection
             runner_type = select_experiment_runner(config)

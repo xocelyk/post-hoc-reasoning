@@ -185,9 +185,33 @@ Generates concise summaries of experiment results.
 
 ## Performance Considerations
 - **Memory Management** - Automatic garbage collection and cache clearing
-- **Batch Processing** - Configurable batch sizes per model
+- **Batch Processing** - Configurable batch sizes per model (currently limited to 1 due to padding issues)
 - **Concurrent Experiments** - Control with `max_concurrent_models`
 - **KV Caching** - Significant speedup for steering generation
+
+### Parallel Execution (RTX A6000 Optimized)
+For significant performance gains, use the `--parallel` flag with TransformerLens experiments:
+
+**Usage:**
+```bash
+# Parallel execution with existing config
+python3 run_transformer_lens_experiments.py --config configs/transformer_lens.yaml --parallel --max-concurrent 3
+
+# Or use pre-configured parallel config
+python3 run_transformer_lens_experiments.py --config configs/transformer_lens_parallel.yaml --parallel
+```
+
+**Performance Benefits:**
+- **3x faster** execution on RTX A6000 (48GB VRAM)
+- Intelligent memory-aware scheduling by model size
+- Automatic OOM recovery and GPU memory management
+- Thread-safe caching and status updates
+
+**Memory Management:**
+- Small models (≤6GB): Up to 6 parallel workers
+- Medium models (≤14GB): Up to 3 parallel workers
+- Large models (>14GB): 2 parallel workers
+- Automatic grouping and batching by memory requirements
 
 ## Important Files
 - **`DATASETS.md`** - Documentation of dataset formats
