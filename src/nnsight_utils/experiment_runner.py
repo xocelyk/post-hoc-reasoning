@@ -23,7 +23,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from cache_manager import ExperimentCache, ExperimentConfig, ExperimentManager
 from config import ExperimentRunConfig, create_experiment_configs
 from data_loading import load_all_datasets
-from parsing_utils import parse_response, filter_think_tags
+from parsing_utils import parse_response, parse_deepseek_response, filter_think_tags
 from visualizer import create_visualizer
 from wandb_integration import WandbExperimentLogger
 
@@ -82,8 +82,11 @@ class UnifiedExperimentRunner:
         )
         self.logger = logging.getLogger("UnifiedExperimentRunner")
 
-    def parse_response(self, response: str) -> Tuple[str, str]:
+    def parse_response(self, response: str, model_name: Optional[str] = None) -> Tuple[str, str]:
         """Parse model response to extract answer."""
+        # Use DeepSeek-specific parser for DeepSeek models
+        if model_name and model_name.lower().startswith('deepseek'):
+            return parse_deepseek_response(response)
         return parse_response(response, thinking=True)
 
     def batch_get_generations(
@@ -212,7 +215,7 @@ class UnifiedExperimentRunner:
                 if hasattr(model, 'model_name') and model.model_name.lower().startswith('deepseek'):
                     response_to_parse = filter_think_tags(generation)
                 
-                pred_letter, pred_answer = self.parse_response(response_to_parse)
+                pred_letter, pred_answer = self.parse_response(response_to_parse, model.model_name)
                 train_results.append({
                     "prompt": item["prompt"],
                     "response": generation,
@@ -277,7 +280,7 @@ class UnifiedExperimentRunner:
                 if hasattr(model, 'model_name') and model.model_name.lower().startswith('deepseek'):
                     response_to_parse = filter_think_tags(generation)
                 
-                pred_letter, pred_answer = self.parse_response(response_to_parse)
+                pred_letter, pred_answer = self.parse_response(response_to_parse, model.model_name)
                 test_results.append({
                     "prompt": item["prompt"],
                     "response": generation,
@@ -313,7 +316,7 @@ class UnifiedExperimentRunner:
             # Extract activations using nnsight_utils with batching
             with memory_cleanup_context():
                 # Use smaller batch size for activation extraction to prevent OOM
-                batch_size = getattr(config, 'activation_batch_size', 4)
+                batch_size = getattr(config, 'activation_batch_size', 1)
                 self.logger.info(f"Extracting train activations (batch_size={batch_size})...")
                 train_activations = extract_activations(model, train_prompts, batch_size=batch_size)
                 

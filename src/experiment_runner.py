@@ -150,19 +150,49 @@ class EnhancedExperimentRunner:
             max_new_tokens = 2000
             self.logger.info(f"Using DeepSeek model, overriding max_new_tokens to {max_new_tokens}")
         
-        with torch.no_grad():  # Ensure no gradients are computed
-            tokens = model.to_tokens(prompts, prepend_bos=True)
-            token_generations = model.generate(
-                tokens, max_new_tokens=max_new_tokens, temperature=temperature, verbose=True
-            )
-            generations = model.to_string(token_generations)
+        # Check if batch size > 1 to decide on generation strategy
+        if len(prompts) > 1:
+            # Process each prompt individually to avoid padding issues
+            self.logger.info(f"Processing {len(prompts)} prompts individually to avoid padding issues")
+            generations = []
             
-            # Clean up immediately
-            del tokens, token_generations
-            if torch.cuda.is_available():
-                torch.cuda.empty_cache()
-            elif torch.backends.mps.is_available():
-                torch.mps.empty_cache()
+            with torch.no_grad():
+                for i, prompt in enumerate(prompts):
+                    tokens = model.to_tokens(prompt, prepend_bos=True)
+                    token_generation = model.generate(
+                        tokens, max_new_tokens=max_new_tokens, temperature=temperature, verbose=False
+                    )
+                    generation = model.to_string(token_generation)
+                    
+                    # Handle both single string and list of strings
+                    if isinstance(generation, list):
+                        generation = generation[0]
+                    
+                    generations.append(generation)
+                    
+                    # Clean up after each generation
+                    del tokens, token_generation
+                    if i % 5 == 0 and torch.cuda.is_available():
+                        torch.cuda.empty_cache()
+        else:
+            # Single prompt, use original method
+            with torch.no_grad():
+                tokens = model.to_tokens(prompts, prepend_bos=True)
+                token_generations = model.generate(
+                    tokens, max_new_tokens=max_new_tokens, temperature=temperature, verbose=True
+                )
+                generations = model.to_string(token_generations)
+                
+                # Ensure it's a list
+                if not isinstance(generations, list):
+                    generations = [generations]
+                
+                # Clean up immediately
+                del tokens, token_generations
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+                elif torch.backends.mps.is_available():
+                    torch.mps.empty_cache()
             
         return generations
 
