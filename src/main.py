@@ -19,7 +19,8 @@ from torch.utils.data import DataLoader, Dataset
 
 from data_loading import load_all_datasets
 from models import ChatModel
-from utils import generate_with_hooks
+from parsing_utils import parse_response
+from utils import generate_with_steering
 
 # %%
 CACHE_DIR = "cache"
@@ -61,32 +62,7 @@ class PromptDataset(Dataset):
 
 
 # Helper functions
-def parse_response(response: str) -> Tuple[str, str]:
-    # TODO: Make more robust; this only works for gemma
-    response = (
-        response.strip()
-        .replace("<eos>", "")
-        .replace("<pad>", "")
-        .replace("<end_of_turn>", "")
-        .strip()
-    )
-    start_answer_string = "the best answer is:"
-    if start_answer_string not in response.lower():
-        return "", ""
-    answer_part = response.split(start_answer_string)[-1]
-    letter_match = re.search(r"\((.)\)", answer_part)
-    if not letter_match:
-        return "", ""
-    letter = letter_match.group(1)
-    text_answer = (
-        answer_part.split(")")[-1]
-        .strip()
-        .split(", ")[0]
-        .lower()
-        .replace(".", "")
-        .strip()
-    )
-    return letter, text_answer
+# Note: parse_response is now imported from parsing_utils
 
 
 def batch_get_resid_activations(prompts, model: ChatModel):
@@ -136,8 +112,7 @@ def process_batch(
     )
     generations = [gen[len(prompt) :] for gen, prompt in zip(generations, prompts)]
 
-    # Use the model's parse_response method rather than a global function
-    responses = [model.parse_response(response) for response in generations]
+    responses = [parse_response(response) for response in generations]
     pred_letters, pred_answers = zip(*responses)
 
     corrects = [pred == correct for pred, correct in zip(pred_letters, correct_letters)]
@@ -291,7 +266,7 @@ def generate_and_save_generations(
         dataset = load_pickle(dataset_cache_path)
     else:
         print("Loading dataset from source...")
-        datasets = load_all_datasets(sample_size=1000)
+        datasets = load_all_datasets()
         dataset = datasets[dataset_name]
 
         if use_cache:
@@ -364,7 +339,7 @@ def generate_and_save_generations(
 def run_steering_experiment(
     model: ChatModel,
     dataset_name: str,
-    alpha_range: List[int] = [0, 1, 2, 3, 4, 5, 6, 7, 8],
+    alpha_range: List[int] = [0, 1, 2, 3, 5, 7],
     use_cache: bool = True,
 ):
     model_name = getattr(model, "model_name", "google/gemma-2-9b-it")
@@ -599,7 +574,7 @@ def generate_steered_examples(
         example_prompt = example["prompt"]
         example_tokens = model.to_tokens(example_prompt, prepend_bos=False)
 
-        generation = generate_with_hooks(
+        generation = generate_with_steering(
             model,
             example_tokens,
             temperature=temperature,

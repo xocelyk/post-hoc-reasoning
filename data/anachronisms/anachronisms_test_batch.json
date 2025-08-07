@@ -1,0 +1,144 @@
+{
+  "examples": [
+    {
+      "input": "Julius Caesar drafted an email to his generals before crossing the Rubicon.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "Julius Caesar sent written dispatches to his generals before crossing the Rubicon.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "Benjamin Franklin tweeted a witty remark about electricity after his kite experiment.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "Benjamin Franklin penned a witty remark about electricity in a letter after his kite experiment.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "Cleopatra held a video conference on Zoom with Roman envoys from her Alexandria palace.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "Cleopatra met face to face with Roman envoys in her Alexandria palace.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "Genghis Khan checked Google Maps on his smartphone to chart the fastest route across the Steppe.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "Genghis Khan relied on experienced scouts to chart the fastest route across the Steppe.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "Mozart uploaded his new symphony to Spotify so patrons across Europe could hear it instantly.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "Mozart premiered his new symphony in a Viennese concert hall so patrons across Europe could hear it.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "Leonardo da Vinci posted a time-lapse of The Last Supper on Instagram Stories.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "Leonardo da Vinci sketched studies of The Last Supper in his notebooks.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "George Washington sent a mass text message to Continental Army officers about the surprise attack on Trenton.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "George Washington sent mounted couriers to Continental Army officers about the surprise attack on Trenton.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "Joan of Arc coordinated her units using military-grade walkie-talkies during the Siege of Orleans.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "Joan of Arc coordinated her units by relaying messages through flag bearers during the Siege of Orleans.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "Queen Victoria watched a live BBC television broadcast of the Diamond Jubilee procession.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "Queen Victoria watched the Diamond Jubilee procession from a carriage window.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "Ernest Hemingway opened his laptop and connected to cafe Wi-Fi to revise A Moveable Feast in 1920s Paris.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "Ernest Hemingway sat with a portable typewriter to revise A Moveable Feast in 1920s Paris.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+**/.env
+**/__pycache__/
+src/cache/
+.DS_Store
+.venv
+.env
+writing/
+tmp/
+cache/
+claude-scratchpad
+run_gemma_comprehensive.py
+test_cache_consistency.py
+test_split_consistency.py
+debug_steering.py
+generate_test_prompts.py
+run_gpt2_experiments.py
+test_integration.py
+
+# Logs
+*.log
+
+# Debug and test scripts
+debug_*.py
+test_chat_template_fix.py
+test_nnsight_generation.py
+test_trace_input.py
+
+# Python
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# OS
+Thumbs.db
+desktop.ini

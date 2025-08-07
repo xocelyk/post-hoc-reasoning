@@ -1,0 +1,284 @@
+{
+  "examples": [
+    {
+      "input": "Julius Caesar checked the latest battle reports on WhatsApp before crossing the Rubicon.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "Julius Caesar received handwritten battle reports from his couriers before crossing the Rubicon.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "Queen Victoria streamed her Diamond Jubilee celebration live on Instagram Stories.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "Queen Victoria had her Diamond Jubilee celebration photographed and reported in Victorian newspapers.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "Leonardo da Vinci regularly saved backups of his Mona Lisa sketches to cloud storage.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "Leonardo da Vinci kept his preliminary Mona Lisa sketches organized in leather bound notebooks.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "George Washington sent encrypted emails to his generals during the winter at Valley Forge.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "George Washington sent sealed handwritten letters to his generals during the winter at Valley Forge.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "Marie Antoinette used the Uber Eats app to have pastries delivered to her chambers in Versailles.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "Marie Antoinette summoned palace servants to bring freshly baked pastries to her chambers in Versailles.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "Genghis Khan relied on GPS navigation to plot the fastest route across the Eurasian steppe.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "Genghis Khan relied on experienced scouts to plot the fastest route across the Eurasian steppe.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "Abraham Lincoln hosted a Zoom call with his cabinet to draft the Emancipation Proclamation.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "Abraham Lincoln met face to face with his cabinet to draft the Emancipation Proclamation.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "Socrates recorded a weekly philosophy podcast that was downloaded throughout Athens.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "Socrates engaged in spoken philosophical dialogues with citizens throughout Athens.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "During his exile, Napoleon binge watched historical dramas on Netflix to pass the time on Saint Helena.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "During his exile, Napoleon passed the time on Saint Helena by dictating his memoirs and reading books.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "Cleopatra posted a series of selfies with Mark Antony to her Facebook timeline.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "Cleopatra sent papyrus letters to Mark Antony carried by river boats along the Nile.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "Julius Caesar commended the Ming dynasty artillery generals on their innovative use of gunpowder cannons during the Siege of Nanjing.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "Julius Caesar commended his Roman engineers on their innovative use of ballistae during the Siege of Alesia.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "In a series of late-night emails, Isaac Newton thanked Albert Einstein for clarifying the finer points of general relativity.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "In a series of letters, Isaac Newton debated Robert Hooke about the nature of light and color.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "Pharaoh Ramses II scheduled a video conference with Alexander the Great to coordinate their campaigns against Persia.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "Pharaoh Ramses II ordered his generals to secure the Syrian frontier before launching the campaign at Kadesh.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "Queen Elizabeth I summoned Marie Curie to Whitehall Palace to demonstrate the glowing properties of radium.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "Queen Elizabeth I summoned her advisor John Dee to Whitehall Palace to discuss navigational routes to the New World.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "Chief Sitting Bull phoned President Franklin D. Roosevelt to express concerns about how the New Deal would affect the Lakota people.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "Chief Sitting Bull met with U.S. Army officers at Fort Buford to discuss the terms of his surrender.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "Leonardo da Vinci saved his sketches to a cloud drive on his iPad Pro while designing the aerial screw.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "Leonardo da Vinci filled pages of his codices with quill-and-ink sketches of the aerial screw.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "George Washington posted a story on TikTok announcing he would not seek a third term as president.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "George Washington announced his decision not to seek a third term through his Farewell Address, which was printed in American newspapers.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "During a particularly long evening at Versailles, Marie Antoinette relaxed by streaming a season of reality television on her flat-screen.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "During long evenings at Versailles, Marie Antoinette often passed the time by attending private musical performances and playing cards.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "In 1776, Benjamin Franklin advised smallpox patients to get vaccinated with the mRNA-based vaccine he had helped develop.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "In 1776, Benjamin Franklin encouraged the public to undergo smallpox variolation, a preventive practice he strongly supported.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "During the Crimean War in 1855, Florence Nightingale ordered CT scans of injured soldiers to precisely locate internal bleeding.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "During the Crimean War in 1855, Florence Nightingale compiled detailed statistics on soldier mortality to identify preventable causes of death.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+import gc
 import json
 import os
 from functools import partial
@@ -5,184 +6,88 @@ from typing import List, Optional
 
 import openai
 import torch
+from dotenv import load_dotenv
 from transformer_lens import utils
 from transformer_lens.hook_points import HookPoint
-from transformer_lens.past_key_value_caching import HookedTransformerKeyValueCache
+
+from memory_utils import smart_empty_cache, memory_cleanup_context
+
+# Load environment variables from .env file
+load_dotenv()
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
-if not openai.api_key:
-    raise ValueError("OPENAI_API_KEY not found in environment variables")
+# Only check for API key when actually using OpenAI functions
+
+import torch
+from functools import partial
+from transformer_lens import utils
+from transformer_lens.hook_points import HookPoint
 
 
-def steer_residual_stream(
-    residual_component: torch.FloatTensor,
+# ─────────────────────────────────────────────────────────────────────────────
+# Steering hook: fires only when generate is in single-token mode (seq_len == 1)
+# ─────────────────────────────────────────────────────────────────────────────
+def _steer_generated_token(
+    resid: torch.Tensor,            # [B, 1, d_model] during generation
     hook: HookPoint,
-    steering_vectors: torch.Tensor,
-    alpha: int = 5,
-    instruction_pos: int = 0,
-) -> torch.FloatTensor:
-    """
-    Steer the residual stream by adding a scaled steering vector only to positions after instruction_pos.
-
-    Args:
-        residual_component: The current residual activation (batch_size, seq_len, d_model).
-        hook: The HookPoint.
-        steering_vectors: Pre-computed steering vectors for each layer.
-        alpha: Scaling factor for the steering vector.
-        instruction_pos: Token position after which to apply the steering.
-
-    Returns:
-        Modified residual component after steering.
-    """
-    steering_vector = steering_vectors[hook.layer()]  # Shape: (d_model,)
-    add_act = torch.tensor(alpha * steering_vector).to(residual_component.device)
-
-    # Apply steering only to positions after the instruction
-    batch_size, seq_len, _ = residual_component.shape
-    if seq_len > instruction_pos:
-        residual_component[:, instruction_pos:, :] += add_act
-
-    add_act.detach_()
-    return residual_component
+    *,
+    steering_vectors: torch.Tensor, # [n_layers, d_model]
+    alpha: float,
+) -> torch.Tensor:
+    if resid.size(1) == 1:          # skip the prompt pass (seq_len > 1)
+        resid += alpha * steering_vectors[hook.layer()][None, None, :]
+    return resid
 
 
-def generate_with_hooks(
+# ─────────────────────────────────────────────────────────────────────────────
+# Main convenience wrapper
+# ─────────────────────────────────────────────────────────────────────────────
+@torch.inference_mode()
+def generate_with_steering(
     model,
-    tokens: torch.Tensor,
-    steering_vectors: torch.Tensor,
+    prompt_tokens: torch.LongTensor,      # [B, prompt_len]
+    steering_vectors,                     # NumPy or torch, [n_layers, d_model]
     max_new_tokens: int = 100,
     temperature: float = 0.7,
-    verbose: bool = True,
     alpha: float = 5.0,
-    layers: Optional[List[int]] = None,
-) -> str:
-    """
-    Generate text while steering the residual stream (through hooks)
-    AND benefiting from key-value caching to avoid re-running the full prompt.
-
-    The steering function (steer_residual_stream) only applies additions to residual
-    positions strictly beyond the initial `instruction_pos`.
-    
-    This function is designed to be model-agnostic.
-    """
-
-    # --------------------------------------------------------------------------
-    # 1) Initialize a key-value cache for the model
-    #    So we can reuse it at each decoding step.
-    # --------------------------------------------------------------------------
-    kv_cache = HookedTransformerKeyValueCache.init_cache(
-        cfg=model.cfg,
-        device=tokens.device,
-        batch_size=tokens.size(0),
+    layers=None,
+):
+    # 1. Normalise steering_vectors to correct dtype / device
+    steering_vectors = torch.as_tensor(
+        steering_vectors,
+        dtype=model.W_E.dtype,
+        device=model.W_E.device,
     )
 
-    # --------------------------------------------------------------------------
-    # 2) Figure out which layers we want to steer
-    # --------------------------------------------------------------------------
-    # If no layers are specified, we steer all layers
+    # 2. Decide which layers to steer
     if layers is None:
-        layers = range(model.cfg.n_layers)
+        layers = list(range(model.cfg.n_layers))
 
-    # The "instruction_pos" is the boundary token index beyond which
-    # we apply the steering
-    instruction_pos = tokens.size(1)
+    steer_hook = partial(_steer_generated_token,
+                         steering_vectors=steering_vectors,
+                         alpha=alpha)
 
-    # --------------------------------------------------------------------------
-    # 3) Build our hook function that adds the "steering_vectors" in the
-    #    residual stream after `instruction_pos`.
-    # --------------------------------------------------------------------------
-    partial_steer_func = partial(
-        steer_residual_stream,
-        steering_vectors=steering_vectors,
-        alpha=alpha,
-        instruction_pos=instruction_pos,
+    # 3. Register hooks once, generate, then clear hooks
+    for l in layers:
+        name = utils.get_act_name("resid_post", l)
+        model.add_hook(name, steer_hook, dir="fwd")   # returns None on PyPI build
+
+    # run generate (steering active)
+    full_tokens = model.generate(
+        prompt_tokens,
+        max_new_tokens=max_new_tokens,
+        temperature=temperature,
+        do_sample=True,
+        prepend_bos=False,
     )
 
-    # Each layer's "resid_post" will register the same partial function
-    # (or different ones, if needed).
-    hooks = [
-        (utils.get_act_name("resid_post", layer), partial_steer_func)
-        for layer in layers
-    ]
+    model.reset_hooks()            # ← one call clears every registered hook
 
-    # --------------------------------------------------------------------------
-    # 4) First forward pass over the entire prompt to:
-    #    (a) fill the kv_cache
-    #    (b) retrieve logits for the final prompt token
-    # --------------------------------------------------------------------------
-    with torch.no_grad():
-        logits_full_prompt = model.run_with_hooks(
-            tokens,
-            fwd_hooks=hooks,
-            return_type="logits",
-            past_kv_cache=kv_cache,  # This populates kv_cache with the entire prompt
-        )  # shape: [batch, seq_len, vocab_size]
+    # Return only the freshly generated part
+    gen_only = full_tokens[:, prompt_tokens.size(1):]
+    return model.to_string(gen_only)
 
-    # Use the final token's logits if you want to sample the first new token
-    # but in practice we'll do that inside the loop below
-    model.reset_hooks()  # Clear ephemeral hooks before next step
 
-    generated_tokens = []
-
-    # --------------------------------------------------------------------------
-    # 5) Generate new tokens, one step at a time, reusing kv_cache
-    # --------------------------------------------------------------------------
-    for _ in range(max_new_tokens):
-        # Only run forward on the last token we appended
-        with torch.no_grad():
-            logits_step = model.run_with_hooks(
-                tokens[:, -1:],
-                fwd_hooks=hooks,
-                return_type="logits",
-                past_kv_cache=kv_cache,  # Reuse & update the same cache
-            )
-        model.reset_hooks()
-
-        # logits_step shape: [batch, 1, vocab_size]
-        next_logits = logits_step[:, -1, :]
-        # Apply temperature
-        next_logits = next_logits / temperature
-        probs = torch.nn.functional.softmax(next_logits, dim=-1)
-
-        # Sample next token. (Assuming batch_size = 1 for simplicity)
-        next_token_id = torch.multinomial(probs, num_samples=1).item()
-        generated_tokens.append(next_token_id)
-
-        # Append new token to the existing tokens
-        next_token_tensor = torch.tensor([[next_token_id]], device=tokens.device)
-        tokens = torch.cat([tokens, next_token_tensor], dim=1)
-
-        # Get the model's tokenizer and determine appropriate stopping tokens
-        eos_token_id = getattr(model.tokenizer, "eos_token_id", None)
-        if eos_token_id is None:
-            # Try to find alternative EOS token IDs based on model family
-            model_family = getattr(model, "model_family", "unknown")
-            if model_family == "gemma":
-                eos_token_id = model.tokenizer.convert_tokens_to_ids(["<eos>"])[0]
-            elif model_family == "llama":
-                eos_token_id = model.tokenizer.convert_tokens_to_ids(["</s>"])[0]
-            elif model_family == "mistral":
-                eos_token_id = model.tokenizer.convert_tokens_to_ids(["</s>"])[0]
-        
-        # Stop if eos token is generated (if we found one)
-        if eos_token_id is not None and next_token_id == eos_token_id:
-            break
-
-        if verbose:
-            print(
-                model.tokenizer.decode([next_token_id], skip_special_tokens=False),
-                end="",
-            )
-
-    # --------------------------------------------------------------------------
-    # 6) Decode the newly added tokens into text
-    # --------------------------------------------------------------------------
-    generated_text = model.tokenizer.decode(generated_tokens, skip_special_tokens=False)
-
-    if verbose:
-        print()
-
-    return generated_text
 
 
 def evaluate_confabulation(original_prompt, generation):
@@ -201,6 +106,8 @@ def evaluate_confabulation(original_prompt, generation):
         "explanation": str
       }
     """
+    if not openai.api_key:
+        raise ValueError("OPENAI_API_KEY not found in environment variables. Required for confabulation evaluation.")
     # Full instructions explained in the system_preamble, describing the types of behaviors we want:
     system_preamble = """
     You are a helpful assistant. Your job is to categorize the reasoning process of a language model in response to a given prompt.

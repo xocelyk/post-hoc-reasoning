@@ -4,32 +4,13 @@ import random
 from typing import Dict, List
 
 
-def format_city_reasoning_from_json(data: Dict) -> List[List[str]]:
-    """
-    Format the city_reasoning dataset from JSON.
-    Each example contains a statement about visiting a landmark in a city and whether it's plausible.
-    """
+def format_sports_understanding_from_json(data: List[Dict]) -> List[List[str]]:
     result = []
-    examples = data.get("examples", [])
-    for example in examples:
-        input_text = example["input"]
-        target_scores = example["target_scores"]
-        # Determine the correct answer based on the highest score
-        correct_answer = max(target_scores, key=target_scores.get)
-        label = "yes" if correct_answer.lower() == "plausible" else "no"
-        result.append([input_text, label])
-    return result
-
-def format_sports_understanding_from_json(data: Dict) -> List[List[str]]:
-    result = []
-    examples = data.get("examples", [])
-    for example in examples:
-        sentence = example["input"]
+    for example in data:
+        question = example["input"]  # Use the full question as-is
         target = example["target"]
         label = "no" if target.lower() == "no" else "yes"
-        # Extract the sentence inside quotes
-        sentence = sentence.split('"')[1]
-        result.append([sentence, label])
+        result.append([question, label])
     return result
 
 
@@ -51,11 +32,29 @@ def format_snarks_from_json(data: Dict) -> List[List[str]]:
     examples = data.get("examples", [])
     for example in examples:
         input_text = example["input"]
-        # Extract the statement after "Options:"
-        input_text = input_text.split("\nOptions:\n")[-1].split("\n")[0].strip()
         target = example["target"]
-        label = "no" if target == "(A)" else "yes"
-        result.append([input_text, label])
+        
+        # Extract both options from the text
+        lines = input_text.split("\n")
+        option_a = None
+        option_b = None
+        
+        for line in lines:
+            line = line.strip()
+            if line.startswith("(A)"):
+                option_a = line[3:].strip()  # Remove "(A) " prefix
+            elif line.startswith("(B)"):
+                option_b = line[3:].strip()  # Remove "(B) " prefix
+        
+        # Create training examples for both options
+        if option_a:
+            label_a = "yes" if target == "(A)" else "no"
+            result.append([option_a, label_a])
+        
+        if option_b:
+            label_b = "yes" if target == "(B)" else "no"
+            result.append([option_b, label_b])
+    
     return result
 
 
@@ -120,7 +119,10 @@ def format_quora_questions_from_json(data: List[Dict]) -> List[List[str]]:
 
 
 def create_dataset(task_name: str) -> List[List[str]]:
-    json_filename = f"../data/{task_name}/{task_name}.json"
+    # Get the directory of this script
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    # Go up one level to get to the project root, then to data
+    json_filename = os.path.join(script_dir, "..", "data", task_name, f"{task_name}.json")
     with open(json_filename, "r") as f:
         json_data = json.load(f)
 
@@ -136,17 +138,41 @@ def create_dataset(task_name: str) -> List[List[str]]:
         example_data = format_logical_deduction_from_json(json_data)
     elif task_name == "quora_question_pairs":
         example_data = format_quora_questions_from_json(json_data)
-    elif task_name == "city_reasoning":
-        example_data = format_city_reasoning_from_json(json_data)
     else:
         raise ValueError(f"Unknown task name: {task_name}")
 
     return example_data
 
 
-def create_cot_dataset(task_name: str, examples: List[List[str]]) -> List[Dict]:
+def create_noncot_dataset(task_name: str, examples: List[List[str]]) -> List[Dict]:
     cot_prompt = load_cot_prompt(task_name)
     example_instruction = 'Please verbalize how you are thinking about the problem, then give your answer in the format "The best answer is: (X)". It\'s very important that you stick to this format.'
+
+
+def create_cot_dataset(
+    task_name: str, examples: List[List[str]], thinking: bool = True, model_name: str = None
+) -> List[Dict]:
+    # Override thinking to False for DeepSeek models
+    is_deepseek = model_name and model_name.lower().startswith('deepseek')
+    if is_deepseek:
+        thinking = False
+    
+    cot_prompt = load_cot_prompt(task_name)
+    example_instruction = 'Please verbalize how you are thinking about the problem, then give your answer in the format "The best answer is: (X)". It\'s very important that you stick to this format.'
+    if not thinking:
+        for turn in cot_prompt:
+            if turn["role"] == "user":
+                turn["content"] = turn["content"].replace(example_instruction, "")
+            else:
+                import re
+
+                match = re.search(r"\((A|B)\).*?(Yes|No)", turn["content"])
+                if match:
+                    letter, yes_no = match.groups()
+                    turn["content"] = f"A: ({letter}) {yes_no}"
+
+    if not thinking:
+        example_instruction = ""
 
     task_configs = {
         "sports_understanding": {
@@ -209,13 +235,6 @@ def create_cot_dataset(task_name: str, examples: List[List[str]]) -> List[Dict]:
                 ),
             ],
         },
-        "city_reasoning": {
-            "question": "Is the following sentence plausible?",
-            "choices": [
-                ("Yes, the sentence is plausible", "No, the sentence is implausible"),
-                ("No, the sentence is implausible", "Yes, the sentence is plausible"),
-            ],
-        },
     }
 
     dataset = []
@@ -244,31 +263,44 @@ def create_cot_dataset(task_name: str, examples: List[List[str]]) -> List[Dict]:
 
         prompt = []
         prompt.extend(cot_prompt)
+        
 
+        # Create the new question content
         if task_name == "logical_deduction":
-            prompt.append(
-                {
-                    "role": "user",
-                    "content": (
-                        f"Q: {full_text}\n\n"
-                        f"Answer choices:\n(A) {choices[0]}\n(B) {choices[1]}\n\n"
-                        f"{example_instruction}"
-                    ),
-                }
+            new_question_content = (
+                f"Q: {full_text}\n\n"
+                f"Answer choices:\n(A) {choices[0]}\n(B) {choices[1]}\n\n"
+                f"{example_instruction}"
             )
         else:
-            prompt.append(
-                {
-                    "role": "user",
-                    "content": (
-                        f"Q: {config['question']} {full_text}\n\n"
-                        f"Answer choices:\n(A) {choices[0]}\n(B) {choices[1]}\n\n"
-                        f"{example_instruction}"
-                    ),
-                }
+            # For sports_understanding, full_text already contains the question
+            if task_name == "sports_understanding":
+                question_text = full_text  # Already contains "Is the following sentence plausible? ..."
+            else:
+                question_text = f"{config['question']} {full_text}"
+                
+            new_question_content = (
+                f"Q: {question_text}\n\n"
+                f"Answer choices:\n(A) {choices[0]}\n(B) {choices[1]}\n\n"
+                f"{example_instruction}"
             )
 
-        prompt.append({"role": "model", "content": "A: Let's think step by step:"})
+        # Add the new question as a user message
+        prompt.append({
+            "role": "user",
+            "content": new_question_content,
+        })
+
+        # Add the assistant message unless it's a DeepSeek model
+        is_deepseek = model_name and model_name.lower().startswith('deepseek')
+        if not is_deepseek:
+            prompt.append({
+                "role": "assistant",
+                "content": "A: Let's think step by step:" if thinking else "A:",
+            })
+
+        # Fix role alternation for the entire prompt
+        prompt = ensure_role_alternation(prompt)
 
         if label in choices[0].lower():
             correct_letter = "A"
@@ -277,6 +309,7 @@ def create_cot_dataset(task_name: str, examples: List[List[str]]) -> List[Dict]:
         else:
             continue
 
+        
         dataset.append(
             {
                 "prompt": prompt,
@@ -288,12 +321,85 @@ def create_cot_dataset(task_name: str, examples: List[List[str]]) -> List[Dict]:
     return dataset
 
 
+def ensure_role_alternation(messages: List[Dict[str, str]]) -> List[Dict[str, str]]:
+    """
+    Ensure proper role alternation by combining consecutive messages from the same role.
+    
+    Args:
+        messages: List of chat messages
+        
+    Returns:
+        List of messages with proper role alternation
+    """
+    if not messages:
+        return messages
+    
+    fixed_messages = []
+    current_message = messages[0].copy()
+    
+    for i in range(1, len(messages)):
+        next_message = messages[i]
+        
+        if current_message["role"] == next_message["role"]:
+            # Same role - combine the messages
+            current_message["content"] += f"\n\n{next_message['content']}"
+        else:
+            # Different role - add current message and start new one
+            fixed_messages.append(current_message)
+            current_message = next_message.copy()
+    
+    # Don't forget the last message
+    fixed_messages.append(current_message)
+    
+    return fixed_messages
+
+
 def load_cot_prompt(task_name: str) -> Dict:
-    with open(f"../data/{task_name}/{task_name}_cot.json", "r") as f:
-        return json.load(f)
+    # Get the directory of this script
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    # Go up one level to get to the project root, then to data
+    cot_filename = os.path.join(script_dir, "..", "data", task_name, f"{task_name}_cot.json")
+    with open(cot_filename, "r") as f:
+        cot_data = json.load(f)
+    
+    # Fix chat format issues for proper alternation
+    fixed_cot = []
+    
+    # Process all messages, converting 'model' to 'assistant' and adding proper Q:/A: prefixes
+    for i, message in enumerate(cot_data):
+        new_message = message.copy()
+        if new_message["role"] == "model":
+            new_message["role"] = "assistant"
+        
+        content = new_message["content"].strip()
+        
+        # Add Q: prefix to user messages that are questions (not the first instruction)
+        if new_message["role"] == "user":
+            if i == 0:
+                # First message is instruction, keep as-is
+                new_message["content"] = content
+            else:
+                # Subsequent user messages are questions, add Q: if not already there
+                if not content.startswith("Q: "):
+                    new_message["content"] = "Q: " + content
+                else:
+                    new_message["content"] = content
+        elif new_message["role"] == "assistant":
+            # Add A: prefix to assistant messages if not already there
+            if not content.startswith("A: "):
+                new_message["content"] = "A: " + content
+            else:
+                new_message["content"] = content
+            
+        fixed_cot.append(new_message)
+    
+    # Ensure proper role alternation by combining consecutive messages from the same role
+    fixed_cot = ensure_role_alternation(fixed_cot)
+    
+    return fixed_cot
 
 
-def load_all_datasets(sample_size=1000):
+def load_all_datasets(sample_size=1000, model_name=None):
     task_datasets = {}
     # Supported tasks based on available format functions
     task_names = [
@@ -308,7 +414,7 @@ def load_all_datasets(sample_size=1000):
         examples = create_dataset(task_name)
         if len(examples) > sample_size:
             examples = random.sample(examples, sample_size)
-        cot_dataset = create_cot_dataset(task_name, examples)
+        cot_dataset = create_cot_dataset(task_name, examples, model_name=model_name)
         task_datasets[task_name] = cot_dataset
     return task_datasets
 

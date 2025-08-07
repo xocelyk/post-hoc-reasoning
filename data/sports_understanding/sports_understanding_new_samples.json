@@ -1,0 +1,4752 @@
+[
+  {
+    "input": "Is the following sentence plausible? \"Aaron Jones gained five yards.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Cooper Kupp caught the back shoulder fade.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Deshaun Watson earned a trip to the penalty box.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jonathan Huberdeau launched a hail mary.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Trae Young threw a touchdown.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Timo Meier skated backwards in the Stanley Cup Playoffs.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Sidney Crosby shot from the six yard line in the Western Conference Finals.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Luka Doncic performed a slide tackle.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Vladimir Guerrero Jr. was flagged on the play.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Stefon Diggs shot from the six yard line.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Chris Godwin shot with the left foot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Gerard Pique nutmegged the defender.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"David Pastrnak set the hard screen.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Gabriel Landeskog hit the screen pass.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Auston Matthews did a double stepover.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Anthony Davis scored a reverse dunk.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Brandin Cooks earned a trip to the penalty box.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kevin De Bruyne beat the buzzer.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mikal Bridges watched the pitch go by.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Sadio Mane performed a give and go.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mika Zibanejad took ball four.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Amari Cooper hit nothing but net.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Brad Marchand launched the desperation heave.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jayson Tatum was flagged on the play.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Gerard Pique went in studs up.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Blake Snell threw to first base.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Victor Hedman gained five yards.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Luka Doncic hit the screen pass in the NFC Divisional.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Nazem Kadri killed the powerplay.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Sterling Shepard skated backwards.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Karim Benzema spent time in the penalty box.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Derrick Henry fumbled the ball.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Zach LaVine launched a hail mary.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Manny Machado launched the half court shot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Carles Puyol got on base.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Corbin Burnes hit a double.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Tyler Lockett hit the screen pass.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"N'Golo Kante spent time in the penalty box in the League Championship.\"",
+    "target": "no",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jack Hughes skated backwards in the Winter Classic.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"James Harden threw a touchdown.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Raheem Sterling performed a give and go.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Giannis Antetokounmpo did a maradona on the defender in the World Series.\"",
+    "target": "no",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Robin Lehner committed a handball.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Clint Capela scored the easy layup in the NBA Championship.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kawhi Leonard airballed the shot.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mika Zibanejad hit nothing but net.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Yaya Toure stepped on first base.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jadon Sancho scored a corner kick.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Julian Edelman entered the attacking zone.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"David Pastrnak earned a trip to the penalty box.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"CeeDee Lamb took a throw in.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jamal Murray took a three.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Son Heung-min walked on ball four.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Edinson Cavani caught the back shoulder fade.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jamal Murray took a side-step three.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Davante Adams took a backhand shot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Toni Kroos was flagged on the play.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Philip Rivers scored a reverse layup in the All-Star Game.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Johnny Gaudreau scored a reverse layup.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Claude Giroux was called for the goal tend.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Austin Ekeler earned a red card in the Eastern Conference Finals.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Ryan Tannehill took ball four.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Andrei Vasilevskiy entered the attacking zone.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Corbin Burnes threw to first base.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Alex Bregman was out at home.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Justin Jefferson shot with the left foot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Sidney Crosby earned a trip to the penalty box in the Winter Classic.\"",
+    "target": "yes",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Claude Giroux earned a trip to the penalty box.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Zach LaVine hit a single in the World Series.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mitchell Robinson set the hard screen.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Walker Buehler grounded out to second base.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Yaya Toure worked a full count.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Anthony Davis was flagged on the play.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Giancarlo Stanton skated behind the net.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"De'Aaron Fox launched a hail mary.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mario Gomez crossed the blue line.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mika Zibanejad took a backhand shot.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Travis Kelce gained five yards in the Superbowl.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"N'Golo Kante scored a bicycle kick in the World Cup.\"",
+    "target": "yes",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"DK Metcalf maradona'd the defender.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Erik Karlsson was called for slashing in the Stanley Cup Finals.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Manny Machado took the snap.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Carles Puyol earned a red card in the Champions League Final.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kevin De Bruyne hit nothing but net in the Winter Classic.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Justin Jefferson worked a full count.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Rafael Devers stepped on first base in the Division Series.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Philip Rivers maradona'd the defender.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Zach LaVine launched the half court shot.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Giannis Antetokounmpo scored a header goal.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Raheem Sterling scored a penalty kick.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Alex Bregman caught the screen pass.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Auston Matthews entered the attacking zone.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Ben Simmons took a three.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Gerrit Cole worked a full count.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Edinson Cavani scored a freekick.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Willian scored a reverse layup.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"David Pastrnak earned a red card in the Champions League Final.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"DK Metcalf watched the pitch go by.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Gabriel Landeskog crossed the blue line in the Stanley Cup Finals.\"",
+    "target": "yes",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Juan Soto struck out the side.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Austin Ekeler drew a flag on the play.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Adam Thielen changed direction in the backfield in the AFC Championship.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Russell Westbrook banked the shot.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Erling Haaland took a charge.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Gleyber Torres launched the desperation heave in the Conference Finals.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Ben Simmons took the snap.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Aaron Jones took the snap.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Gerrit Cole was out at second.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Fred VanVleet watched the pitch go by.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Artemi Panarin went five hole in the Stanley Cup Playoffs.\"",
+    "target": "yes",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"David Silva went in studs up.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Alex Ovechkin stepped on first base.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"De'Aaron Fox scored in added time.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Ja'Marr Chase caught the back shoulder fade.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mike Evans fumbled the ball.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Joel Embiid performed a give and go.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Fred VanVleet hit the buzzer beater.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Paul Pogba took the snap.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"George Kittle scored in the third period.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Drew Brees scored a touchdown.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Tyler Lockett committed a handball.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Ja'Marr Chase launched a hail mary.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Clint Capela hit a triple.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Wayne Rooney stepped on first base.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Dejounte Murray beat the buzzer.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Neymar scored in the third period in the Stanley Cup.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Freddie Freeman got on base.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Blake Snell hit a double.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Ryan Nugent-Hopkins shot from the six yard line in the Wild Card Game.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Andres Iniesta was flagged on the play.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Pedro earned a trip to the penalty box.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Drew Brees was flagged on the play in the AFC Divisional.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Robert Lewandowski scored a bicycle kick.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Steven Stamkos lost control of the puck.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Gleyber Torres was called for icing in the Western Conference Finals.\"",
+    "target": "no",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Draymond Green launched the desperation heave in the Conference Finals.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Gerrit Cole grounded out to second base.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"LaMelo Ball was safe at first.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Gerrit Cole converted the first down.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Ronald Acuna Jr. grounded out to second base.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Tom Wilson took a backhand shot.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Vladimir Guerrero Jr. skated behind the net.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Draymond Green scored a corner kick.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Brandin Cooks performed a give and go.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"George Kittle skated behind the net in the Eastern Conference Finals.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Gerrit Cole was out at first.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Malcolm Brogdon scored a corner kick in the Champions League Final.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Pedro shot from outside the eighteen in the World Cup.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Timo Meier fumbled the ball.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Teuvo Teravainen skated behind the net.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"John Carlson passed the puck.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Angel Di Maria caught the back shoulder fade.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mario Balotelli lost control of the puck.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Cale Makar scored in the third period.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Amari Cooper ran out of bounds in the NFC Championship.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"CeeDee Lamb scored a reverse dunk.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Sidney Crosby launched the desperation heave.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mikal Bridges was called for slashing.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Austin Ekeler caught the screen pass.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Aaron Judge watched the pitch go by.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Alex Bregman hit a single.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Vladimir Guerrero Jr. threw to first base.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Matthew Tkachuk shot with the left foot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Francisco Lindor hit a single.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Gerrit Cole beat the buzzer.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Dejounte Murray shot from beyond the arc.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Pepe was flagged on the play.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Giannis Antetokounmpo worked a full count in the NFC Championship.\"",
+    "target": "no",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Cristiano Ronaldo nutmegged the defender.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kylian Mbappe took the snap.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jadon Sancho got on the end of a through ball.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Tom Brady entered the attacking zone.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Riyad Mahrez took a left footed shot.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kendrick Nunn wristed a shot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Karim Benzema scored a corner kick.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jonathan Taylor was called for icing.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Timo Meier hit a walkoff homer.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Norman Powell was called for the goal tend.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Chris Godwin scored a touchdown.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Julian Edelman went five hole.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Travis Kelce launched the desperation heave in the FA Cup.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Amari Cooper called for the screen.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Sidney Crosby skated behind the net.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mario Gomez scored in added time.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Tom Brady went for it on fourth down.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Raheem Sterling shot with the left foot.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Fernando Tatis Jr. took ball four.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mika Zibanejad eurostepped to the basket.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jose Ramirez was out at second.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Domantas Sabonis got into the endzone.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Alex Ovechkin dunked the ball.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Pepe spent time in the penalty box in the All-Star Game.\"",
+    "target": "no",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kyle Schwarber was out at first.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Frederik Andersen skated backwards.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Malik Beasley set the hard screen.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Son Heung-min did a maradona on the defender.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Arjen Robben scored in extra time.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Aaron Judge hit a double.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Sterling Shepard was called for icing in the Stanley Cup Playoffs.\"",
+    "target": "no",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mario Balotelli scored in added time in the Champions League Final.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Walker Buehler scored in extra time.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"George Springer scored in added time.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mika Zibanejad passed the puck in the Stanley Cup.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Marcus Rashford earned a red card.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kylian Mbappe earned a red card.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Igor Shesterkin went five hole in the Stanley Cup.\"",
+    "target": "yes",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"David Pastrnak killed the powerplay.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Andres Iniesta worked a full count.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"DeAndre Hopkins went for it on fourth down in the NFC Divisional.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jose Ramirez struck out the side.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jonathan Huberdeau scored on the power play.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Juan Soto worked a full count.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Pete Alonso threw a touchdown.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Francisco Lindor worked a full count.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Riyad Mahrez scored a windmill dunk in the AFC Championship.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Luis Robert struck out the side in the All-Star Game.\"",
+    "target": "yes",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Sergio Busquets got on the end of a through ball.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Carson Wentz changed direction in the backfield.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Gerrit Cole skated backwards.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Alex Bregman took a backhand shot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Giannis Antetokounmpo scored a reverse dunk.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Dejounte Murray was called for icing.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Nick Chubb gained five yards.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"LeBron James was out at home in the Stanley Cup Playoffs.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Stefon Diggs went for it on fourth down.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Bo Bichette hit into a double play.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Ryan Tannehill maradona'd the defender.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Sterling Shepard drew a flag on the play.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Gleyber Torres changed direction in the backfield.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Adam Thielen walked on ball four.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Tom Brady gained five yards.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Chris Godwin drew a flag on the play in the Wild Card Round.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Davante Adams committed a handball.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jose Ramirez threw to first base in the All-Star Game.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Dalvin Cook was out at second.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Luis Robert got into the endzone.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"DJ Chark scored a touchdown.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Yordan Alvarez crossed the blue line.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Julian Edelman converted the first down.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Zach LaVine scored in the third period.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Collin Sexton beat the buzzer.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Auston Matthews got into the endzone in the Premier League.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Raheem Sterling scored a freekick.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Yaya Toure launched a hail mary.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Sterling Shepard launched the half court shot in the Winter Classic.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Karim Benzema launched the desperation heave.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"David Silva shot the puck.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Pete Alonso hit a single in the World Series.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mohamed Salah maradona'd the defender.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kyle Schwarber was out at second.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kyle Schwarber hit a walkoff homer in the League Championship.\"",
+    "target": "yes",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Cristiano Ronaldo got on the end of a through ball in the European Cup.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mario Balotelli scored in added time in the Premier League.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Carson Wentz was flagged on the play.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"John Carlson wristed a shot.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Drew Brees converted the first down.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Alex Bregman walked to first base in the Wild Card Game.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Nazem Kadri passed the puck.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Alex Bregman threw to first base.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Dejounte Murray hit the buzzer beater.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"George Springer wristed a shot in the Champions League.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"DK Metcalf was flagged on the play.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kwadwo Asamoah wristed a shot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Norman Powell scored a reverse layup.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Toni Kroos scored a header goal.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Nazem Kadri struck out the side in the NBA Finals.\"",
+    "target": "no",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Riyad Mahrez earned an indirect kick.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Sergio Ramos got a base hit.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Tom Wilson was called for slashing.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Ryan Tannehill ran out of bounds.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Cristiano Ronaldo scored in extra time in the European Cup.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Son Heung-min nutmegged the defender.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Philip Rivers fumbled the ball.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jonathan Taylor threw to first base.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"James Harden hit a walkoff homer.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Derrick Henry hit a triple.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Son Heung-min earned an indirect kick.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Stephen Curry shot from outside the eighteen.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Trae Young was called for the goal tend.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Cale Makar scored on the power play.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Vladimir Guerrero Jr. did a double stepover.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Sadio Mane scored a corner kick.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Andres Iniesta hit a double.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Freddie Freeman worked a full count.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jonathan Marchessault did a maradona on the defender in the AFC Championship.\"",
+    "target": "no",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Marcus Rashford took ball four.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Leon Draisaitl shot from outside the eighteen.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Dalvin Cook earned a trip to the penalty box.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Pedro stepped on first base.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Russell Westbrook nutmegged the defender.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Raheem Sterling hit nothing but net.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Dougie Hamilton launched the desperation heave.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Dougie Hamilton went five hole.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Dougie Hamilton entered the attacking zone.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Aleksander Barkov launched the half court shot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Auston Matthews earned an indirect kick in the European Cup.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Fred VanVleet was called for the goal tend.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jayson Tatum scored on the power play.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Gerrit Cole threw to first base in the Division Series.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jonathan Marchessault backhanded a shot in the Stanley Cup Playoffs.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Cooper Kupp ran out of bounds.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Ben Simmons went for it on fourth down.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Walker Buehler threw to first base.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Cristiano Ronaldo went in studs up in the UEFA Euro.\"",
+    "target": "yes",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Walker Buehler took a three.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Anthony Davis earned a red card.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Timo Meier took a backhand shot.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kirill Kaprizov earned a red card.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Dalvin Cook ran out of bounds.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Erling Haaland got on base in the Conference Finals.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Tom Wilson skated backwards.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Marvin Jones changed direction in the backfield.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Timo Meier committed a handball.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Giannis Antetokounmpo got on base.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mario Balotelli went in studs up.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Yaya Toure took a turnaround jumper.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kendrick Nunn was called for icing in the Stanley Cup Finals.\"",
+    "target": "no",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Yordan Alvarez earned an indirect kick.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jonas Valanciunas scored on the power play in the Superbowl.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Freddie Freeman shot from the six yard line.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Ryan Nugent-Hopkins passed the puck.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Sebastian Aho passed the puck.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Bo Bichette hit a walkoff homer.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Giannis Antetokounmpo hit nothing but net.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jadon Sancho hit a single in the NFC Divisional.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Draymond Green crossed the blue line.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Gerrit Cole struck out the side in the Wild Card Game.\"",
+    "target": "yes",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"David Silva did a maradona on the defender.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Drew Brees hit the slant pass.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Frederik Andersen took a charge.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Alex Ovechkin backhanded a shot in the Stanley Cup.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Erik Karlsson shot the puck.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Son Heung-min changed direction in the backfield.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Gerard Pique committed a three second violation.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jaylen Brown drove into the restricted area.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Giorgio Chiellini performed a give and go.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Anthony Rizzo grounded out to second base.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Teuvo Teravainen was safe at first.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Travis Kelce shot from beyond the arc.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Draymond Green committed a blocking foul.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Stephen Curry threw a touchdown.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kawhi Leonard took a three.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mikal Bridges was out at home.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Bryce Harper walked on ball four in the Wild Card Game.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Keenan Allen changed direction in the backfield.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Corbin Burnes backhanded a shot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Malcolm Brogdon took a left footed shot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Trae Young caught the back shoulder fade.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Sidney Crosby was out at first.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Marcus Rashford took the snap.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Brandin Cooks took the snap in the NFC Divisional.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Nick Chubb walked on ball four.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Sebastian Aho scored a touchdown.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Trae Young took a turnaround jumper.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Frederik Andersen skated behind the net.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Nick Chubb drew a flag on the play.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Sidney Crosby did a double stepover.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Luka Modric did a maradona on the defender.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Marcelo nutmegged the defender.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Sadio Mane threw a touchdown.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"DJ Chark hit the screen pass.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Fred VanVleet killed the powerplay.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jack Flaherty set the hard screen in the AFC Championship.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Giorgio Chiellini caught the back shoulder fade in the Winter Classic.\"",
+    "target": "no",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Nazem Kadri entered the attacking zone.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"David Pastrnak was safe at first.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kevin De Bruyne went in studs up.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Cristiano Ronaldo hit a triple in the World Series.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Ja'Marr Chase ran out of bounds.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Trea Turner hit a double in the Wild Card Game.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Cale Makar launched a hail mary.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Luis Robert was out at second in the All-Star Game.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Tom Wilson scored on the power play.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kyle Connor scored a bicycle kick.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Stefon Diggs was called for the goal tend.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Marcus Rashford ran out of bounds.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Amari Cooper hit the screen pass.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jakub Vrana ran out of bounds.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Sergio Busquets killed the powerplay.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Walker Buehler took the snap.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Juan Soto took a backhand shot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Tyler Lockett was flagged on the play in the NFC Championship.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Giancarlo Stanton scored a penalty kick.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Dalvin Cook crossed the blue line.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Marvin Jones threw a touchdown.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kyle Tucker fumbled the ball.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Deshaun Watson scored a bicycle kick.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Travis Kelce took the snap.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mario Balotelli passed the puck.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jonathan Taylor drew a flag on the play.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Giancarlo Stanton got a base hit.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Ronald Acuna Jr. got on base.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Gleyber Torres went for it on fourth down.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jamal Murray scored in added time.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Adam Thielen hit nothing but net.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kyle Connor crossed the blue line.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jonathan Huberdeau took a side-step three.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Dougie Hamilton passed the puck in the Conference Finals.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Alex Bregman scored in added time.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Aaron Judge backhanded a shot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Fred VanVleet took a backhand shot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Timo Meier hit a triple in the League Championship.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"DeAndre Hopkins hit a double.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Xander Bogaerts hit nothing but net.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jonathan Huberdeau set the hard screen in the AFC Divisional.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kyle Connor spent time in the penalty box.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Xander Bogaerts hit a walkoff homer.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mike Trout set the hard screen.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Andrei Vasilevskiy launched the half court shot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Russell Westbrook scored the easy layup.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Teuvo Teravainen killed the powerplay.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"George Springer was out at first.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Matthew Tkachuk skated behind the net in the Stanley Cup Playoffs.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Yordan Alvarez hit into a double play.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Malik Beasley hit a single.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Marvin Jones hit nothing but net.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Elias Lindholm scored on the power play.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Domantas Sabonis hit a single.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Luis Robert struck out the side.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"LeBron James scored a reverse layup.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Carson Wentz got on the end of a through ball.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Tyreek Hill got on the end of a through ball.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Nick Chubb scored a touchdown.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Igor Shesterkin went five hole.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Frederik Andersen entered the attacking zone.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mitchell Trubisky hit the slant pass.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Bryce Harper was out at first.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Dougie Hamilton passed the puck.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Manny Machado launched the desperation heave.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Brandin Cooks hit into a double play.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Chris Godwin scored a touchdown in the AFC Divisional.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Nathan MacKinnon launched the desperation heave.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Gleyber Torres earned a trip to the penalty box in the Champions League.\"",
+    "target": "no",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Malcolm Brogdon set the hard screen.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"George Springer set the hard screen.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kwadwo Asamoah shot from the six yard line.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kevin Durant hit the buzzer beater.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Luis Robert skated backwards.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mohamed Salah went in studs up in the Champions League.\"",
+    "target": "yes",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Adam Thielen scored a corner kick.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kawhi Leonard was called for the goal tend in the First Round.\"",
+    "target": "yes",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Manny Machado went in studs up.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jose Ramirez launched the desperation heave in the Stanley Cup Finals.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Clint Capela committed a handball.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Alvin Kamara changed direction in the backfield.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Trae Young hit nothing but net in the Western Conference Finals.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kwadwo Asamoah got on the end of a through ball.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Steven Stamkos earned a trip to the penalty box.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Luis Robert took a left footed shot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Marcus Rashford hit the buzzer beater.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Norman Powell spent time in the penalty box.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Juan Soto fumbled the ball in the UEFA Euro.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Alex Bregman was out at first in the World Series.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Neymar did a maradona on the defender.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Yordan Alvarez caught the back shoulder fade in the AFC Championship.\"",
+    "target": "no",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Tyler Lockett watched the pitch go by.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Domantas Sabonis fumbled the ball.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Nathan MacKinnon committed a handball.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jack Hughes launched the desperation heave in the Winter Classic.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Travis Kelce was safe at first.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Manny Machado set the hard screen.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jonathan Marchessault was out at second in the Division Series.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Claude Giroux got a base hit.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Julian Edelman ran out of bounds.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Andres Iniesta hit the slant pass.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Tyler Lockett scored a penalty kick.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Zach LaVine beat the buzzer.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Draymond Green went five hole in the FA Cup.\"",
+    "target": "no",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Gleyber Torres ran out of bounds.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Giannis Antetokounmpo was flagged on the play in the FA Cup.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Pete Alonso launched a hail mary.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Marcus Rashford nutmegged the defender.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Francisco Lindor scored the easy layup.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jose Ramirez scored a reverse dunk in the Stanley Cup.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Zach LaVine was flagged on the play in the League Championship.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jamal Murray spent time in the penalty box.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Riyad Mahrez hit a triple.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jonas Valanciunas eurostepped to the basket.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Nikola Jokic scored a reverse dunk.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Erling Haaland scored a freekick.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Davante Adams hit a triple.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Claude Giroux lost control of the puck.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Travis Kelce hit the wheel route.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Stephen Curry called for the screen.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"John Carlson scored a touchdown.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jaylen Brown shot from beyond the arc.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Collin Sexton scored a windmill dunk in the Western Conference Finals.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Pete Alonso stepped on first base.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Robert Woods threw a touchdown.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Chris Godwin hit the screen pass.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Dalvin Cook caught the screen pass.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Xander Bogaerts scored in extra time.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Malcolm Brogdon eurostepped to the basket.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Steven Stamkos launched the desperation heave.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Nikola Jokic airballed the shot in the Conference Semifinals.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Patrice Bergeron shot the puck.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Wayne Rooney scored the easy layup.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jakub Vrana shot the puck in the Conference Finals.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Fred VanVleet banked the shot.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Brandin Cooks skated behind the net in the League Championship.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jose Altuve was out at home in the World Series.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Yaya Toure took a throw in.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Sergio Ramos took a charge.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Patrick Kane hit the slant pass in the First Round.\"",
+    "target": "no",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Steven Stamkos caught the screen pass.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Manny Machado hit into a double play.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Robert Lewandowski hit the screen pass.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mitchell Robinson spent time in the penalty box.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Ryan Nugent-Hopkins hit a triple.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kirill Kaprizov took a turnaround jumper.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Ryan Tannehill backhanded a shot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Stephen Curry was out at home in the Stanley Cup Playoffs.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jose Ramirez shot from the six yard line.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Manny Machado changed direction in the backfield.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kailer Yamamoto converted the first down.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Andrei Vasilevskiy got into the endzone in the Wild Card Game.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Riyad Mahrez scored in extra time in the World Cup.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Marcelo was called for the goal tend.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Raheem Sterling gained five yards.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Fred VanVleet beat the shot clock.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"T.Y. Hilton scored a windmill dunk.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Rafael Devers maradona'd the defender.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Adam Thielen shot from beyond the arc.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Keenan Allen committed a blocking foul.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Chris Godwin fumbled the ball.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"James Harden eurostepped to the basket.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Luis Robert was out at home.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Derrick Henry ran out of bounds.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Alvin Kamara called for the screen in the NBA Championship.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Ronald Acuna Jr. took a three.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Santi Cazorla shot from the six yard line.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Neymar dunked the ball.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Luka Doncic took a three.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Domantas Sabonis eurostepped to the basket in the NBA Championship.\"",
+    "target": "yes",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Son Heung-min got on the end of a through ball.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kyle Schwarber nutmegged the defender.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Marcelo scored a bicycle kick.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Josh Allen scored a penalty kick.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Nick Chubb maradona'd the defender.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Luka Modric spent time in the penalty box.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Cale Makar entered the attacking zone.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jack Flaherty hit a single.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"George Kittle gained five yards in the AFC Divisional.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Patrick Kane crossed the blue line.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Deshaun Watson walked to first base.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mitchell Robinson got a base hit.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Gerard Pique performed a give and go in the Champions League Final.\"",
+    "target": "yes",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kailer Yamamoto eurostepped to the basket.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Dougie Hamilton wristed a shot.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Walker Buehler walked to first base in the All-Star Game.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Michael Conforto converted the first down.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Alex Bregman was out at second.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jose Altuve threw to first base.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Matthew Tkachuk passed the puck.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Cooper Kupp took a side-step three.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"David Pastrnak took a backhand shot.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Vladimir Guerrero Jr. got on base.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Erling Haaland committed a handball in the Champions League.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Chris Godwin took a side-step three in the Stanley Cup.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jadon Sancho was out at home.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Corbin Burnes got on base.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mika Zibanejad earned an indirect kick in the FA Cup.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"DJ Chark took ball four.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Anthony Davis earned an indirect kick in the Champions League.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Domantas Sabonis committed a handball.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Bo Bichette was out at second.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Trae Young drove into the restricted area.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kyle Connor committed a three second violation.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"CeeDee Lamb took the snap.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Paul Pogba hit into a double play in the Division Series.\"",
+    "target": "no",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"John Carlson scored a penalty kick in the AFC Championship.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kawhi Leonard scored the easy layup.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Pete Alonso skated backwards.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Ryan Nugent-Hopkins earned a trip to the penalty box.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Virgil van Dijk shot from the six yard line.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"T.Y. Hilton launched the half court shot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"George Kittle passed the puck.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Malik Beasley shot from the six yard line.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jaylen Brown was called for icing.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Deshaun Watson beat the shot clock.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jayson Tatum shot from beyond the arc in the Eastern Conference Finals.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Aaron Judge hit a triple.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Alex Ovechkin wristed a shot.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Tom Wilson committed a blocking foul.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Nikola Jokic scored a reverse layup.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"LeBron James scored a reverse dunk.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"LeBron James beat the buzzer.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Aaron Judge went in studs up.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Freddie Freeman grounded out to second base in the Division Series.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Stephen Curry was out at home in the NFC Divisional.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Fred VanVleet went for it on fourth down.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"CeeDee Lamb scored a corner kick.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jonas Valanciunas hit nothing but net.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"George Kittle went for it on fourth down.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mohamed Salah walked on ball four.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mike Evans lost control of the puck.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Philip Rivers scored a touchdown.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Bo Bichette stepped on first base.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Luis Robert beat the buzzer.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Rafael Devers grounded out to second base.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kevin Durant watched the pitch go by.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Travis Kelce wristed a shot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Sterling Shepard shot the puck.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Tom Wilson threw to first base.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Gerard Pique ran out of bounds.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Drew Brees hit a triple.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Bruno Fernandes scored a freekick.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Connor McDavid backhanded a shot.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"David Pastrnak was out at first.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Bryce Harper got into the endzone.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Harry Kane hit the buzzer beater.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Joel Embiid hit the screen pass.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"DeAndre Hopkins shot from outside the eighteen.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Victor Hedman was called for icing.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Pete Alonso was out at home.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Karim Benzema did a double stepover.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Tom Brady launched a hail mary.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Calvin Ridley drew a flag on the play.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Luka Doncic earned an indirect kick.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Adam Thielen lost control of the puck.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Petr Cech grounded out to second base in the All-Star Game.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kawhi Leonard got on base.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Virgil van Dijk was out at home in the All-Star Game.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Patrick Kane wristed a shot.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Edinson Cavani shot from outside the eighteen.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Giannis Antetokounmpo set the hard screen.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kirill Kaprizov was called for icing.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Amari Cooper scored a touchdown.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Zach LaVine got into the endzone.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Nick Chubb ran out of bounds.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"De'Aaron Fox airballed the shot.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Pedro scored in added time.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"George Springer worked a full count.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Shohei Ohtani was safe at first.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mikal Bridges got a base hit.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Matthew Tkachuk wristed a shot.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Manny Machado hit the screen pass.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kyle Tucker caught the back shoulder fade in the Stanley Cup Playoffs.\"",
+    "target": "no",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Cristiano Ronaldo skated behind the net.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"De'Aaron Fox beat the buzzer in the First Round.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Wayne Rooney killed the powerplay.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kyle Connor went for it on fourth down.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"John Carlson went for it on fourth down.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kylian Mbappe entered the attacking zone.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mike Trout threw to first base.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Anthony Rizzo committed a blocking foul.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jayson Tatum drove into the restricted area in the Eastern Conference Finals.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Manny Machado threw to first base.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Giancarlo Stanton drew a flag on the play.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Pete Alonso was called for slashing.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Santi Cazorla went in studs up.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Clint Capela shot from beyond the arc in the NBA Championship.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Toni Kroos got on the end of a through ball in the World Cup.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Brandin Cooks caught the screen pass.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Ronald Acuna Jr. threw to first base in the World Series.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mike Trout scored a penalty kick.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Patrice Bergeron scored in the third period.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Andres Iniesta went in studs up.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Shohei Ohtani took a left footed shot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Andrei Vasilevskiy shot from outside the eighteen.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Fernando Tatis Jr. hit the wheel route.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Russell Westbrook shot from beyond the arc.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Angel Di Maria earned a trip to the penalty box.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Philip Rivers converted the first down in the AFC Divisional.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Zach LaVine hit the buzzer beater in the Western Conference Finals.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Amari Cooper crossed the blue line.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Norman Powell scored a touchdown in the Stanley Cup Playoffs.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kendrick Nunn hit nothing but net.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Cooper Kupp got into the endzone in the AFC Championship.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Brandin Cooks took the snap.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Frederik Andersen hit a triple.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Sergio Busquets performed a give and go.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"David Silva struck out the side.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kwadwo Asamoah earned a red card.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Toni Kroos took the snap.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Bryce Harper was out at second.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Philip Rivers walked on ball four.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Nazem Kadri scored a freekick.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Luka Doncic walked to first base in the AFC Championship.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Blake Snell hit a walkoff homer.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jayson Tatum took a throw in in the Stanley Cup.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kwadwo Asamoah hit a walkoff homer.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"N'Golo Kante took a left footed shot in the European Cup.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Trae Young eurostepped to the basket in the Eastern Conference Finals.\"",
+    "target": "yes",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"John Tavares threw to first base.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Luka Doncic took a side-step three.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Amari Cooper hit the slant pass.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Gabriel Landeskog passed the puck.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kyle Schwarber committed a three second violation.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"T.Y. Hilton changed direction in the backfield.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Malik Beasley scored a reverse layup.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Juan Soto took a turnaround jumper.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kendrick Nunn shot from beyond the arc.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Drew Brees hit the screen pass.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Francisco Lindor scored a windmill dunk.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Ja'Marr Chase got on the end of a through ball.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Anthony Davis backhanded a shot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Rafael Devers struck out the side.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Riyad Mahrez scored a penalty kick.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Sergio Ramos scored in added time.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Matthew Tkachuk entered the attacking zone.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Draymond Green was out at second in the European Cup.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"DeAndre Hopkins took a three.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Aleksander Barkov spent time in the penalty box.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Steven Stamkos drove into the restricted area.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kailer Yamamoto earned an indirect kick.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Sergio Ramos nutmegged the defender.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"N'Golo Kante crossed the blue line.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Dougie Hamilton scored in the third period.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Derrick Henry was flagged on the play.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Raheem Sterling shot the puck.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Raheem Sterling hit a walkoff homer in the AFC Divisional.\"",
+    "target": "no",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Giannis Antetokounmpo launched a hail mary.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Angel Di Maria scored a corner kick.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Malik Beasley shot the puck.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Joel Embiid performed a give and go in the Stanley Cup Playoffs.\"",
+    "target": "no",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Tom Brady took ball four.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jack Hughes earned a trip to the penalty box in the Conference Finals.\"",
+    "target": "yes",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Rafael Devers got into the endzone.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Rafael Devers entered the attacking zone.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Igor Shesterkin was called for slashing.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Luis Robert went in studs up.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Johnny Gaudreau was called for icing.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Keenan Allen lost control of the puck.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Patrice Bergeron lost control of the puck.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Joel Embiid got on the end of a through ball in the Champions League.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Deshaun Watson launched a hail mary.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mario Gomez entered the attacking zone.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"DeAndre Hopkins was called for icing.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Johnny Gaudreau committed a blocking foul.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mohamed Salah threw to first base.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Alex Ovechkin crossed the blue line.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Raheem Sterling earned a red card.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Andrei Vasilevskiy hit the screen pass in the World Cup.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Yordan Alvarez took ball four.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Malik Beasley took a side-step three.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Edinson Cavani airballed the shot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Gabriel Landeskog went five hole.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Davante Adams drew a flag on the play.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Frederik Andersen scored on the power play.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Aaron Jones drew a flag on the play.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Drew Brees changed direction in the backfield.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"T.Y. Hilton ran out of bounds.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mario Balotelli earned an indirect kick.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Sterling Shepard fumbled the ball.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Robert Lewandowski earned a trip to the penalty box.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Yaya Toure was flagged on the play in the European Cup.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Philip Rivers dunked the ball.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Nick Chubb fumbled the ball.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Tom Wilson launched the desperation heave.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Travis Kelce worked a full count.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Manny Machado stepped on first base.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Edinson Cavani earned a red card.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Tom Wilson killed the powerplay.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Willian skated behind the net in the Division Series.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Xander Bogaerts hit a double.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Igor Shesterkin beat the shot clock.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Marcelo scored in extra time.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"DJ Chark gained five yards in the Wild Card Round.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Trae Young maradona'd the defender.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Draymond Green took a charge.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Shohei Ohtani was out at first.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Ben Simmons airballed the shot.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jonathan Taylor scored a touchdown.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"John Tavares gained five yards.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Carson Wentz took a backhand shot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Amari Cooper went for it on fourth down.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mark Stone scored a penalty kick.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kendrick Nunn shot the puck.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Wayne Rooney grounded out to second base.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Leon Draisaitl was called for icing.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"DJ Chark ran out of bounds.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Stephen Curry performed a slide tackle in the NFC Divisional.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Matthew Tkachuk hit a triple.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Anthony Davis killed the powerplay in the Stanley Cup Playoffs.\"",
+    "target": "no",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Freddie Freeman was safe at first.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mookie Betts committed a blocking foul.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"George Kittle launched a hail mary.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Gerard Pique took a throw in.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Ronald Acuna Jr. struck out the side in the World Series.\"",
+    "target": "yes",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jaylen Brown launched the desperation heave.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Deshaun Watson shot from beyond the arc.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jayson Tatum took a charge.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mika Zibanejad took a turnaround jumper.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"John Tavares launched the desperation heave.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Erik Karlsson shot with the left foot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"N'Golo Kante did a double stepover.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jose Ramirez watched the pitch go by.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Giorgio Chiellini entered the attacking zone.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Sebastian Aho skated backwards.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Teuvo Teravainen scored in extra time.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Calvin Ridley hit nothing but net.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Juan Soto got on the end of a through ball in the Conference Semifinals.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Raheem Sterling got on the end of a through ball.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Bryce Harper walked on ball four in the World Series.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Sebastian Aho committed a three second violation.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Adam Thielen caught the back shoulder fade.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Brandin Cooks shot with the left foot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Brandin Cooks was called for slashing.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kailer Yamamoto lost control of the puck.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Zach LaVine ran out of bounds.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"LeBron James scored the easy layup in the First Round.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"DK Metcalf got into the endzone.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Michael Conforto was out at first.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"John Tavares airballed the shot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Neymar nutmegged the defender.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Bruno Fernandes ran out of bounds.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mookie Betts was out at first.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Gleyber Torres scored in extra time.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Fernando Tatis Jr. was out at second.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Son Heung-min was out at first.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kylian Mbappe went in studs up.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"David Silva committed a handball in the World Cup.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Artemi Panarin was out at second.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Edinson Cavani performed a slide tackle.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"CeeDee Lamb threw a touchdown.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Xander Bogaerts shot the puck.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Johnny Gaudreau performed a slide tackle.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Adam Thielen ran out of bounds.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Draymond Green eurostepped to the basket.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Trae Young called for the screen.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Brandin Cooks scored a touchdown in the Wild Card Round.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Neymar scored the easy layup.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jadon Sancho backhanded a shot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Collin Sexton backhanded a shot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Raheem Sterling scored in added time.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"LeBron James was flagged on the play.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"David Pastrnak shot the puck in the Conference Finals.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Harry Kane shot with the left foot.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kevin De Bruyne threw a touchdown.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Francisco Lindor went for it on fourth down.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"George Kittle hit the screen pass.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Tom Wilson caught the back shoulder fade.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Gleyber Torres worked a full count.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kevin De Bruyne shot the puck.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"LaMelo Ball beat the shot clock in the Conference Semifinals.\"",
+    "target": "yes",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mitchell Robinson took a charge.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Joe Burrow launched the desperation heave.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Zach LaVine took a charge.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kirill Kaprizov scored in the third period in the Stanley Cup.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Sergio Ramos took a backhand shot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jonas Valanciunas killed the powerplay.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Trae Young took a side-step three.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Erik Karlsson launched the desperation heave.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"LaMelo Ball beat the shot clock.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Elias Lindholm committed a blocking foul in the Eastern Conference Finals.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Nick Chubb got into the endzone.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Rafael Devers watched the pitch go by.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Cooper Kupp caught the screen pass.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Andrei Vasilevskiy did a maradona on the defender.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Sidney Crosby took a backhand shot.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Arjen Robben fumbled the ball.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Amari Cooper changed direction in the backfield.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Stefon Diggs was out at second.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Tom Brady wristed a shot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mitchell Trubisky crossed the blue line.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kevin De Bruyne took a side-step three.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Son Heung-min drove into the restricted area.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Harry Kane got on the end of a through ball.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Carles Puyol took a throw in.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Harry Kane took a left footed shot.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Willian scored on the power play.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Vladimir Guerrero Jr. got on the end of a through ball.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"DK Metcalf wristed a shot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Tyreek Hill caught the back shoulder fade.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Fernando Tatis Jr. got on base in the Division Series.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Xander Bogaerts was out at first.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Tom Wilson drew a flag on the play.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jack Hughes beat the shot clock.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Juan Soto hit a walkoff homer.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Brandin Cooks eurostepped to the basket.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Marvin Jones airballed the shot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jonathan Marchessault scored on the power play.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Blake Snell took a charge.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Carson Wentz scored on the power play.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Erling Haaland maradona'd the defender.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mario Balotelli was out at home.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jose Ramirez scored a touchdown.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Robert Lewandowski backhanded a shot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Dalvin Cook launched the desperation heave.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Nikola Jokic hit the buzzer beater.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Cale Makar hit the screen pass.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Anthony Davis scored a windmill dunk.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kendrick Nunn walked on ball four.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Ja'Marr Chase drew a flag on the play.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Robert Lewandowski gained five yards.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Anthony Davis drove into the restricted area.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kylian Mbappe scored a bicycle kick in the European Cup.\"",
+    "target": "yes",
+    "complexity": "complex"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Robert Lewandowski did a maradona on the defender.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Russell Westbrook called for the screen.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Raheem Sterling maradona'd the defender.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Angel Di Maria launched the desperation heave in the Conference Finals.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Shohei Ohtani performed a give and go.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Blake Snell stepped on first base in the All-Star Game.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Giancarlo Stanton hit the slant pass.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"George Springer was out at second in the World Series.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Sergio Ramos scored a reverse dunk.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kylian Mbappe scored a penalty kick.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Tom Wilson was flagged on the play.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Collin Sexton took a three in the Western Conference Finals.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Adam Thielen went for it on fourth down.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Drew Brees converted the first down in the NFC Divisional.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"David Silva was called for icing.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Calvin Ridley launched the half court shot in the Conference Finals.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Willian was called for slashing.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jayson Tatum scored a penalty kick.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Sergio Busquets hit a triple.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Luka Doncic got a base hit.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jamal Murray committed a blocking foul.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Patrick Kane gained five yards.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kailer Yamamoto spent time in the penalty box.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Elias Lindholm threw a touchdown.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Bruno Fernandes scored a header goal.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Santi Cazorla shot from outside the eighteen.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Alvin Kamara threw a touchdown.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"T.Y. Hilton skated backwards in the Premier League.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Luka Modric caught the back shoulder fade.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Sergio Busquets earned a red card.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Giannis Antetokounmpo dunked the ball.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Sergio Ramos called for the screen.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Nikola Jokic scored a windmill dunk.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Nikola Jokic performed a slide tackle.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Gerard Pique stepped on first base.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Mikal Bridges took a throw in.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Vladimir Guerrero Jr. walked to first base.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Chris Godwin passed the puck.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Aaron Jones fumbled the ball.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Walker Buehler drew a flag on the play in the Eastern Conference Finals.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Josh Allen got a base hit.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Petr Cech shot with the left foot in the World Cup.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kyle Schwarber entered the attacking zone.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Jonathan Marchessault passed the puck.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Domantas Sabonis called for the screen in the Western Conference Finals.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Edinson Cavani watched the pitch go by.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"LeBron James skated behind the net.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Bryce Harper scored the easy layup.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Fred VanVleet beat the buzzer.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Kawhi Leonard scored a windmill dunk.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"James Harden threw to first base.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Francisco Lindor shot from the six yard line.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"N'Golo Kante banked the shot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Dougie Hamilton took a left footed shot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Tom Wilson skated behind the net.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Freddie Freeman threw to first base in the Division Series.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Giannis Antetokounmpo hit the wheel route.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Chris Godwin caught the screen pass.\"",
+    "target": "yes",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Anthony Davis caught the back shoulder fade.\"",
+    "target": "no",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Anthony Davis beat the shot clock.\"",
+    "target": "yes",
+    "complexity": "moderate"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Yordan Alvarez took a backhand shot.\"",
+    "target": "no",
+    "complexity": "simple"
+  },
+  {
+    "input": "Is the following sentence plausible? \"Malik Beasley hit the buzzer beater.\"",
+    "target": "yes",
+    "complexity": "simple"
+  }
+]
