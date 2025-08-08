@@ -23,6 +23,7 @@ from parsing_utils import parse_response
 from utils import generate_with_steering
 from visualizer import create_visualizer
 from steering_methods import create_steering_method, format_steering_results
+from logging_utils import setup_logging, log_steering_result, log_phase_start, log_batch_progress, console
 
 # W&B integration
 try:
@@ -82,22 +83,15 @@ class EnhancedExperimentRunner:
         self.wandb_available = WANDB_AVAILABLE and not os.environ.get("WANDB_DISABLED", "false").lower() == "true"
 
     def setup_logging(self):
-        """Setup logging configuration."""
+        """Setup logging configuration with improved formatting."""
         log_dir = os.path.join(self.run_config.cache_dir, "logs")
         os.makedirs(log_dir, exist_ok=True)
 
         timestamp = time.strftime("%Y%m%d_%H%M%S")
         log_file = os.path.join(log_dir, f"experiment_run_{timestamp}.log")
 
-        logging.basicConfig(
-            level=logging.INFO,
-            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-            handlers=[
-                logging.FileHandler(log_file),
-                logging.StreamHandler(sys.stdout),
-            ],
-        )
-        self.logger = logging.getLogger("ExperimentRunner")
+        # Use our custom logging setup
+        self.logger = setup_logging(log_file=log_file, verbose=True)
 
     def parse_response(self, response: str) -> Tuple[str, str]:
         """Parse model response to extract answer."""
@@ -179,7 +173,7 @@ class EnhancedExperimentRunner:
             with torch.no_grad():
                 tokens = model.to_tokens(prompts, prepend_bos=True)
                 token_generations = model.generate(
-                    tokens, max_new_tokens=max_new_tokens, temperature=temperature, verbose=True
+                    tokens, max_new_tokens=max_new_tokens, temperature=temperature, verbose=False
                 )
                 generations = model.to_string(token_generations)
                 
@@ -709,8 +703,10 @@ class EnhancedExperimentRunner:
         self, model: ChatModel, config: ExperimentConfig, cache: ExperimentCache
     ) -> bool:
         """Run steering experiments."""
-        self.logger.info(
-            f"Running steering for {config.model_name} on {config.dataset_name}"
+        # Use nice phase logging
+        log_phase_start(
+            "Steering Experiments",
+            f"{config.model_name} on {config.dataset_name}"
         )
 
         # Load cached data
@@ -885,6 +881,14 @@ class EnhancedExperimentRunner:
         
         steered_results = []
         
+        # Track results for progress display
+        success_count = 0
+        failure_count = 0
+        unparsed_count = 0
+        
+        # Determine direction for display
+        direction = "yes_to_no" if alpha < 0 else "no_to_yes"
+        
         # Load steering method metadata to check method type
         cache_dir = config.get_cache_dir(self.run_config.cache_dir)
         metadata_path = os.path.join(cache_dir, "steering_metadata.json")
@@ -926,7 +930,8 @@ class EnhancedExperimentRunner:
             batch_end = min(batch_start + batch_size, len(test_data))
             batch_data = test_data[batch_start:batch_end]
             
-            self.logger.info(f"Processing steering batch {batch_start//batch_size + 1}/{(len(test_data) + batch_size - 1)//batch_size}")
+            # Use simpler batch progress display
+            log_batch_progress(batch_start//batch_size + 1, (len(test_data) + batch_size - 1)//batch_size, "Steering batch")
             
             for i, example in enumerate(batch_data):
                 global_idx = batch_start + i
@@ -952,9 +957,10 @@ class EnhancedExperimentRunner:
                 new_letter, new_answer = self.parse_response(generation)
                 orig = example["pred_answer"]
                 
-                # Log the generation and parsing results
-                self.logger.info(f"Generated response: {generation}")
-                self.logger.info(f"Parsed: letter='{new_letter}', answer='{new_answer}'")
+                # Clean up generation display - handle list
+                generation_display = generation
+                if isinstance(generation, list) and len(generation) == 1:
+                    generation_display = generation[0]
                 
                 # Determine target answer based on original answer
                 target_answer = "no" if orig == "yes" else "yes"
@@ -970,6 +976,32 @@ class EnhancedExperimentRunner:
                     category = "failure"
                     success = False
 
+                # Update counts
+                if category == "success":
+                    success_count += 1
+                elif category == "failure":
+                    failure_count += 1
+                else:
+                    unparsed_count += 1
+                
+                # Use our new colorful logging
+                log_steering_result(
+                    example_idx=global_idx + 1,
+                    total_examples=len(test_data),
+                    alpha=alpha,
+                    direction=direction,
+                    original_answer=orig,
+                    target_answer=target_answer,
+                    steered_answer=new_answer,
+                    response_text=generation_display,
+                    category=category,
+                    model_name=config.model_name,
+                    dataset_name=config.dataset_name,
+                    success_count=success_count,
+                    failure_count=failure_count,
+                    unparsed_count=unparsed_count,
+                )
+                
                 result = {
                     "original_prompt": example_prompt,
                     "steered_generation": generation,
@@ -1012,8 +1044,6 @@ class EnhancedExperimentRunner:
                         torch.cuda.empty_cache()
                     elif torch.backends.mps.is_available():
                         torch.mps.empty_cache()
-                        
-                self.logger.info(f"Completed steering example {global_idx + 1}/{len(test_data)}")
             
             # Clean up between batches
             gc.collect()

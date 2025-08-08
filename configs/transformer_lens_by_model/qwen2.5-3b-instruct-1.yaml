@@ -1,18 +1,10 @@
 cache_dir: cache
 datasets:
-- name: anachronisms
-  split_seed: 42
-  test_size: 500
-  train_size: 500
 - name: sports_understanding
   split_seed: 42
   test_size: 500
   train_size: 500
 - name: logical_deduction
-  split_seed: 42
-  test_size: 500
-  train_size: 500
-- name: social_chemistry
   split_seed: 42
   test_size: 500
   train_size: 500
@@ -25,7 +17,7 @@ models:
   batch_size: 1
   device: auto
   dtype: bfloat16
-  name: google/gemma-2-2b-it
+  name: Qwen/Qwen2.5-3B-Instruct
 save_generations: true
 steering:
   alpha_range:

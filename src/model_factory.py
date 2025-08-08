@@ -58,6 +58,18 @@ def _create_model_auto(model_name: str, **kwargs) -> Union[ChatModel, NNsightCha
     """
     errors = []
     
+    # Special case: For Llama models, try transformer_lens first
+    if "llama" in model_name.lower():
+        try:
+            logger.info(f"Llama model detected. Attempting to load '{model_name}' with transformer_lens backend first")
+            model = ChatModel(model_name, **kwargs)
+            logger.info(f"Successfully loaded '{model_name}' with transformer_lens backend")
+            return model
+        except Exception as e:
+            error_msg = f"transformer_lens backend failed: {str(e)}"
+            logger.warning(error_msg)
+            errors.append(error_msg)
+    
     # Strategy 1: Try nnsight first for broader model support
     if is_model_supported_by_nnsight(model_name):
         try:
@@ -200,6 +212,18 @@ def list_supported_models() -> Dict[str, Dict[str, Any]]:
             "recommended": "auto",
             "notes": "Works with both backends"
         },
+        # add llama-2-7b-chat
+        "Llama-2-7b-chat": {
+            "backends": ["transformer_lens", "nnsight"],
+            "recommended": "auto",
+            "notes": "Works with both backends"
+        },
+        # add phi-3-mini-4k-instruct
+        "Phi-3-mini-4k-instruct": {
+            "backends": ["transformer_lens", "nnsight"],
+            "recommended": "auto",
+            "notes": "Works with both backends"
+        },
         
         # NNsight-only models
         "deepseek-ai/DeepSeek-R1-Distill-Llama-8B": {
@@ -222,18 +246,6 @@ def list_supported_models() -> Dict[str, Dict[str, Any]]:
             "recommended": "nnsight",
             "notes": "Requires nnsight for chat template support"
         },
-        
-        # Broad HuggingFace support via nnsight
-        "meta-llama/Llama-2-7b-chat-hf": {
-            "backends": ["nnsight"],
-            "recommended": "nnsight",
-            "notes": "Available through nnsight"
-        },
-        "mistralai/Mistral-7B-Instruct-v0.1": {
-            "backends": ["nnsight"],
-            "recommended": "nnsight",
-            "notes": "Available through nnsight"
-        }
     }
     
     return supported_models

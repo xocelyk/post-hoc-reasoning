@@ -261,6 +261,8 @@ class ConfigLoader:
             alpha_range=steering_data.get("alpha_range", [0, 1, 2, 3, 4, 5, 6, 7, 8]),
             temperature=steering_data.get("temperature", 0.7),
             max_new_tokens=steering_data.get("max_new_tokens", 100),
+            max_gen=steering_data.get("max_gen", None),
+            stop_alpha_early=steering_data.get("stop_alpha_early", False),
         )
 
     @staticmethod

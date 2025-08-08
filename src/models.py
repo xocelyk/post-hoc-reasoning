@@ -1,9 +1,12 @@
 import os
 import platform
+import logging
 from typing import Dict, List
 
 import torch
 from transformer_lens import HookedTransformer
+
+logger = logging.getLogger(__name__)
 
 
 class ChatModel:
@@ -105,15 +108,49 @@ class ChatModel:
         try:
             # Check if we need to continue the final message
             if self._is_incomplete_assistant_message(messages):
-                result = self.model.tokenizer.apply_chat_template(
-                    messages, 
-                    tokenize=False,
-                    continue_final_message=True
-                )
+                # Try with continue_final_message first
+                try:
+                    result = self.model.tokenizer.apply_chat_template(
+                        messages, 
+                        tokenize=False,
+                        continue_final_message=True
+                    )
+                except TypeError as e:
+                    # If continue_final_message is not supported, fall back to default
+                    # This handles older tokenizers that don't support this parameter
+                    result = self.model.tokenizer.apply_chat_template(messages, tokenize=False)
             else:
                 result = self.model.tokenizer.apply_chat_template(messages, tokenize=False)
             return result
         except Exception as e:
+            # If there's an error with the chat template, provide more context
+            if "[/INST]" in str(e) and "doesn't match" in str(e):
+                # Log the messages to help debug
+                logger.error(f"Chat template error for Llama model. Messages: {messages}")
+                logger.error(f"Model name: {self.model_name}")
+                logger.error(f"Error: {str(e)}")
+                
+                # Try a workaround for Llama models
+                try:
+                    # For Llama, ensure messages don't have malformed content
+                    cleaned_messages = []
+                    for msg in messages:
+                        cleaned_msg = dict(msg)
+                        # Remove any [INST] or [/INST] tags from content
+                        if 'content' in cleaned_msg:
+                            cleaned_msg['content'] = cleaned_msg['content'].replace('[INST]', '').replace('[/INST]', '')
+                        cleaned_messages.append(cleaned_msg)
+                    
+                    result = self.model.tokenizer.apply_chat_template(cleaned_messages, tokenize=False)
+                    logger.warning("Applied Llama chat template workaround - removed [INST]/[/INST] tags from message content")
+                    return result
+                except Exception as e2:
+                    logger.error(f"Llama workaround also failed: {str(e2)}")
+                    raise ValueError(
+                        f"Chat template error for model '{self.model_name}': {str(e)}. "
+                        f"This often happens with Llama models when the chat template is malformed. "
+                        f"Messages passed: {messages}"
+                    )
             raise
 
     def __getattr__(self, attr):
