@@ -1,9 +1,9 @@
 cache_dir: cache
 datasets:
-- name: logical_deduction
-  split_seed: 42
-  test_size: 500
-  train_size: 500
+# - name: logical_deduction
+#   split_seed: 42
+#   test_size: 500
+#   train_size: 500
 - name: social_chemistry
   split_seed: 42
   test_size: 500

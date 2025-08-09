@@ -255,9 +255,10 @@ class CacheExplorer:
             # Show response
             response = gen.get('response', gen.get('generated_text', 'N/A'))
             if isinstance(response, str):
-                if len(response) > 300:
-                    response = response[:300] + "..."
-                print(f"Response: {response}")
+                print(f"Response (length: {len(response)} chars):")
+                print("-" * 40)
+                print(response)
+                print("-" * 40)
             
             if 'category' in gen:
                 print(f"Category: {gen['category']}")
@@ -281,21 +282,27 @@ class CacheExplorer:
         
         # Find matching files - be flexible with float/int formatting
         matching_files = []
+        
+        # Try both integer and float formats in filename
+        alpha_strs = []
+        if alpha == int(alpha):
+            # For whole numbers, try both "4" and "4.0" formats
+            alpha_strs.append(str(int(alpha)))
+            alpha_strs.append(f"{alpha:.1f}")
+        else:
+            # For decimals, use the float format
+            alpha_strs.append(str(alpha))
+        
         for filename in os.listdir(steering_dir):
             if filename.startswith('steering_alpha_') and filename.endswith('.pkl'):
-                # Extract alpha from filename
-                try:
-                    parts = filename.replace('steering_alpha_', '').rsplit('_', 1)
-                    if len(parts) >= 2:
-                        file_alpha = float(parts[0])
-                        file_direction = parts[1].replace('.pkl', '')
-                        
-                        # Check if alpha matches (handle float comparison)
-                        if abs(file_alpha - alpha) < 0.001:
-                            if direction is None or direction == file_direction:
-                                matching_files.append(filename)
-                except:
-                    pass
+                # Check if this file matches our alpha value
+                for alpha_str in alpha_strs:
+                    expected_prefix = f'steering_alpha_{alpha_str}_'
+                    if filename.startswith(expected_prefix):
+                        file_direction = filename.replace(expected_prefix, '').replace('.pkl', '')
+                        if direction is None or direction == file_direction:
+                            matching_files.append(filename)
+                            break
         
         if not matching_files:
             print(f"No steering results found for alpha={alpha}" + (f" direction={direction}" if direction else ""))
@@ -405,19 +412,11 @@ class CacheExplorer:
                             response = response[0] if isinstance(response[0], str) else str(response[0])
                         
                         if isinstance(response, str):
-                            # Clean up the response to make it more readable
-                            if len(response) > 800:
-                                # Show last 800 chars to capture the answer
-                                response = "..." + response[-800:]
-                                print(f"Response (last 800 chars):")
-                            else:
-                                print(f"Response:")
-                            
-                            # Split into lines for better readability
-                            lines = response.split('\n')
-                            for line in lines[-10:]:  # Show last 10 lines
-                                if line.strip():
-                                    print(f"  {line[:120]}")  # Limit line width
+                            # Show full response for steered results
+                            print(f"Response (length: {len(response)} chars):")
+                            print("-" * 80)
+                            print(response)
+                            print("-" * 80)
                         
                         print("-" * 40)
                     
