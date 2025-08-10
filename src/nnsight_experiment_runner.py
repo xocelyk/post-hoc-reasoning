@@ -31,7 +31,6 @@ from nnsight_models import NNsightChatModel
 from parsing_utils import parse_response
 from nnsight_utils import batch_get_resid_activations
 from nnsight_steering import generate_with_nnsight_steering
-from visualizer import create_visualizer
 
 
 class NNsightPromptDataset(Dataset):
@@ -65,7 +64,6 @@ class NNsightExperimentRunner:
     def __init__(self, run_config: ExperimentRunConfig):
         self.run_config = run_config
         self.exp_manager = ExperimentManager(run_config.cache_dir)
-        self.visualizer = create_visualizer(run_config.interactive)
 
         # Setup logging
         self.setup_logging()
@@ -338,11 +336,7 @@ class NNsightExperimentRunner:
         cache.save_pickle(all_coef_vectors, cache.get_probe_coefficients_path())
         cache.save_json(auc_scores, cache.get_auc_scores_path())
 
-        # Update visualizer
-        if hasattr(self.visualizer, "update_auc_scores"):
-            self.visualizer.update_auc_scores(
-                config.model_name, config.dataset_name, auc_scores
-            )
+        # Visualization removed - AUC scores logged above
 
         best_layer = layers[np.argmax(auc_scores)]
         best_auc = max(auc_scores)
@@ -462,15 +456,7 @@ class NNsightExperimentRunner:
                     success_rate = 0
                     self.logger.info(f"Alpha {alpha_yes:+.1f} (yes): No results")
 
-                # Update visualizer
-                if hasattr(self.visualizer, "update_steering_results"):
-                    self.visualizer.update_steering_results(
-                        config.model_name,
-                        config.dataset_name,
-                        alpha_yes,
-                        "yes",
-                        success_rate,
-                    )
+                # Visualization removed - results logged above
 
             # No to Yes steering
             alpha_no = abs(alpha)  # Positive alpha steers "no" to "yes"
@@ -501,15 +487,7 @@ class NNsightExperimentRunner:
                     success_rate = 0
                     self.logger.info(f"Alpha {alpha_no:+.1f} (no): No results")
 
-                # Update visualizer
-                if hasattr(self.visualizer, "update_steering_results"):
-                    self.visualizer.update_steering_results(
-                        config.model_name,
-                        config.dataset_name,
-                        alpha_no,
-                        "no",
-                        success_rate,
-                    )
+                # Visualization removed - results logged above
 
         return True
 
@@ -634,54 +612,18 @@ class NNsightExperimentRunner:
             cache = self.exp_manager.add_experiment(config)
             self.experiments_status[exp_key] = cache.get_experiment_status()
 
-        if self.run_config.interactive and hasattr(self.visualizer, "layout"):
-            # Run with live visualization
-            with Live(self.visualizer.layout, refresh_per_second=2) as live:
-                self._run_experiments_with_visualization(live)
-        else:
-            # Run without live visualization
-            self._run_experiments_simple()
-
-        # Print final summary
-        if hasattr(self.visualizer, "print_summary"):
-            self.visualizer.print_summary(self.experiments_status)
-
-    def _run_experiments_with_visualization(self, live):
-        """Run experiments with live visualization."""
-        for config in self.experiment_configs:
-            exp_key = f"{config.model_name}_{config.dataset_name}"
-
-            # Update display
-            self.visualizer.update_display(self.experiments_status)
-
-            # Run experiment
-            result = self.run_single_experiment(config)
-
-            # Update status
-            if result["success"]:
-                self.experiments_status[exp_key] = result["status"]
-
-            # Final display update
-            self.visualizer.update_display(self.experiments_status)
+        # Run experiments without visualization
+        self._run_experiments_simple()
 
     def _run_experiments_simple(self):
-        """Run experiments without live visualization."""
+        """Run experiments."""
         for config in self.experiment_configs:
             exp_key = f"{config.model_name}_{config.dataset_name}"
-
-            if hasattr(self.visualizer, "start_experiment"):
-                self.visualizer.start_experiment(
-                    config.model_name, config.dataset_name, 3
-                )
 
             result = self.run_single_experiment(config)
 
             if result["success"]:
                 self.experiments_status[exp_key] = result["status"]
-                if hasattr(self.visualizer, "complete_experiment"):
-                    self.visualizer.complete_experiment(
-                        config.model_name, config.dataset_name
-                    )
 
     def resume_experiments(self, experiment_ids: Optional[List[str]] = None):
         """Resume incomplete experiments."""

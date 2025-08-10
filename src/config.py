@@ -52,7 +52,6 @@ class ExperimentRunConfig:
     steering: SteeringConfig = field(default_factory=SteeringConfig)
     cache_dir: str = "cache"
     use_cache: bool = True
-    interactive: bool = True
     max_concurrent_models: int = 1
     save_generations: bool = True
     evaluate_confabulation: bool = (
@@ -77,8 +76,8 @@ class ConfigValidator:
         if config.dtype not in ["float32", "float16", "bfloat16", "int8"]:
             errors.append(f"Invalid dtype: {config.dtype}")
 
-        if config.batch_size <= 0:
-            errors.append("Batch size must be positive")
+        if config.batch_size != 1:
+            errors.append("Batch size must be 1 (batch processing not supported)")
 
         if config.backend not in ["auto", "nnsight", "transformer_lens"]:
             errors.append(f"Invalid backend: {config.backend}")
@@ -293,7 +292,6 @@ class ConfigLoader:
             steering=steering,
             cache_dir=data.get("cache_dir", "cache"),
             use_cache=data.get("use_cache", True),
-            interactive=data.get("interactive", True),
             max_concurrent_models=data.get("max_concurrent_models", 1),
             save_generations=data.get("save_generations", True),
             evaluate_confabulation=data.get("evaluate_confabulation", False),
@@ -339,7 +337,6 @@ class ConfigLoader:
             },
             "cache_dir": config.cache_dir,
             "use_cache": config.use_cache,
-            "interactive": config.interactive,
             "max_concurrent_models": config.max_concurrent_models,
             "save_generations": config.save_generations,
             "evaluate_confabulation": config.evaluate_confabulation,

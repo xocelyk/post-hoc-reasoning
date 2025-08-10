@@ -21,7 +21,6 @@ from data_loading import load_all_datasets
 from models import ChatModel
 from parsing_utils import parse_response
 from utils import generate_with_steering
-from visualizer import create_visualizer
 from steering_methods import create_steering_method, format_steering_results
 from logging_utils import setup_logging, log_steering_result, log_phase_start, log_batch_progress, console
 
@@ -64,7 +63,6 @@ class EnhancedExperimentRunner:
     def __init__(self, run_config: ExperimentRunConfig):
         self.run_config = run_config
         self.exp_manager = ExperimentManager(run_config.cache_dir)
-        self.visualizer = create_visualizer(run_config.interactive)
 
         # Setup logging
         self.setup_logging()
@@ -614,11 +612,7 @@ class EnhancedExperimentRunner:
                 all_scores=auc_scores
             )
 
-        # Update visualizer
-        if hasattr(self.visualizer, "update_auc_scores"):
-            self.visualizer.update_auc_scores(
-                config.model_name, config.dataset_name, auc_scores
-            )
+        # Visualization removed - AUC scores logged above
 
         return True
 
@@ -743,11 +737,19 @@ class EnhancedExperimentRunner:
             )
 
         layers = list(range(model.cfg.n_layers))
+        
+        # Track early stopping flags
+        should_stop_yes_to_no = False
+        should_stop_no_to_yes = False
 
         for alpha in config.alpha_range:
             # Yes to No steering
             alpha_yes = -abs(alpha)  # Negative alpha steers "yes" to "no"
-            if not (self.run_config.use_cache and cache.has_steering_results(alpha_yes, "yes")):
+            
+            # Check for early stopping
+            if should_stop_yes_to_no and self.run_config.steering.stop_alpha_early and alpha > 0:
+                self.logger.info(f"Skipping alpha {alpha_yes} (yes→no): Early stopping due to 100% unparsed rate")
+            elif not (self.run_config.use_cache and cache.has_steering_results(alpha_yes, "yes")):
                 results_yes = self.generate_steered_examples(
                     model, yes_test_data, all_contrastive_vectors, layers, alpha_yes, config
                 )
@@ -772,6 +774,11 @@ class EnhancedExperimentRunner:
                         f"{failure_rate:.2f} failure, {unparsed_rate:.2f} unparsed"
                     )
                     
+                    # Check for early stopping - 100% unparsed rate
+                    if self.run_config.steering.stop_alpha_early and alpha > 0 and unparsed_rate >= 1.0:
+                        should_stop_yes_to_no = True
+                        self.logger.info(f"Early stopping yes→no direction: 100% unparsed rate at alpha {alpha_yes}")
+                    
                     # Log summary to W&B
                     if self.wandb_logger:
                         self.wandb_logger.log_steering_summary(
@@ -793,19 +800,15 @@ class EnhancedExperimentRunner:
                     success_rate = 0
                     self.logger.info(f"Alpha {alpha_yes:+.1f} (yes): No results")
 
-                # Update visualizer
-                if hasattr(self.visualizer, "update_steering_results"):
-                    self.visualizer.update_steering_results(
-                        config.model_name,
-                        config.dataset_name,
-                        alpha_yes,
-                        "yes",
-                        success_rate,
-                    )
+                # Visualization removed - results logged above
 
             # No to Yes steering
             alpha_no = abs(alpha)  # Positive alpha steers "no" to "yes"
-            if not (self.run_config.use_cache and cache.has_steering_results(alpha_no, "no")):
+            
+            # Check for early stopping
+            if should_stop_no_to_yes and self.run_config.steering.stop_alpha_early and alpha > 0:
+                self.logger.info(f"Skipping alpha {alpha_no} (no→yes): Early stopping due to 100% unparsed rate")
+            elif not (self.run_config.use_cache and cache.has_steering_results(alpha_no, "no")):
                 results_no = self.generate_steered_examples(
                     model, no_test_data, all_contrastive_vectors, layers, alpha_no, config
                 )
@@ -830,6 +833,11 @@ class EnhancedExperimentRunner:
                         f"{failure_rate:.2f} failure, {unparsed_rate:.2f} unparsed"
                     )
                     
+                    # Check for early stopping - 100% unparsed rate
+                    if self.run_config.steering.stop_alpha_early and alpha > 0 and unparsed_rate >= 1.0:
+                        should_stop_no_to_yes = True
+                        self.logger.info(f"Early stopping no→yes direction: 100% unparsed rate at alpha {alpha_no}")
+                    
                     # Log summary to W&B
                     if self.wandb_logger:
                         self.wandb_logger.log_steering_summary(
@@ -851,15 +859,7 @@ class EnhancedExperimentRunner:
                     success_rate = 0
                     self.logger.info(f"Alpha {alpha_no:+.1f} (no): No results")
 
-                # Update visualizer
-                if hasattr(self.visualizer, "update_steering_results"):
-                    self.visualizer.update_steering_results(
-                        config.model_name,
-                        config.dataset_name,
-                        alpha_no,
-                        "no",
-                        success_rate,
-                    )
+                # Visualization removed - results logged above
 
         return True
 
@@ -1200,17 +1200,8 @@ class EnhancedExperimentRunner:
             cache = self.exp_manager.add_experiment(config)
             self.experiments_status[exp_key] = cache.get_experiment_status()
 
-        if self.run_config.interactive and hasattr(self.visualizer, "layout"):
-            # Run with live visualization
-            with Live(self.visualizer.layout, refresh_per_second=2) as live:
-                self._run_experiments_with_visualization(live)
-        else:
-            # Run without live visualization
-            self._run_experiments_simple()
-
-        # Print final summary
-        if hasattr(self.visualizer, "print_summary"):
-            self.visualizer.print_summary(self.experiments_status)
+        # Run experiments without visualization
+        self._run_experiments_simple()
         
         # Print comprehensive final summary
         self.print_final_summary()
@@ -1375,42 +1366,15 @@ class EnhancedExperimentRunner:
         print(f"🎉 Experiment run completed!")
         print(f"{'#'*80}\n")
 
-    def _run_experiments_with_visualization(self, live):
-        """Run experiments with live visualization."""
-        for config in self.experiment_configs:
-            exp_key = f"{config.model_name}_{config.dataset_name}"
-
-            # Update display
-            self.visualizer.update_display(self.experiments_status)
-
-            # Run experiment
-            result = self.run_single_experiment(config)
-
-            # Update status
-            if result["success"]:
-                self.experiments_status[exp_key] = result["status"]
-
-            # Final display update
-            self.visualizer.update_display(self.experiments_status)
-
     def _run_experiments_simple(self):
-        """Run experiments without live visualization."""
+        """Run experiments."""
         for config in self.experiment_configs:
             exp_key = f"{config.model_name}_{config.dataset_name}"
-
-            if hasattr(self.visualizer, "start_experiment"):
-                self.visualizer.start_experiment(
-                    config.model_name, config.dataset_name, 3
-                )
 
             result = self.run_single_experiment(config)
 
             if result["success"]:
                 self.experiments_status[exp_key] = result["status"]
-                if hasattr(self.visualizer, "complete_experiment"):
-                    self.visualizer.complete_experiment(
-                        config.model_name, config.dataset_name
-                    )
 
     def resume_experiments(self, experiment_ids: Optional[List[str]] = None):
         """Resume incomplete experiments."""
