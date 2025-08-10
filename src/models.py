@@ -105,20 +105,43 @@ class ChatModel:
         Format a list of chat messages according to the model's chat template.
         Automatically detects incomplete assistant messages and uses continue_final_message.
         """
+        # For Llama-2 models, preemptively clean messages to avoid template errors
+        is_llama2 = "llama-2" in self.model_name.lower() or "llama2" in self.model_name.lower()
+        if is_llama2:
+            # Clean any [INST]/[/INST] tags from message content before applying template
+            cleaned_messages = []
+            for msg in messages:
+                cleaned_msg = dict(msg)
+                if 'content' in cleaned_msg:
+                    cleaned_msg['content'] = cleaned_msg['content'].replace('[INST]', '').replace('[/INST]', '')
+                cleaned_messages.append(cleaned_msg)
+            messages = cleaned_messages
+        
         try:
             # Check if we need to continue the final message
             if self._is_incomplete_assistant_message(messages):
-                # Try with continue_final_message first
-                try:
+                # For Llama-2 models, don't use continue_final_message as it often causes issues
+                if is_llama2:
+                    # Add generation prompt manually for Llama-2
                     result = self.model.tokenizer.apply_chat_template(
                         messages, 
                         tokenize=False,
-                        continue_final_message=True
+                        add_generation_prompt=False
                     )
-                except TypeError as e:
-                    # If continue_final_message is not supported, fall back to default
-                    # This handles older tokenizers that don't support this parameter
-                    result = self.model.tokenizer.apply_chat_template(messages, tokenize=False)
+                    # Llama-2 format expects responses after [/INST]
+                    if not result.endswith(" "):
+                        result += " "
+                else:
+                    # Try with continue_final_message first for other models
+                    try:
+                        result = self.model.tokenizer.apply_chat_template(
+                            messages, 
+                            tokenize=False,
+                            continue_final_message=True
+                        )
+                    except TypeError as e:
+                        # If continue_final_message is not supported, fall back to default
+                        result = self.model.tokenizer.apply_chat_template(messages, tokenize=False)
             else:
                 result = self.model.tokenizer.apply_chat_template(messages, tokenize=False)
             return result
