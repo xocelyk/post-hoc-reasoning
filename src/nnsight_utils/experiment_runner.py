@@ -23,7 +23,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from cache_manager import ExperimentCache, ExperimentConfig, ExperimentManager
 from config import ExperimentRunConfig, create_experiment_configs
 from data_loading import load_all_datasets
-from parsing_utils import parse_response, parse_deepseek_response, filter_think_tags
+from parsing_utils import parse_response, filter_think_tags
 from visualizer import create_visualizer
 from wandb_integration import WandbExperimentLogger
 
@@ -84,9 +84,8 @@ class UnifiedExperimentRunner:
 
     def parse_response(self, response: str, model_name: Optional[str] = None) -> Tuple[str, str]:
         """Parse model response to extract answer."""
-        # Use DeepSeek-specific parser for DeepSeek models
-        if model_name and model_name.lower().startswith('deepseek'):
-            return parse_deepseek_response(response)
+        # Use the same parser for all models now, including DeepSeek
+        # DeepSeek will use thinking=True prompts and the standard parser
         return parse_response(response, thinking=True)
 
     def batch_get_generations(

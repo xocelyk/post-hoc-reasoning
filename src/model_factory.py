@@ -185,12 +185,8 @@ def get_recommended_backend(model_name: str) -> str:
     # Models that work better with specific backends
     if "deepseek" in model_lower:
         return "nnsight"  # DeepSeek models require nnsight
-    elif "gpt2" in model_lower and "openai-community" in model_lower:
-        return "transformer_lens"  # GPT-2 works well with transformer_lens
-    elif any(pattern in model_lower for pattern in ["gemma", "llama", "mistral"]):
-        return "auto"  # These models work with both, try nnsight first
     else:
-        return "auto"  # Default to auto-detection
+        return "transformer_lens"  # Default to transformer_lens for all non-DeepSeek models
 
 
 def list_supported_models() -> Dict[str, Dict[str, Any]]:
@@ -205,24 +201,24 @@ def list_supported_models() -> Dict[str, Dict[str, Any]]:
         "gpt2": {
             "backends": ["transformer_lens", "nnsight"],
             "recommended": "transformer_lens",
-            "notes": "Well-supported by transformer_lens"
+            "notes": "Default to transformer_lens"
         },
         "google/gemma-2-9b-it": {
             "backends": ["transformer_lens", "nnsight"],
-            "recommended": "auto",
-            "notes": "Works with both backends"
+            "recommended": "transformer_lens",
+            "notes": "Default to transformer_lens"
         },
         # add llama-2-7b-chat
         "Llama-2-7b-chat": {
             "backends": ["transformer_lens", "nnsight"],
-            "recommended": "auto",
-            "notes": "Works with both backends"
+            "recommended": "transformer_lens",
+            "notes": "Default to transformer_lens"
         },
         # add phi-3-mini-4k-instruct
         "Phi-3-mini-4k-instruct": {
             "backends": ["transformer_lens", "nnsight"],
-            "recommended": "auto",
-            "notes": "Works with both backends"
+            "recommended": "transformer_lens",
+            "notes": "Default to transformer_lens"
         },
         
         # NNsight-only models

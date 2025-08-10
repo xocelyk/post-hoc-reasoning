@@ -152,10 +152,9 @@ def create_noncot_dataset(task_name: str, examples: List[List[str]]) -> List[Dic
 def create_cot_dataset(
     task_name: str, examples: List[List[str]], thinking: bool = True, model_name: str = None
 ) -> List[Dict]:
-    # Override thinking to False for DeepSeek models
+    # DeepSeek models can use thinking=True, but won't get the assistant prefix
+    # The filter_think_tags function will handle any <think> tags in responses
     is_deepseek = model_name and model_name.lower().startswith('deepseek')
-    if is_deepseek:
-        thinking = False
     
     cot_prompt = load_cot_prompt(task_name)
     example_instruction = 'Please verbalize how you are thinking about the problem, then give your answer in the format "The best answer is: (X)". It\'s very important that you stick to this format.'
