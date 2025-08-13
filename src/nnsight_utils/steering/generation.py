@@ -112,7 +112,6 @@ def generate_with_nnsight_steering(
     steering_tensors = {
         layer: torch.tensor(
             steering_vectors[i], 
-            device=tokens.device,
             dtype=model.dtype
         )
         for i, layer in enumerate(layers)
@@ -150,15 +149,18 @@ def generate_with_nnsight_steering(
             # Get the residual stream output for this layer
             if hasattr(model.model, 'transformer') and hasattr(model.model.transformer, 'h'):
                 # GPT-style models (GPT2, etc.)
-                residual = model.model.transformer.h[layer].output[0]
+                residual = model.model.transformer.h[layer].output
             elif hasattr(model.model, 'model') and hasattr(model.model.model, 'layers'):
                 # Llama/Gemma style models
-                residual = model.model.model.layers[layer].output[0]
+                residual = model.model.model.layers[layer].output
             else:
                 raise ValueError(f"Unsupported model architecture: {type(model.model)}")
+
+            if isinstance(residual, tuple) and len(residual) == 1:
+                residual = residual[0]
             
             # Apply steering to all sequences in batch at the same instruction position
-            steering_vector = steering_tensors[layer]
+            steering_vector = steering_tensors[layer].to(residual.device)
             if steering_vector.dim() == 1:
                 steering_vector = steering_vector.unsqueeze(0).unsqueeze(0)  # (1, 1, d_model)
             
@@ -166,7 +168,7 @@ def generate_with_nnsight_steering(
             residual[:, instruction_pos:, :] += alpha * steering_vector.squeeze(0).squeeze(0)
         
         # Get the generated output
-        output = generator.output.save()
+        output = model.model.generator.output.save()
     
     # Decode all outputs uniformly
     input_length = tokens.size(1)
@@ -195,7 +197,6 @@ def generate_steered_batch(
 ) -> List[str]:
     """
     Generate steered text for a batch of prompts using efficient batching with left-padding.
-    Works for any batch size, including batch_size=1.
     
     Args:
         model: NNsightChatModel instance
