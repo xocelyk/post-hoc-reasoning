@@ -76,8 +76,8 @@ class ConfigValidator:
         if config.dtype not in ["float32", "float16", "bfloat16", "int8"]:
             errors.append(f"Invalid dtype: {config.dtype}")
 
-        if config.batch_size != 1:
-            errors.append("Batch size must be 1 (batch processing not supported)")
+        if config.batch_size < 1:
+            errors.append("Batch size must be at least 1")
 
         if config.backend not in ["auto", "nnsight", "transformer_lens"]:
             errors.append(f"Invalid backend: {config.backend}")

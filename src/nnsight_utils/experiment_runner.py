@@ -93,49 +93,46 @@ class UnifiedExperimentRunner:
         prompts: List[str], 
         model: NNsightChatModel, 
         temperature: float = 0.7, 
-        max_new_tokens: int = 100
+        max_new_tokens: int = 100,
+        batch_size: Optional[int] = None
     ) -> List[str]:
-        """Generate responses for a batch of prompts."""
+        """Generate responses for a batch of prompts using efficient batching with left-padding."""
         # Override max_new_tokens for DeepSeek models
         if hasattr(model, 'model_name') and model.model_name.lower().startswith('deepseek'):
             max_new_tokens = 2000
             self.logger.info(f"Using DeepSeek model, overriding max_new_tokens to {max_new_tokens}")
         
-        self.logger.info(f"Generating for {len(prompts)} prompts")
+        # Get batch size from model config or use default
+        if batch_size is None:
+            batch_size = getattr(model, 'batch_size', 4)  # Default batch size of 4
         
-        generations = []
-        for i, prompt in enumerate(prompts):
-            if i % 5 == 0:
-                self.logger.info(f"  Progress: {i}/{len(prompts)} prompts generated")
-            
-            # Use the basic generation function without steering
-            response = generate_text(
-                model=model,
-                prompt=prompt,  # generate_text handles tokenization
-                max_new_tokens=max_new_tokens,
-                temperature=temperature,
-                do_sample=True
-            )
-            generations.append(response)
-            
-            # Log the first prompt and response for debugging
-            if i == 0:
-                # Filter think tags for DeepSeek models when displaying
-                display_response = response
-                if hasattr(model, 'model_name') and model.model_name.lower().startswith('deepseek'):
-                    display_response = filter_think_tags(response)
-                    
-                self.logger.info("=" * 80)
-                self.logger.info("FIRST PROMPT AND RESPONSE:")
-                self.logger.info("=" * 80)
-                self.logger.info(f"Full Prompt:\n{prompt}")
-                self.logger.info("-" * 80)
-                self.logger.info(f"Response (filtered for DeepSeek):\n{display_response}")
-                self.logger.info("=" * 80)
-            
-            # Memory cleanup every few generations
-            if i % 5 == 0:
-                smart_empty_cache()
+        self.logger.info(f"Generating for {len(prompts)} prompts using batch_size={batch_size}")
+        
+        # Use the new batched generation function
+        from .core.generation import batch_generate_text
+        generations = batch_generate_text(
+            model=model,
+            prompts=prompts,
+            max_new_tokens=max_new_tokens,
+            temperature=temperature,
+            do_sample=True,
+            batch_size=batch_size
+        )
+        
+        # Log the first prompt and response for debugging
+        if generations:
+            # Filter think tags for DeepSeek models when displaying
+            display_response = generations[0]
+            if hasattr(model, 'model_name') and model.model_name.lower().startswith('deepseek'):
+                display_response = filter_think_tags(generations[0])
+                
+            self.logger.info("=" * 80)
+            self.logger.info("FIRST PROMPT AND RESPONSE:")
+            self.logger.info("=" * 80)
+            self.logger.info(f"Full Prompt:\n{prompts[0]}")
+            self.logger.info("-" * 80)
+            self.logger.info(f"Response (filtered for DeepSeek):\n{display_response}")
+            self.logger.info("=" * 80)
         
         return generations
 
