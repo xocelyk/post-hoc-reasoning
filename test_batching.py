@@ -21,10 +21,10 @@ def test_batched_generation():
         
         # Test prompts of different lengths
         prompts = [
-            "What is the capital of France?",
-            "Explain the theory of relativity in simple terms.",
-            "Who wrote 'To Kill a Mockingbird'?",
-            "Summarize the plot of Hamlet."
+            "The capital of Germany is",
+            "The capital of France is",
+            "The capital of Italy is",
+            "The capital of Spain is",
         ]
         
         print(f"Testing with {len(prompts)} prompts")
@@ -58,8 +58,8 @@ def test_batched_steering():
         model = NNsightChatModel(model_name)
         
         # Create dummy steering vectors (random for testing)
-        n_layers = 12  # DialoGPT-small has 12 layers
-        d_model = 768  # Hidden size
+        n_layers = model.model.config.num_hidden_layers
+        d_model = model.model.config.hidden_size
         
         steering_vectors = np.random.randn(n_layers, d_model).astype(np.float32)
         
