@@ -14,6 +14,40 @@ import torch
 from .models import NNsightChatModel
 
 
+def _get_layer_output(model, layer_idx: int) -> any:
+    """
+    Get the layer output from the model.
+    
+    Args:
+        model: The underlying model object (model.model)
+        layer_idx: Index of the layer to get output from
+        
+    Returns:
+        The layer output tensor (handles tuple outputs automatically)
+        
+    Raises:
+        ValueError: If the model architecture is not supported
+    """
+    # 1. Find the list of layers object depending on the arch
+    if hasattr(model, 'transformer') and hasattr(model.transformer, 'h'):
+        # GPT-style models (GPT2, etc.)
+        layer_container = model.transformer.h
+    elif hasattr(model, 'model') and hasattr(model.model, 'layers'):
+        # Llama/Gemma style models
+        layer_container = model.model.layers
+    else:
+        raise ValueError(f"Unsupported model architecture: {type(model)}")
+    
+    # 2. Select the layer at layer_idx and get the .output
+    layer_output = layer_container[layer_idx].output
+    
+    # 3. Check if .output is a tuple of len 1 and if so select the first item
+    if isinstance(layer_output, tuple) and len(layer_output) == 1:
+        return layer_output[0]
+    else:
+        return layer_output
+
+
 def batch_get_resid_activations(
     model: NNsightChatModel, 
     prompts: List[str],
@@ -49,7 +83,16 @@ def batch_get_resid_activations(
         # We'll collect these and stack at the end for "all" positions
         all_activations = []
     
-    # Process in batches
+    # Process in batches with progress bar
+    from tqdm import tqdm
+    
+    progress_bar = tqdm(
+        total=n_prompts,
+        desc=f"Extracting activations (batch_size={batch_size})",
+        unit="prompts",
+        ncols=100
+    )
+    
     for i in range(0, n_prompts, batch_size):
         batch_prompts = prompts[i:i + batch_size]
         batch_tokens = model.to_tokens(batch_prompts)
@@ -65,15 +108,15 @@ def batch_get_resid_activations(
             if position == "last":
                 # Extract only the final position (most common case)
                 residuals = {
-                    layer: model.model.model.layers[layer].output[:, -1].save()
+                    layer: _get_layer_output(model.model, layer)[:, -1]
                     for layer in layers
-                }
+                }.save()
             elif position == "all":
                 # Extract all positions
                 residuals = {
-                    layer: model.model.model.layers[layer].output.save()
+                    layer: _get_layer_output(model.model, layer)
                     for layer in layers
-                }
+                }.save()
             else:
                 raise ValueError(f"Unknown position: {position}. Use 'last' or 'all'")
     
@@ -100,6 +143,12 @@ def batch_get_resid_activations(
         elif torch.backends.mps.is_available():
             torch.mps.empty_cache()
         gc.collect()
+        
+        # Update progress bar
+        progress_bar.update(batch_size_actual)
+    
+    # Close progress bar
+    progress_bar.close()
     
     # Final processing
     if position == "all":
@@ -128,10 +177,12 @@ def extract_layer_activations(
         Tensor of activations from the specified layer
     """
     with model.model.trace(tokens):
+        layer_output = _get_layer_output(model.model, layer)
+        
         if position_slice is not None:
-            activations = model.model.model.layers[layer].output[:, position_slice].save()
-        else:
-            activations = model.model.model.layers[layer].output.save()
+            layer_output = layer_output[:, position_slice]
+        
+        activations = layer_output.save()
     
     return activations.detach()
 

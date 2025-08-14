@@ -133,6 +133,16 @@ def batch_generate_text(
     
     results = []
     
+    # Set up progress bar
+    from tqdm import tqdm
+    
+    progress_bar = tqdm(
+        total=len(prompts),
+        desc=f"Generating (batch_size={batch_size})",
+        unit="prompts",
+        ncols=100
+    )
+    
     for i in range(0, len(prompts), batch_size):
         batch_prompts = prompts[i:i + batch_size]
         
@@ -205,7 +215,11 @@ def batch_generate_text(
                     generated_text = full_decoded
             
             results.append(generated_text)
+        
+        # Update progress bar
+        progress_bar.update(len(batch_prompts))
     
+    progress_bar.close()
     return results
 
 

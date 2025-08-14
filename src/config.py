@@ -52,6 +52,7 @@ class ExperimentRunConfig:
     steering: SteeringConfig = field(default_factory=SteeringConfig)
     cache_dir: str = "cache"
     use_cache: bool = True
+    use_kv_cache: bool = False  # Whether to use KV caching for steering (False = use regular batching)
     max_concurrent_models: int = 1
     save_generations: bool = True
     evaluate_confabulation: bool = (
@@ -292,6 +293,7 @@ class ConfigLoader:
             steering=steering,
             cache_dir=data.get("cache_dir", "cache"),
             use_cache=data.get("use_cache", True),
+            use_kv_cache=data.get("use_kv_cache", False),
             max_concurrent_models=data.get("max_concurrent_models", 1),
             save_generations=data.get("save_generations", True),
             evaluate_confabulation=data.get("evaluate_confabulation", False),
@@ -337,6 +339,7 @@ class ConfigLoader:
             },
             "cache_dir": config.cache_dir,
             "use_cache": config.use_cache,
+            "use_kv_cache": config.use_kv_cache,
             "max_concurrent_models": config.max_concurrent_models,
             "save_generations": config.save_generations,
             "evaluate_confabulation": config.evaluate_confabulation,

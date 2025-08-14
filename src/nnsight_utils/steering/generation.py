@@ -5,11 +5,12 @@ This module provides steering functionality using nnsight's intervention system,
 offering a cleaner alternative to the transformer_lens hook-based approach.
 """
 
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Tuple
 import logging
 import numpy as np
 import torch
 
+from ..core.activation_extraction import _get_layer_output
 from ..core.models import NNsightChatModel
 from ..probes.base import ProbeResult
 from .strategies import SteeringDispatcher, prepare_steering_vectors, determine_steering_layers, get_steering_config
@@ -146,18 +147,8 @@ def generate_with_nnsight_steering(
         
         # Apply steering interventions during generation
         for layer in layers:
-            # Get the residual stream output for this layer
-            if hasattr(model.model, 'transformer') and hasattr(model.model.transformer, 'h'):
-                # GPT-style models (GPT2, etc.)
-                residual = model.model.transformer.h[layer].output
-            elif hasattr(model.model, 'model') and hasattr(model.model.model, 'layers'):
-                # Llama/Gemma style models
-                residual = model.model.model.layers[layer].output
-            else:
-                raise ValueError(f"Unsupported model architecture: {type(model.model)}")
-
-            if isinstance(residual, tuple) and len(residual) == 1:
-                residual = residual[0]
+            # Get the residual stream output for this layer using architecture detection
+            residual = _get_layer_output(model.model, layer)
             
             # Apply steering to all sequences in batch at the same instruction position
             steering_vector = steering_tensors[layer].to(residual.device)
@@ -188,11 +179,10 @@ def generate_with_nnsight_steering(
 def generate_steered_batch(
     model: NNsightChatModel,
     prompts: List[str],
-    steering_vectors: np.ndarray,
+    probe_result: ProbeResult,
     alpha: float = 1.0,
     max_new_tokens: int = 100,
     temperature: float = 0.7,
-    layers: Optional[List[int]] = None,
     batch_size: Optional[int] = None,
 ) -> List[str]:
     """
@@ -201,11 +191,10 @@ def generate_steered_batch(
     Args:
         model: NNsightChatModel instance
         prompts: List of prompt strings
-        steering_vectors: Numpy array of steering vectors
+        probe_result: Results from probe training (contains method and vectors)
         alpha: Steering strength
         max_new_tokens: Maximum tokens to generate per prompt
         temperature: Sampling temperature
-        layers: Layers to apply steering to
         batch_size: Number of prompts to process at once (None = all at once)
         
     Returns:
@@ -215,6 +204,29 @@ def generate_steered_batch(
         batch_size = len(prompts)
     
     results = []
+    
+    config = get_steering_config(probe_result.method)
+    layers = determine_steering_layers(probe_result, config)
+    vectors = prepare_steering_vectors(probe_result, config)
+    
+    # Convert and cache
+    steering_tensors = {}
+    for layer, vector in vectors.items():
+        tensor = torch.tensor(
+            alpha * vector,  # Apply alpha scaling
+            dtype=model.dtype
+        )
+        steering_tensors[layer] = tensor
+    
+    # Set up progress bar
+    from tqdm import tqdm
+    
+    progress_bar = tqdm(
+        total=len(prompts),
+        desc=f"Steering (batch_size={batch_size})",
+        unit="prompts",
+        ncols=100
+    )
     
     # Process prompts in batches
     for i in range(0, len(prompts), batch_size):
@@ -242,7 +254,7 @@ def generate_steered_batch(
         batch_results = generate_with_nnsight_steering(
             model=model,
             tokens=batch_tokens,
-            steering_vectors=steering_vectors,
+            steering_vectors=steering_tensors,
             alpha=alpha,
             max_new_tokens=max_new_tokens,
             temperature=temperature,
@@ -253,7 +265,12 @@ def generate_steered_batch(
         
         # Results are already a list
         results.extend(batch_results)
+        
+        # Update progress bar
+        progress_bar.update(len(batch_prompts))
     
+    # Close progress bar
+    progress_bar.close()
     return results
 
 
