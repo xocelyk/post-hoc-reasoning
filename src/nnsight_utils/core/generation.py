@@ -113,7 +113,8 @@ def batch_generate_text(
     **kwargs
 ) -> List[str]:
     """
-    Generate text for multiple prompts with optional batching.
+    Generate text for multiple prompts with efficient batching and left-padding.
+    Works for any batch size, including batch_size=1.
     
     Args:
         model: NNsightChatModel instance
@@ -132,22 +133,93 @@ def batch_generate_text(
     
     results = []
     
+    # Set up progress bar
+    from tqdm import tqdm
+    
+    progress_bar = tqdm(
+        total=len(prompts),
+        desc=f"Generating (batch_size={batch_size})",
+        unit="prompts",
+        ncols=100
+    )
+    
     for i in range(0, len(prompts), batch_size):
         batch_prompts = prompts[i:i + batch_size]
         
-        # Process each prompt in the batch
-        # Note: NNsight may require individual processing for complex generation
-        for prompt in batch_prompts:
-            generated = generate_text(
-                model=model,
-                prompt=prompt,
-                max_new_tokens=max_new_tokens,
-                temperature=temperature,
-                do_sample=do_sample,
-                **kwargs
-            )
-            results.append(generated)
+        # Set pad token (use eos_token_id as pad_token_id if not set)
+        if model.tokenizer.pad_token_id is None:
+            model.tokenizer.pad_token_id = model.tokenizer.eos_token_id
+        
+        # Use tokenizer's built-in padding with left-padding for causal models
+        model.tokenizer.padding_side = 'left'  # Left-pad for causal generation
+        
+        # Tokenize all prompts with padding
+        batch_encoding = model.tokenizer(
+            batch_prompts, 
+            return_tensors="pt", 
+            padding=True,
+            truncation=False
+        )
+        
+        batch_tokens = batch_encoding['input_ids']
+        attention_mask = batch_encoding['attention_mask']
+        
+        # Prepare generation kwargs
+        gen_kwargs = {
+            "max_new_tokens": max_new_tokens,
+            "temperature": temperature,
+            "do_sample": do_sample,
+            "pad_token_id": model.tokenizer.pad_token_id,
+            "attention_mask": attention_mask,
+        }
+        
+        # Add DeepSeek-specific stopping criteria
+        if hasattr(model, 'model_name') and model.model_name.lower().startswith('deepseek'):
+            stop_tokens = []
+            vocab = model.tokenizer.get_vocab()
+            
+            if '<｜end▁of▁sentence｜>' in vocab:
+                stop_tokens.append(vocab['<｜end▁of▁sentence｜>'])
+            if '<｜User｜>' in vocab:
+                stop_tokens.append(vocab['<｜User｜>'])
+                
+            if stop_tokens:
+                gen_kwargs["eos_token_id"] = stop_tokens
+        
+        # Update with additional kwargs
+        gen_kwargs.update(kwargs)
+        
+        # Generate using the model's batch generate method
+        output = model.generate(batch_tokens, **gen_kwargs)
+        
+        # Decode outputs and extract only generated parts
+        input_length = batch_tokens.size(1)
+        
+        for original_prompt, output_tokens in zip(batch_prompts, output):
+            # Extract only the newly generated tokens (after input)
+            generated_tokens = output_tokens[input_length:]
+            
+            if len(generated_tokens) > 0:
+                generated_text = model.tokenizer.decode(generated_tokens, skip_special_tokens=True)
+            else:
+                generated_text = ""
+            
+            # Fallback: string-based extraction if token-based fails
+            if not generated_text:
+                full_decoded = model.tokenizer.decode(output_tokens, skip_special_tokens=True)
+                
+                # Remove the original prompt from the decoded output
+                if full_decoded.startswith(original_prompt):
+                    generated_text = full_decoded[len(original_prompt):]
+                else:
+                    generated_text = full_decoded
+            
+            results.append(generated_text)
+        
+        # Update progress bar
+        progress_bar.update(len(batch_prompts))
     
+    progress_bar.close()
     return results
 
 

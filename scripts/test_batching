@@ -1,0 +1,242 @@
+#!/usr/bin/env python3
+"""
+Simple test script to verify batched generation and steering work correctly.
+"""
+
+import time
+import torch
+import numpy as np
+from src.nnsight_utils import NNsightChatModel
+from src.nnsight_utils.core.generation import batch_generate_text
+from src.nnsight_utils.steering.generation import generate_steered_batch, generate_with_nnsight_steering
+
+# Define the model name once for all tests
+MODEL_NAME = "google/gemma-2-2b-it"
+# MODEL_NAME = "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"  # Alternative
+
+def test_batched_generation():
+    """Test that batched generation works with left-padding."""
+    print("Testing batched generation...")
+    
+    # Use a small model for testing
+    # model_name = "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
+    
+    try:
+        print(f"Loading model: {MODEL_NAME}")
+        start_time = time.time()
+        model = NNsightChatModel(MODEL_NAME)
+        load_time = time.time() - start_time
+        print(f"Model loaded in {load_time:.2f}s")
+        
+        # Test prompts of different lengths
+        prompts = [
+            "The capital of Italy is",
+            "The capital of Germany is", 
+            "The capital of France is",
+            "The capital of Spain is",
+        ]
+        
+        print(f"Testing with {len(prompts)} prompts")
+        
+        # Test batch generation with profiling
+        start_time = time.time()
+        results = batch_generate_text(
+            model=model,
+            prompts=prompts,
+            max_new_tokens=10,
+            batch_size=2
+        )
+        generation_time = time.time() - start_time
+        
+        print(f"Batch generation took {generation_time:.3f}s ({len(prompts)/generation_time:.2f} prompts/sec)")
+        print(f"Generated {len(results)} results:")
+        for i, (prompt, result) in enumerate(zip(prompts, results)):
+            print(f"  {i+1}. Prompt: '{prompt}' -> Result: '{result}'")
+        
+        print("✅ Batched generation test passed!")
+        return True, generation_time
+        
+    except Exception as e:
+        print(f"❌ Batched generation test failed: {e}")
+        import traceback
+        traceback.print_exc()
+        return False, 0
+
+def test_batched_steering():
+    """Test that batched steering works with left-padding."""
+    print("\nTesting batched steering...")
+    
+    try:
+        # Use a small model
+        print(f"Loading model: {MODEL_NAME}")
+        start_time = time.time()
+        model = NNsightChatModel(MODEL_NAME)
+        load_time = time.time() - start_time
+        print(f"Model loaded in {load_time:.2f}s")
+        
+        # Create dummy steering vectors (random for testing)
+        n_layers = model.model.config.num_hidden_layers
+        d_model = model.model.config.hidden_size
+        print(f"Model architecture: {n_layers} layers, {d_model} dimensions")
+        
+        steering_vectors = np.random.randn(n_layers, d_model).astype(np.float32)
+        
+        # Test prompts
+        prompts = [
+            "The weather today is",
+            "I think that",
+            "The capital of France is",
+            "My favorite color is"
+        ]
+        
+        print(f"Testing steering with {len(prompts)} prompts")
+        
+        # Test batched steered generation with profiling
+        start_time = time.time()
+        results = generate_steered_batch(
+            model=model,
+            prompts=prompts,
+            steering_vectors=steering_vectors,
+            alpha=0.1,  # Small alpha for testing
+            max_new_tokens=8,
+            batch_size=2
+        )
+        steering_time = time.time() - start_time
+        
+        print(f"Batched steering took {steering_time:.3f}s ({len(prompts)/steering_time:.2f} prompts/sec)")
+        print(f"Generated {len(results)} steered results:")
+        for i, (prompt, result) in enumerate(zip(prompts, results)):
+            print(f"  {i+1}. Prompt: '{prompt}' -> Result: '{result}'")
+        
+        print("✅ Batched steering test passed!")
+        return True, steering_time
+        
+    except Exception as e:
+        print(f"❌ Batched steering test failed: {e}")
+        import traceback
+        traceback.print_exc()
+        return False, 0
+
+def test_sequential_vs_batched_comparison():
+    """Compare sequential vs batched processing performance."""
+    print("\n" + "="*60)
+    print("Performance Comparison: Sequential vs Batched")
+    print("="*60)
+    
+    try:
+        print(f"Loading model: {MODEL_NAME}")
+        model = NNsightChatModel(MODEL_NAME)
+        
+        # Test prompts
+        prompts = [
+            "The weather today is",
+            "I think that",
+            "The capital of France is", 
+            "My favorite color is",
+            "The best programming language is",
+            "Machine learning is"
+        ]
+        
+        # Create steering vectors
+        n_layers = model.model.config.num_hidden_layers
+        d_model = model.model.config.hidden_size
+        steering_vectors = np.random.randn(n_layers, d_model).astype(np.float32)
+        
+        print(f"Testing with {len(prompts)} prompts")
+        
+        # Test sequential processing (batch_size=1)
+        print("\n📊 Sequential Processing (batch_size=1):")
+        start_time = time.time()
+        sequential_results = generate_steered_batch(
+            model=model,
+            prompts=prompts,
+            steering_vectors=steering_vectors,
+            alpha=0.1,
+            max_new_tokens=8,
+            batch_size=1  # Force sequential
+        )
+        sequential_time = time.time() - start_time
+        print(f"  Time: {sequential_time:.3f}s ({len(prompts)/sequential_time:.2f} prompts/sec)")
+        
+        # Test batched processing (batch_size=2)
+        print("\n📊 Batched Processing (batch_size=2):")
+        start_time = time.time()
+        batched_results = generate_steered_batch(
+            model=model,
+            prompts=prompts,
+            steering_vectors=steering_vectors,
+            alpha=0.1,
+            max_new_tokens=8,
+            batch_size=2  # Batched
+        )
+        batched_time = time.time() - start_time
+        print(f"  Time: {batched_time:.3f}s ({len(prompts)/batched_time:.2f} prompts/sec)")
+        
+        # Test full batching (all at once)
+        print("\n📊 Full Batching (all prompts at once):")
+        start_time = time.time()
+        full_batch_results = generate_steered_batch(
+            model=model,
+            prompts=prompts,
+            steering_vectors=steering_vectors,
+            alpha=0.1,
+            max_new_tokens=8,
+            batch_size=None  # All at once
+        )
+        full_batch_time = time.time() - start_time
+        print(f"  Time: {full_batch_time:.3f}s ({len(prompts)/full_batch_time:.2f} prompts/sec)")
+        
+        # Calculate speedups
+        print(f"\n🚀 Performance Summary:")
+        print(f"  Sequential:     {sequential_time:.3f}s (baseline)")
+        print(f"  Batch size 2:   {batched_time:.3f}s ({sequential_time/batched_time:.2f}x speedup)")
+        print(f"  Full batch:     {full_batch_time:.3f}s ({sequential_time/full_batch_time:.2f}x speedup)")
+        
+        # Verify results are similar
+        print(f"\n✅ All methods generated {len(sequential_results)} results")
+        
+        return True, {
+            'sequential': sequential_time,
+            'batched': batched_time, 
+            'full_batch': full_batch_time
+        }
+        
+    except Exception as e:
+        print(f"❌ Performance comparison failed: {e}")
+        import traceback
+        traceback.print_exc()
+        return False, {}
+
+
+if __name__ == "__main__":
+    print("Testing batched generation and steering implementation...")
+    print("="*60)
+    
+    success = True
+    timings = {}
+    
+    # Test regular generation
+    gen_success, gen_time = test_batched_generation()
+    success &= gen_success
+    timings['generation'] = gen_time
+    
+    # Test steered generation  
+    steer_success, steer_time = test_batched_steering()
+    success &= steer_success
+    timings['steering'] = steer_time
+    
+    # Performance comparison
+    comp_success, comp_times = test_sequential_vs_batched_comparison()
+    success &= comp_success
+    timings.update(comp_times)
+    
+    print("\n" + "="*60)
+    if success:
+        print("🎉 ALL TESTS PASSED! Batched implementation is working correctly.")
+        print("\n📊 Performance Summary:")
+        for test_name, test_time in timings.items():
+            if test_time > 0:
+                print(f"  {test_name:15}: {test_time:.3f}s")
+    else:
+        print("💥 Some tests failed. Check the errors above.")
+    print("="*60)

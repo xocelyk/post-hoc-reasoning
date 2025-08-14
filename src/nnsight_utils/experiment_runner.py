@@ -39,6 +39,7 @@ from . import (
 )
 from .core.generation import generate_text
 from .steering.kv_cached_generation import generate_with_kv_cached_steering, estimate_kv_cache_savings
+from .steering.generation import generate_steered_batch
 
 
 class UnifiedExperimentRunner:
@@ -93,49 +94,53 @@ class UnifiedExperimentRunner:
         prompts: List[str], 
         model: NNsightChatModel, 
         temperature: float = 0.7, 
-        max_new_tokens: int = 100
+        max_new_tokens: int = 100,
+        batch_size: Optional[int] = None
     ) -> List[str]:
-        """Generate responses for a batch of prompts."""
+        """Generate responses for a batch of prompts using efficient batching with left-padding."""
         # Override max_new_tokens for DeepSeek models
         if hasattr(model, 'model_name') and model.model_name.lower().startswith('deepseek'):
             max_new_tokens = 2000
             self.logger.info(f"Using DeepSeek model, overriding max_new_tokens to {max_new_tokens}")
         
-        self.logger.info(f"Generating for {len(prompts)} prompts")
+        # Get batch size from model config or use default
+        if batch_size is None:
+            batch_size = getattr(model, 'batch_size', 4)  # Default batch size of 4
         
-        generations = []
-        for i, prompt in enumerate(prompts):
-            if i % 5 == 0:
-                self.logger.info(f"  Progress: {i}/{len(prompts)} prompts generated")
-            
-            # Use the basic generation function without steering
-            response = generate_text(
-                model=model,
-                prompt=prompt,  # generate_text handles tokenization
-                max_new_tokens=max_new_tokens,
-                temperature=temperature,
-                do_sample=True
-            )
-            generations.append(response)
-            
-            # Log the first prompt and response for debugging
-            if i == 0:
-                # Filter think tags for DeepSeek models when displaying
-                display_response = response
-                if hasattr(model, 'model_name') and model.model_name.lower().startswith('deepseek'):
-                    display_response = filter_think_tags(response)
-                    
-                self.logger.info("=" * 80)
-                self.logger.info("FIRST PROMPT AND RESPONSE:")
-                self.logger.info("=" * 80)
-                self.logger.info(f"Full Prompt:\n{prompt}")
-                self.logger.info("-" * 80)
-                self.logger.info(f"Response (filtered for DeepSeek):\n{display_response}")
-                self.logger.info("=" * 80)
-            
-            # Memory cleanup every few generations
-            if i % 5 == 0:
-                smart_empty_cache()
+        self.logger.info(f"🚀 Starting batch generation: {len(prompts)} prompts with batch_size={batch_size}")
+        
+        # Use the new batched generation function
+        from .core.generation import batch_generate_text
+        import time
+        start_time = time.time()
+        
+        generations = batch_generate_text(
+            model=model,
+            prompts=prompts,
+            max_new_tokens=max_new_tokens,
+            temperature=temperature,
+            do_sample=True,
+            batch_size=batch_size
+        )
+        
+        generation_time = time.time() - start_time
+        throughput = len(prompts) / generation_time if generation_time > 0 else 0
+        self.logger.info(f"✅ Generation completed: {generation_time:.2f}s ({throughput:.2f} prompts/sec)")
+        
+        # Log the first prompt and response for debugging
+        if generations:
+            # Filter think tags for DeepSeek models when displaying
+            display_response = generations[0]
+            if hasattr(model, 'model_name') and model.model_name.lower().startswith('deepseek'):
+                display_response = filter_think_tags(generations[0])
+                
+            self.logger.info("=" * 80)
+            self.logger.info("FIRST PROMPT AND RESPONSE:")
+            self.logger.info("=" * 80)
+            self.logger.info(f"Full Prompt:\n{prompts[0]}")
+            self.logger.info("-" * 80)
+            self.logger.info(f"Response (filtered for DeepSeek):\n{display_response}")
+            self.logger.info("=" * 80)
         
         return generations
 
@@ -495,6 +500,10 @@ class UnifiedExperimentRunner:
             if result["pred_answer"] == "no" and result["correct_answer"] == "no"
         ]
 
+        # Get batch size from model config for this experiment
+        model_config = next((m for m in self.run_config.models if m.name == config.model_name), None)
+        batch_size = model_config.batch_size if model_config else 4
+
         # Apply max_gen limit if specified
         max_gen = self.run_config.steering.max_gen
         if max_gen is not None:
@@ -524,7 +533,9 @@ class UnifiedExperimentRunner:
                 self.logger.info(f"Skipping alpha {alpha_yes} (yes→no): Early stopping due to 100% unparsed rate")
             elif not cache.has_steering_results(alpha_yes, "yes"):
                 results_yes = self.generate_steered_examples(
-                    model, yes_test_data, probe_result, alpha_yes, config
+                    model, yes_test_data, probe_result, alpha_yes, config,
+                    use_kv_cache=self.run_config.use_kv_cache,
+                    batch_size=batch_size
                 )
                 cache.save_pickle(
                     results_yes, cache.get_steering_results_path(alpha_yes, "yes")
@@ -570,7 +581,9 @@ class UnifiedExperimentRunner:
                 self.logger.info(f"Skipping alpha {alpha_no} (no→yes): Early stopping due to 100% unparsed rate")
             elif not cache.has_steering_results(alpha_no, "no"):
                 results_no = self.generate_steered_examples(
-                    model, no_test_data, probe_result, alpha_no, config
+                    model, no_test_data, probe_result, alpha_no, config,
+                    use_kv_cache=self.run_config.use_kv_cache,
+                    batch_size=batch_size
                 )
                 cache.save_pickle(
                     results_no, cache.get_steering_results_path(alpha_no, "no")
@@ -619,8 +632,10 @@ class UnifiedExperimentRunner:
         probe_result: ProbeResult,
         alpha: float,
         config: ExperimentConfig,
+        use_kv_cache: bool = False,
+        batch_size: Optional[int] = None,
     ) -> List[Dict]:
-        """Generate steered examples using KV-cached generation for optimal performance."""
+        """Generate steered examples using configurable KV caching or regular batching."""
         # Override max_new_tokens for DeepSeek models
         max_new_tokens = config.max_new_tokens
         if hasattr(model, 'model_name') and model.model_name.lower().startswith('deepseek'):
@@ -635,25 +650,37 @@ class UnifiedExperimentRunner:
         else:
             # Prompts need formatting (they are message lists)
             prompt_strings = [model.apply_chat_template(example["prompt"]) for example in test_data]
-        
-        # Estimate potential KV cache savings
-        cache_stats = estimate_kv_cache_savings(prompt_strings, model.cfg.n_layers)
-        if cache_stats['shared_prefix_length'] > 50:
-            self.logger.info(
-                f"Using KV caching - estimated speedup: {cache_stats['estimated_speedup']} "
-                f"(shared prefix: {cache_stats['shared_prefix_length']} chars)"
-            )
-        
+         
         with memory_cleanup_context():
-            # Use KV-cached generation for better performance
-            steered_responses = generate_with_kv_cached_steering(
-                model=model,
-                prompts=prompt_strings,
-                probe_result=probe_result,
-                alpha=alpha,
-                max_new_tokens=max_new_tokens,
-                temperature=config.temperature
-            )
+            # Log steering method being used
+            if use_kv_cache:
+                # Estimate potential KV cache savings
+                cache_stats = estimate_kv_cache_savings(prompt_strings, model.cfg.n_layers)
+                if cache_stats['shared_prefix_length'] > 50:
+                    self.logger.info(
+                        f"Using KV caching - estimated speedup: {cache_stats['estimated_speedup']} "
+                        f"(shared prefix: {cache_stats['shared_prefix_length']} chars)"
+                    )
+
+                # Use KV-cached generation (ignores batch_size)
+                steered_responses = generate_with_kv_cached_steering(
+                    model=model,
+                    prompts=prompt_strings,
+                    probe_result=probe_result,
+                    alpha=alpha,
+                    max_new_tokens=max_new_tokens,
+                    temperature=config.temperature,
+                )
+            else:
+                steered_responses = generate_steered_batch(
+                    model=model,
+                    prompts=prompt_strings,
+                    probe_result=probe_result,
+                    alpha=alpha,
+                    max_new_tokens=max_new_tokens,
+                    temperature=config.temperature,
+                    batch_size=batch_size,
+                )
         
         # Process results
         steered_results = []

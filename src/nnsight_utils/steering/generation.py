@@ -5,11 +5,12 @@ This module provides steering functionality using nnsight's intervention system,
 offering a cleaner alternative to the transformer_lens hook-based approach.
 """
 
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Tuple
 import logging
 import numpy as np
 import torch
 
+from ..core.activation_extraction import _get_layer_output
 from ..core.models import NNsightChatModel
 from ..probes.base import ProbeResult
 from .strategies import SteeringDispatcher, prepare_steering_vectors, determine_steering_layers, get_steering_config
@@ -76,25 +77,31 @@ def generate_with_nnsight_steering(
     temperature: float = 0.7,
     layers: Optional[List[int]] = None,
     do_sample: bool = True,
-) -> str:
+    attention_mask: Optional[torch.Tensor] = None,
+) -> List[str]:
     """
     Generate text with steering using nnsight interventions.
+    Handles any batch size uniformly with left-padding.
     
     Args:
         model: NNsightChatModel instance
-        tokens: Input token tensor
+        tokens: Input token tensor (batch_size, seq_len) - should be left-padded
         steering_vectors: Numpy array of steering vectors for each layer
         alpha: Scaling factor for steering vectors
-        instruction_pos: Position after which to apply steering (None = end of prompt) 
+        instruction_pos: Position after which to apply steering (None = end of prompt)
+                        Same for all sequences due to left-padding
         max_new_tokens: Maximum number of tokens to generate
         temperature: Sampling temperature
         layers: List of layer indices to steer (None = all layers with vectors)
         do_sample: Whether to use sampling (True) or greedy decoding (False)
+        attention_mask: Optional attention mask for batched inputs
         
     Returns:
-        Generated text string
+        List of generated text strings (always returns a list)
     """
-    # Set default instruction position to end of prompt
+    batch_size = tokens.size(0)
+    
+    # Set default instruction position to end of prompt (same for all due to left-padding)
     if instruction_pos is None:
         instruction_pos = tokens.size(1)
     
@@ -102,126 +109,168 @@ def generate_with_nnsight_steering(
     if layers is None:
         layers = list(range(len(steering_vectors)))
     
-    # Convert steering vectors to tensors on the right device
+    # Convert steering vectors to tensors on the right device (use tokens device)
     steering_tensors = {
         layer: torch.tensor(
             steering_vectors[i], 
-            device=tokens.device,
             dtype=model.dtype
         )
         for i, layer in enumerate(layers)
     }
     
+    # Prepare generation kwargs
+    gen_kwargs = {
+        "max_new_tokens": max_new_tokens,
+        "temperature": temperature,
+        "do_sample": do_sample,
+        "pad_token_id": model.tokenizer.eos_token_id,
+    }
+    
+    if attention_mask is not None:
+        gen_kwargs["attention_mask"] = attention_mask
+    
+    # Add DeepSeek-specific stopping criteria
+    if hasattr(model, 'model_name') and model.model_name.lower().startswith('deepseek'):
+        stop_tokens = []
+        vocab = model.tokenizer.get_vocab()
+        
+        if '<｜end▁of▁sentence｜>' in vocab:
+            stop_tokens.append(vocab['<｜end▁of▁sentence｜>'])
+        if '<｜User｜>' in vocab:
+            stop_tokens.append(vocab['<｜User｜>'])
+            
+        if stop_tokens:
+            gen_kwargs["eos_token_id"] = stop_tokens
+    
     # Generate with interventions
-    with model.model.generate(
-        tokens,
-        max_new_tokens=max_new_tokens,
-        temperature=temperature,
-        do_sample=do_sample,
-        pad_token_id=model.tokenizer.eos_token_id,
-    ) as generator:
+    with model.model.generate(tokens, **gen_kwargs) as generator:
         
         # Apply steering interventions during generation
         for layer in layers:
-            # Get the residual stream output for this layer
-            # Handle different model architectures
-            if hasattr(model.model, 'transformer') and hasattr(model.model.transformer, 'h'):
-                # GPT-style models (GPT2, etc.)
-                layer_module = model.model.transformer.h[layer]
-                residual = layer_module.output[0]
-            elif hasattr(model.model, 'model') and hasattr(model.model.model, 'layers'):
-                # Llama/Gemma style models
-                residual = model.model.model.layers[layer].output[0]
-            else:
-                raise ValueError(f"Unsupported model architecture: {type(model.model)}")
+            # Get the residual stream output for this layer using architecture detection
+            residual = _get_layer_output(model.model, layer)
             
-            # Apply steering directly using += operator
-            steering_vector = steering_tensors[layer]
-            # Broadcast steering vector to the right shape if needed
+            # Apply steering to all sequences in batch at the same instruction position
+            steering_vector = steering_tensors[layer].to(residual.device)
             if steering_vector.dim() == 1:
-                steering_vector = steering_vector.unsqueeze(0).unsqueeze(0)
+                steering_vector = steering_vector.unsqueeze(0).unsqueeze(0)  # (1, 1, d_model)
             
-            # Apply steering to positions after instruction_pos
-            residual[:, instruction_pos:, :] += alpha * steering_vector
+            # Apply to all batch elements at once (same instruction_pos due to left-padding)
+            residual[:, instruction_pos:, :] += alpha * steering_vector.squeeze(0).squeeze(0)
         
-        # Get the generated output through the correct path
-        if hasattr(model.model, 'lm_head'):
-            # For models with lm_head (GPT-style)
-            logits = model.model.lm_head.output.save()
-        elif hasattr(model.model, 'embed_out'):
-            # For models with embed_out
-            logits = model.model.embed_out.output.save()
-        else:
-            # Fallback: try to access through the last layer based on model type
-            last_layer_idx = model.cfg.n_layers - 1
-            if hasattr(model.model, 'transformer') and hasattr(model.model.transformer, 'h'):
-                # GPT-style models
-                logits = model.model.transformer.h[last_layer_idx].output[0].save()
-            elif hasattr(model.model, 'model') and hasattr(model.model.model, 'layers'):
-                # Llama/Gemma style models
-                logits = model.model.model.layers[last_layer_idx].output[0].save()
-            else:
-                raise ValueError(f"Cannot determine output access for model: {type(model.model)}")
-        
-        # Convert logits to tokens
-        if logits.dim() == 3:  # [batch, seq, vocab]
-            generated_tokens = torch.argmax(logits, dim=-1)
-        else:
-            generated_tokens = logits
+        # Get the generated output
+        output = model.model.generator.output.save()
     
-    # Decode the full output and return as string
-    return model.to_string(generated_tokens[0])
+    # Decode all outputs uniformly
+    input_length = tokens.size(1)
+    results = []
+    
+    for i in range(batch_size):
+        generated_tokens = output[i, input_length:]
+        if len(generated_tokens) > 0:
+            generated_text = model.tokenizer.decode(generated_tokens, skip_special_tokens=True)
+        else:
+            generated_text = ""
+        results.append(generated_text)
+    
+    return results
 
 
 def generate_steered_batch(
     model: NNsightChatModel,
     prompts: List[str],
-    steering_vectors: np.ndarray,
+    probe_result: ProbeResult,
     alpha: float = 1.0,
     max_new_tokens: int = 100,
     temperature: float = 0.7,
-    layers: Optional[List[int]] = None,
-    batch_size: int = 1,
+    batch_size: Optional[int] = None,
 ) -> List[str]:
     """
-    Generate steered text for a batch of prompts.
+    Generate steered text for a batch of prompts using efficient batching with left-padding.
     
     Args:
         model: NNsightChatModel instance
         prompts: List of prompt strings
-        steering_vectors: Numpy array of steering vectors
+        probe_result: Results from probe training (contains method and vectors)
         alpha: Steering strength
         max_new_tokens: Maximum tokens to generate per prompt
         temperature: Sampling temperature
-        layers: Layers to apply steering to
-        batch_size: Number of prompts to process at once
+        batch_size: Number of prompts to process at once (None = all at once)
         
     Returns:
         List of generated text strings
     """
+    if batch_size is None:
+        batch_size = len(prompts)
+    
     results = []
+    
+    config = get_steering_config(probe_result.method)
+    layers = determine_steering_layers(probe_result, config)
+    vectors = prepare_steering_vectors(probe_result, config)
+    
+    # Convert and cache
+    steering_tensors = {}
+    for layer, vector in vectors.items():
+        tensor = torch.tensor(
+            alpha * vector,  # Apply alpha scaling
+            dtype=model.dtype
+        )
+        steering_tensors[layer] = tensor
+    
+    # Set up progress bar
+    from tqdm import tqdm
+    
+    progress_bar = tqdm(
+        total=len(prompts),
+        desc=f"Steering (batch_size={batch_size})",
+        unit="prompts",
+        ncols=100
+    )
     
     # Process prompts in batches
     for i in range(0, len(prompts), batch_size):
         batch_prompts = prompts[i:i + batch_size]
         
-        for prompt in batch_prompts:
-            # Tokenize individual prompt
-            tokens = model.to_tokens(prompt)
-            
-            # Generate with steering
-            generated = generate_with_nnsight_steering(
-                model=model,
-                tokens=tokens,
-                steering_vectors=steering_vectors,
-                alpha=alpha,
-                max_new_tokens=max_new_tokens,
-                temperature=temperature,
-                layers=layers,
-            )
-            
-            results.append(generated)
+        # Set pad token (use eos_token_id as pad_token_id if not set)
+        if model.tokenizer.pad_token_id is None:
+            model.tokenizer.pad_token_id = model.tokenizer.eos_token_id
+        
+        # Use tokenizer's built-in padding with left-padding for causal models
+        model.tokenizer.padding_side = 'left'
+        
+        # Tokenize all prompts with padding
+        batch_encoding = model.tokenizer(
+            batch_prompts, 
+            return_tensors="pt", 
+            padding=True,
+            truncation=False
+        )
+        
+        batch_tokens = batch_encoding['input_ids']
+        attention_mask = batch_encoding['attention_mask']
+        
+        # Use the updated batched steering function
+        batch_results = generate_with_nnsight_steering(
+            model=model,
+            tokens=batch_tokens,
+            steering_vectors=steering_tensors,
+            alpha=alpha,
+            max_new_tokens=max_new_tokens,
+            temperature=temperature,
+            layers=layers,
+            do_sample=True,
+            attention_mask=attention_mask,
+        )
+        
+        # Results are already a list
+        results.extend(batch_results)
+        
+        # Update progress bar
+        progress_bar.update(len(batch_prompts))
     
+    # Close progress bar
+    progress_bar.close()
     return results
 
 
