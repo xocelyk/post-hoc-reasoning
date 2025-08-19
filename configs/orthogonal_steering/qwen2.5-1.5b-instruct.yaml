@@ -1,0 +1,36 @@
+experiment:
+  cache_dir: cache/experiments_orthogonal
+  use_existing_probes: true
+  probe_cache_dir: cache/experiments
+
+steering:
+  alpha_values: [4, 8, 12, 16, 20]
+  samples_per_alpha: 20
+  num_orthogonal_vectors: 1
+  use_best_probe_layer: true
+  seed: 42
+
+models:
+  - name: Qwen/Qwen2.5-1.5B-Instruct
+    backend: auto
+    batch_size: 1
+    device: auto
+    dtype: bfloat16
+
+datasets:
+  - name: anachronisms
+    train_size: 500
+    test_size: 500
+    split_seed: 42
+  - name: logical_deduction
+    train_size: 500
+    test_size: 500
+    split_seed: 42
+  - name: social_chemistry
+    train_size: 500
+    test_size: 500
+    split_seed: 42
+  - name: sports_understanding
+    train_size: 500
+    test_size: 500
+    split_seed: 42
