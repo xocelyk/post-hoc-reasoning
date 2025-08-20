@@ -189,16 +189,24 @@ def run_experiment(config: OrthogonalRunConfig) -> None:
                             example = test_data[idx]
                             if isinstance(example, dict):
                                 prompt = example.get("prompt", "")
-                                original_gen = (
-                                    example.get("generation")
-                                    or example.get("response")
-                                    or ""
-                                )
+                                # Handle response being a tuple (letter, answer)
+                                response = example.get("response", None)
+                                if isinstance(response, tuple) and len(response) == 2:
+                                    # Response is already parsed as (letter, answer)
+                                    original_answer = response[1]
+                                else:
+                                    # Try to get generation text and parse it
+                                    original_gen = (
+                                        example.get("generation")
+                                        or example.get("response")
+                                        or ""
+                                    )
+                                    _, original_answer = parse_response(original_gen)
                             else:
                                 # Fallback for simple list structures
                                 prompt = example[0]
                                 original_gen = example[1] if len(example) > 1 else ""
-                            _, original_answer = parse_response(original_gen)
+                                _, original_answer = parse_response(original_gen)
 
                             prompt_tokens = model.to_tokens(prompt, prepend_bos=True)
 
