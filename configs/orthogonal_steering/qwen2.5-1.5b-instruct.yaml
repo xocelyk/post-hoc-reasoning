@@ -4,8 +4,8 @@ experiment:
   probe_cache_dir: cache/experiments
 
 steering:
-  alpha_values: [4, 8, 12, 16, 20]
-  samples_per_alpha: 20
+  alpha_values: [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
+  samples_per_alpha: 50
   num_orthogonal_vectors: 1
   use_best_probe_layer: true
   seed: 42
