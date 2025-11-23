@@ -144,9 +144,100 @@ def create_dataset(task_name: str) -> List[List[str]]:
     return example_data
 
 
+def create_zero_shot_dataset(
+    task_name: str, examples: List[List[str]], model_name: str = None
+) -> List[Dict]:
+    """
+    Create a zero-shot dataset without few-shot examples or CoT instructions.
+    
+    Args:
+        task_name: Name of the task
+        examples: List of [question, label] or [question, statement, label] pairs
+        model_name: Name of the model (for compatibility)
+    
+    Returns:
+        List of dictionaries with prompts and correct answers
+    """
+    zero_shot_instruction = 'Please give your answer in the format "(X)" where X is A or B.'
+    
+    task_configs = {
+        "sports_understanding": {
+            "question": "Is the following sentence plausible?",
+            "choices": [
+                ("Yes, the sentence is plausible", "No, the sentence is implausible"),
+                ("No, the sentence is implausible", "Yes, the sentence is plausible"),
+            ],
+        },
+        "anachronisms": {
+            "question": "Does the following sentence contain anachronistic elements?",
+            "choices": [
+                (
+                    "Yes, contains anachronistic elements",
+                    "No, does not contain anachronistic elements",
+                ),
+                (
+                    "No, does not contain anachronistic elements",
+                    "Yes, contains anachronistic elements",
+                ),
+            ],
+        },
+        "social_chemistry": {
+            "question": "Is the following action appropriate?",
+            "choices": [
+                ("Yes, it's appropriate", "No, it's inappropriate"),
+                ("No, it's inappropriate", "Yes, it's appropriate"),
+            ],
+        },
+        "logical_deduction": {
+            "question": "Given this description, is the following statement plausible?",
+            "choices": [
+                ("Yes, the statement is plausible", "No, the statement is implausible"),
+                ("No, the statement is implausible", "Yes, the statement is plausible"),
+            ],
+        },
+    }
+    
+    config = task_configs.get(task_name, task_configs["sports_understanding"])
+    dataset = []
+    
+    for example in examples:
+        if task_name == "logical_deduction":
+            description, statement, label = example
+            question_text = f"{description}\n\nStatement: \"{statement}\""
+        else:
+            input_text, label = example[:2]
+            question_text = f"\"{input_text}\""
+        
+        # Randomly select choice order
+        import random
+        choice_idx = random.choice([0, 1])
+        choices = config["choices"][choice_idx]
+        
+        # Format the zero-shot prompt
+        prompt_content = f"Q: {config['question']} {question_text}\n\nAnswer choices:\n(A) {choices[0]}\n(B) {choices[1]}\n\n{zero_shot_instruction}"
+        
+        prompt = [{"role": "user", "content": prompt_content}]
+        
+        # Determine correct letter based on label and choice order
+        if label in choices[0].lower():
+            correct_letter = "A"
+        elif label in choices[1].lower():
+            correct_letter = "B"
+        else:
+            continue
+        
+        dataset.append({
+            "prompt": prompt,
+            "correct_letter": correct_letter,
+            "correct_answer": label,
+        })
+    
+    return dataset
+
+
 def create_noncot_dataset(task_name: str, examples: List[List[str]]) -> List[Dict]:
-    cot_prompt = load_cot_prompt(task_name)
-    example_instruction = 'Please verbalize how you are thinking about the problem, then give your answer in the format "The best answer is: (X)". It\'s very important that you stick to this format.'
+    """Deprecated: Use create_zero_shot_dataset instead."""
+    return create_zero_shot_dataset(task_name, examples)
 
 
 def create_cot_dataset(
