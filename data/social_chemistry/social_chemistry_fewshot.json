@@ -1,0 +1,53 @@
+[
+    {
+      "statement": "Doing something that causes other people to lose trust in you.",
+      "reasoning": "It's bad to do something that causes other people to lose trust in you.",
+      "answer": "no"
+    },
+    {
+      "statement": "Listening to each other's issues.",
+      "reasoning": "Partners should listen to each other's issues.",
+      "answer": "yes"
+    },
+    {
+      "statement": "Needing space from family.",
+      "reasoning": "It is okay to need space from family.",
+      "answer": "yes"
+    },
+    {
+      "statement": "Keeping things clean.",
+      "reasoning": "It's good to keep things clean.",
+      "answer": "yes"
+    },
+    {
+        "statement": "Interrupting someone while they are speaking.",
+        "reasoning": "It's rude to interrupt someone while they are speaking and shows a lack of respect.",
+        "answer": "no"
+      },
+      {
+        "statement": "Offering to help a friend move into their new apartment.",
+        "reasoning": "Helping a friend with a difficult task is considerate and supportive.",
+        "answer": "yes"
+      },
+      {
+        "statement": "Spreading rumors about a colleague behind their back.",
+        "reasoning": "Spreading rumors damages trust and can harm the colleague's reputation.",
+        "answer": "no"
+      },
+      {
+        "statement": "Saying thank you when someone does you a favor.",
+        "reasoning": "Expressing gratitude is polite and reinforces positive social bonds.",
+        "answer": "yes"
+      },
+      {
+        "statement": "Ignoring a text message from your partner for several days without explanation.",
+        "reasoning": "Ignoring a partner’s communication for an extended period can cause worry and erode trust.",
+        "answer": "no"
+      },
+      {
+        "statement": "Apologizing sincerely when you've made a mistake.",
+        "reasoning": "A sincere apology acknowledges the mistake and helps mend relationships.",
+        "answer": "yes"
+      }
+  ]
+  

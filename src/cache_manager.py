@@ -18,16 +18,33 @@ class ExperimentConfig:
     test_size: int
     split_seed: int
     alpha_range: List[float]
+    backend: str = "nnsight"
     temperature: float = 0.7
     max_new_tokens: int = 100
+    
+    # Bias experiment parameters
+    train_bias: Optional[str] = None
+    test_bias: Optional[str] = None
+    train_dataset: Optional[str] = None  # For cross-dataset experiments
+    test_dataset: Optional[str] = None
+    
+    # Dataset-specific parameters (e.g., for MMLU: split, subject, etc.)
+    dataset_params: Optional[Dict[str, Any]] = None
 
     def get_hash(self) -> str:
         """Generate a unique hash for this experiment configuration."""
         # Exclude steering method from hash to allow shared cache for data
         # Only include core experiment parameters that affect data generation
+        dataset_params_str = ""
+        if self.dataset_params:
+            # Sort keys for consistent hashing
+            sorted_params = sorted(self.dataset_params.items())
+            dataset_params_str = "_" + str(sorted_params)
         config_str = (
             f"{self.model_name}_{self.dataset_name}_{self.train_size}_{self.test_size}_"
-            f"{self.split_seed}_{self.temperature}_{self.max_new_tokens}"
+            f"{self.split_seed}_{self.temperature}_{self.max_new_tokens}_"
+            f"{self.train_bias}_{self.test_bias}_{self.train_dataset}_{self.test_dataset}"
+            f"{dataset_params_str}"
         )
         return hashlib.md5(config_str.encode()).hexdigest()[:12]
 
@@ -59,6 +76,7 @@ class ExperimentCache:
             os.path.join(self.cache_dir, "data"),
             os.path.join(self.cache_dir, "probes"),
             os.path.join(self.cache_dir, "steering"),
+            os.path.join(self.cache_dir, "debiasing"),
             os.path.join(self.cache_dir, "metadata"),
         ]
         for dir_path in dirs:
@@ -145,6 +163,20 @@ class ExperimentCache:
     def get_steering_summary_path(self) -> str:
         return os.path.join(self.cache_dir, "steering", "summary.json")
 
+    # Debiasing caching methods
+    def get_debiasing_results_path(self, alpha: float = 0.0) -> str:
+        """Get path for debiasing results."""
+        filename = f"debiasing_alpha_{alpha}.pkl"
+        return os.path.join(self.cache_dir, "debiasing", filename)
+
+    def get_debiasing_vectors_path(self) -> str:
+        """Get path for computed ACE debiasing vectors."""
+        return os.path.join(self.cache_dir, "debiasing", "ace_vectors.json")
+
+    def get_debiasing_summary_path(self) -> str:
+        """Get path for debiasing experiment summary."""
+        return os.path.join(self.cache_dir, "debiasing", "summary.json")
+
     # Generic save/load methods
     def save_pickle(self, data: Any, filepath: str):
         """Save data as pickle file."""
@@ -203,14 +235,22 @@ class ExperimentCache:
         else:
             # Check default/logistic regression probes
             return (
-                os.path.exists(self.get_probes_path())
-                and os.path.exists(self.get_probe_coefficients_path())
+                # os.path.exists(self.get_probes_path())
+                os.path.exists(self.get_probe_coefficients_path())
                 and os.path.exists(self.get_auc_scores_path())
             )
 
     def has_steering_results(self, alpha: float, label: str) -> bool:
         """Check if steering results exist for specific alpha and label."""
         return os.path.exists(self.get_steering_results_path(alpha, label))
+
+    def has_debiasing_vectors(self) -> bool:
+        """Check if ACE debiasing vectors are computed and cached."""
+        return os.path.exists(self.get_debiasing_vectors_path())
+
+    def has_debiasing_results(self, alpha: float = 0.0) -> bool:
+        """Check if debiasing results exist for specific alpha."""
+        return os.path.exists(self.get_debiasing_results_path(alpha))
 
     def list_cached_probe_methods(self) -> List[str]:
         """List all steering/probe methods that have cached data."""
@@ -263,6 +303,8 @@ class ExperimentCache:
             "probes": self.has_probes(),
             "steering_complete": len(self.get_completed_steering())
             >= len(self.config.alpha_range) * 2,
+            "debiasing_vectors": self.has_debiasing_vectors(),
+            "debiasing_complete": self.has_debiasing_results(),
         }
 
     def clean_cache(self):

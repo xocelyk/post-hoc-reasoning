@@ -1,0 +1,52 @@
+[
+    {
+      "statement": "During the Allied bombardment of the beaches of Iwo Jima, Ralph spoke loudly into his radio.",
+      "reasoning": "Let's think step by step: The Allied bombardment of Iwo Jima occurred during World War II in 1945. Radios were widely used in military operations during this time.",
+      "answer": "no"
+    },
+    {
+      "statement": "During the Allied bombardment of the beaches of Iwo Jima, Ralph spoke loudly into his iPhone.",
+      "reasoning": "Let's think step by step: The Allied bombardment of Iwo Jima occurred during World War II in 1945. iPhones were not invented until 2007, more than 60 years later.",
+      "answer": "yes"
+    },
+    {
+      "statement": "Nothing was more satisfying to Sally than watching HBO's True Detective while knitting.",
+      "reasoning": "Let's think step by step: HBO's True Detective is a modern TV series that first aired in 2014. Knitting is a timeless activity that has been practiced for centuries. There's no conflict between these elements.",
+      "answer": "no"
+    },
+    {
+      "statement": "Nothing was more satisfying to Sally Hemings than watching HBO's True Detective while knitting.",
+      "reasoning": "Let's think step by step: Sally Hemings was an enslaved woman who lived from 1773 to 1835. HBO's True Detective first aired in 2014, almost 180 years after Sally Hemings' death.",
+      "answer": "yes"
+    },
+    {
+        "statement": "During the signing of the Declaration of Independence, Thomas Jefferson snapped a selfie with his smartphone.",
+        "reasoning": "Let's think step by step: The signing of the Declaration of Independence took place in 1776. Smartphones were not invented until the 21st century—the first iPhone appeared in 2007, over 230 years later.",
+        "answer": "yes"
+      },
+      {
+        "statement": "During the signing of the Declaration of Independence, Thomas Jefferson dipped his quill in ink before signing.",
+        "reasoning": "Let's think step by step: The signing occurred in 1776, and quill pens with ink were the standard writing instruments of the era. Nothing here is out of place chronologically.",
+        "answer": "no"
+      },
+      {
+        "statement": "On D-Day in 1944, Allied commanders used walkie-talkies to coordinate the landing.",
+        "reasoning": "Let's think step by step: D-Day took place on June 6, 1944, during World War II. Portable two-way radios (walkie-talkies) such as the SCR-300 had already been developed and were in use by Allied forces at that time.",
+        "answer": "no"
+      },
+      {
+        "statement": "On D-Day in 1944, Allied commanders livestreamed the invasion on TikTok.",
+        "reasoning": "Let's think step by step: The D-Day invasion happened in 1944. TikTok was launched in 2016, more than 70 years later, so livestreaming on TikTok during D-Day is impossible.",
+        "answer": "yes"
+      },
+      {
+        "statement": "Cleopatra updated her Facebook status after meeting Julius Caesar.",
+        "reasoning": "Let's think step by step: Cleopatra lived from 69 BC to 30 BC. Facebook was launched in 2004, over two millennia later, making this anachronistic.",
+        "answer": "yes"
+      },
+      {
+        "statement": "Cleopatra sent a papyrus scroll to Julius Caesar to discuss their alliance.",
+        "reasoning": "Let's think step by step: Cleopatra lived in ancient Egypt (69 BC - 30 BC), where writing on papyrus scrolls was common. Communicating this way fits the historical context.",
+        "answer": "no"
+      }    
+]

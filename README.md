@@ -46,6 +46,7 @@ results = Results("cache/experiments")
 steering_results = results.steering      # Steering experiment results
 generation_results = results.generation  # Train/test generation results  
 probe_results = results.probe            # Probe training results
+debiasing_results = results.debiasing    # ACE debiasing experiment results
 ```
 
 ### Available Metrics

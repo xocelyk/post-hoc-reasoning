@@ -83,11 +83,12 @@ class UnifiedExperimentRunner:
         )
         self.logger = logging.getLogger("UnifiedExperimentRunner")
 
-    def parse_response(self, response: str, model_name: Optional[str] = None) -> Tuple[str, str]:
+    def parse_response(self, response: str, model_name: Optional[str] = None, prompt_context: str = "") -> Tuple[str, str]:
         """Parse model response to extract answer."""
         # Use the same parser for all models now, including DeepSeek
         # DeepSeek will use thinking=True prompts and the standard parser
-        return parse_response(response, thinking=True)
+        return parse_response(response, thinking=True, prompt_context=prompt_context, 
+                            use_judge=self.run_config.use_judge, task_config=None)
 
     def batch_get_generations(
         self, 
@@ -137,9 +138,13 @@ class UnifiedExperimentRunner:
             self.logger.info("=" * 80)
             self.logger.info("FIRST PROMPT AND RESPONSE:")
             self.logger.info("=" * 80)
-            self.logger.info(f"Full Prompt:\n{prompts[0]}")
+            # Escape Rich markup to prevent parsing errors
+            escaped_prompt = str(prompts[0]).replace("[", "\\[").replace("]", "\\]")
+            self.logger.info(f"Full Prompt:\n{escaped_prompt}")
             self.logger.info("-" * 80)
-            self.logger.info(f"Response (filtered for DeepSeek):\n{display_response}")
+            # Escape Rich markup to prevent parsing errors
+            escaped_response = display_response.replace("[", "\\[").replace("]", "\\]")
+            self.logger.info(f"Response (filtered for DeepSeek):\n{escaped_response}")
             self.logger.info("=" * 80)
         
         return generations
@@ -219,7 +224,7 @@ class UnifiedExperimentRunner:
                 if hasattr(model, 'model_name') and model.model_name.lower().startswith('deepseek'):
                     response_to_parse = filter_think_tags(generation)
                 
-                pred_letter, pred_answer = self.parse_response(response_to_parse, model.model_name)
+                pred_letter, pred_answer = self.parse_response(response_to_parse, model.model_name, item["prompt"])
                 train_results.append({
                     "prompt": item["prompt"],
                     "response": generation,
@@ -255,7 +260,9 @@ class UnifiedExperimentRunner:
                     else:
                         prompt_str = str(item["prompt"])
                     
-                    self.logger.info(f"FULL PROMPT:\n{prompt_str}")
+                    # Escape Rich markup to prevent parsing errors
+                    escaped_prompt = prompt_str.replace("[", "\\[").replace("]", "\\]")
+                    self.logger.info(f"FULL PROMPT:\n{escaped_prompt}")
                     self.logger.info("-" * 80)
                     
                     # Filter think tags for DeepSeek models when displaying
@@ -263,7 +270,9 @@ class UnifiedExperimentRunner:
                     if hasattr(model, 'model_name') and model.model_name.lower().startswith('deepseek'):
                         display_response = filter_think_tags(generation)
                     
-                    self.logger.info(f"RESPONSE (filtered for DeepSeek):\n{display_response}")
+                    # Escape Rich markup to prevent parsing errors
+                    escaped_response = display_response.replace("[", "\\[").replace("]", "\\]")
+                    self.logger.info(f"RESPONSE (filtered for DeepSeek):\n{escaped_response}")
                     self.logger.info("-" * 80)
                     self.logger.info(f"PARSED ANSWER: {pred_answer}")
                     self.logger.info(f"CORRECT ANSWER: {item['correct_answer']}")
@@ -284,7 +293,7 @@ class UnifiedExperimentRunner:
                 if hasattr(model, 'model_name') and model.model_name.lower().startswith('deepseek'):
                     response_to_parse = filter_think_tags(generation)
                 
-                pred_letter, pred_answer = self.parse_response(response_to_parse, model.model_name)
+                pred_letter, pred_answer = self.parse_response(response_to_parse, model.model_name, item["prompt"])
                 test_results.append({
                     "prompt": item["prompt"],
                     "response": generation,
@@ -691,7 +700,7 @@ class UnifiedExperimentRunner:
                 response_to_parse = filter_think_tags(steered_response)
             
             # Parse response
-            pred_letter, pred_answer = self.parse_response(response_to_parse)
+            pred_letter, pred_answer = self.parse_response(response_to_parse, prompt_context=example["prompt"])
             
             # Determine success and category
             target_answer = "no" if alpha < 0 else "yes"
@@ -788,6 +797,11 @@ class UnifiedExperimentRunner:
                 self.logger.error("Failed to run steering experiments")
                 return {"success": False, "error": "Steering experiments failed"}
             
+            # Phase 4: Run debiasing experiments
+            if not self.run_debiasing_experiments(model, config, cache):
+                self.logger.error("Failed to run debiasing experiments")
+                return {"success": False, "error": "Debiasing experiments failed"}
+            
             self.logger.info(f"Completed experiment: {config.model_name} on {config.dataset_name}")
             
             # Log experiment summary to W&B
@@ -840,6 +854,186 @@ class UnifiedExperimentRunner:
                 smart_empty_cache()
         
         return results
+
+    def run_debiasing_experiments(
+        self, model: NNsightChatModel, config: ExperimentConfig, cache: ExperimentCache
+    ) -> bool:
+        """Run ACE debiasing experiments."""
+        from ace_debiasing import ACEDebiasingMethod
+        from nnsight_steering import generate_with_nnsight_ace_debiasing
+        
+        # Check if already computed
+        if cache.has_debiasing_results():
+            self.logger.info("Debiasing results already cached, skipping")
+            return True
+        
+        self.logger.info(f"Starting ACE debiasing experiments for {config.model_name} on {config.dataset_name}")
+
+        # Load cached training data for computing ACE vectors
+        train_results = cache.load_pickle(cache.get_train_generations_path())
+        train_activations = cache.load_pickle(cache.get_train_activations_path())
+        
+        if train_results is None or train_activations is None:
+            self.logger.error("Missing training data for debiasing")
+            return False
+
+        # Find the best probe layer (highest AUC)
+        method = getattr(self.run_config.steering, 'method', 'caa-single-layer')
+        auc_scores = cache.load_json(cache.get_auc_scores_path(method))
+        if auc_scores is None:
+            self.logger.error("Missing probe AUC scores for debiasing")
+            return False
+        
+        best_layer = max(auc_scores.keys(), key=lambda k: auc_scores[k])
+        best_layer = int(best_layer)
+        self.logger.info(f"Using layer {best_layer} for ACE debiasing (best probe layer)")
+
+        # Prepare training data for ACE
+        train_layer_activations = []
+        train_predictions = []
+        
+        for result, activations in zip(train_results, train_activations):
+            if isinstance(train_activations, list):
+                layer_activation = activations[best_layer]
+            else:
+                layer_activation = activations[best_layer]
+            pred_answer = result["pred_answer"]
+            
+            train_layer_activations.append(layer_activation)
+            train_predictions.append(pred_answer)
+
+        # Compute ACE vectors
+        try:
+            ace_method = ACEDebiasingMethod(layer=best_layer)
+            ace_vectors = ace_method.fit(train_layer_activations, train_predictions)
+            
+            # Save ACE vectors
+            ace_method.save(cache.get_debiasing_vectors_path())
+            self.logger.info(f"ACE vectors computed and saved")
+            
+        except Exception as e:
+            self.logger.error(f"Failed to compute ACE vectors: {e}")
+            return False
+
+        # Load test data for generating debiased responses
+        test_results = cache.load_pickle(cache.get_test_generations_path())
+        
+        if test_results is None:
+            self.logger.error("Missing test generation data for debiasing evaluation")
+            return False
+
+        self.logger.info(f"Generating debiased predictions for {len(test_results)} test samples...")
+        
+        debiased_results = []
+        original_correct = 0
+        debiased_correct = 0
+        
+        for i, result in enumerate(test_results):
+            prompt_string = result["prompt_string"] if "prompt_string" in result else model.apply_chat_template(result["prompt"])
+            correct_answer = result["correct_answer"]
+            original_pred = result["pred_answer"]
+            
+            # Track original accuracy
+            if original_pred.lower() == correct_answer.lower():
+                original_correct += 1
+            
+            # Convert prompt to tokens
+            prompt_tokens = model.to_tokens(prompt_string)
+            
+            # Generate with ACE debiasing
+            try:
+                debiased_generation = generate_with_nnsight_ace_debiasing(
+                    model=model,
+                    tokens=prompt_tokens,
+                    ace_unit_direction=ace_vectors.unit_direction,
+                    ace_bias=ace_vectors.bias,
+                    layer=best_layer,
+                    max_new_tokens=config.max_new_tokens,
+                    temperature=config.temperature
+                )
+                
+                # Parse debiased response  
+                debiased_pred, _ = self.parse_response(debiased_generation, prompt_context=prompt_string)
+                
+                # Track debiased accuracy
+                if debiased_pred.lower() == correct_answer.lower():
+                    debiased_correct += 1
+                
+                debiased_results.append({
+                    "prompt": prompt_string,
+                    "original_pred": original_pred,
+                    "debiased_generation": debiased_generation,
+                    "debiased_pred": debiased_pred,
+                    "correct_answer": correct_answer,
+                    "original_correct": original_pred.lower() == correct_answer.lower(),
+                    "debiased_correct": debiased_pred.lower() == correct_answer.lower()
+                })
+                
+            except Exception as e:
+                self.logger.warning(f"Failed to generate debiased response for sample {i}: {e}")
+                debiased_results.append({
+                    "prompt": prompt_string,
+                    "original_pred": original_pred,
+                    "debiased_generation": "",
+                    "debiased_pred": "",
+                    "correct_answer": correct_answer,
+                    "original_correct": original_pred.lower() == correct_answer.lower(),
+                    "debiased_correct": False
+                })
+        
+        # Compute final accuracy metrics
+        n_samples = len(test_results)
+        original_accuracy = original_correct / n_samples if n_samples > 0 else 0
+        debiased_accuracy = debiased_correct / n_samples if n_samples > 0 else 0
+        
+        # Count prediction changes
+        prediction_changes = sum(
+            1 for r in debiased_results 
+            if r["original_pred"].lower() != r["debiased_pred"].lower() and r["debiased_pred"] != ""
+        )
+        
+        evaluation_results = {
+            "original_accuracy": float(original_accuracy),
+            "debiased_accuracy": float(debiased_accuracy), 
+            "accuracy_change": float(debiased_accuracy - original_accuracy),
+            "prediction_changes": prediction_changes,
+            "prediction_change_rate": prediction_changes / n_samples if n_samples > 0 else 0,
+            "total_samples": n_samples,
+            "successful_generations": sum(1 for r in debiased_results if r["debiased_pred"] != "")
+        }
+        
+        # Save debiasing results
+        debiasing_results = {
+            "ace_vectors": ace_vectors.to_dict(),
+            "evaluation": evaluation_results,
+            "debiased_generations": debiased_results,
+            "layer": best_layer,
+            "n_train_samples": len(train_layer_activations),
+            "n_test_samples": n_samples
+        }
+        
+        cache.save_pickle(debiasing_results, cache.get_debiasing_results_path())
+        
+        # Save summary
+        summary = {
+            "layer": best_layer,
+            "ace_bias": float(ace_vectors.bias),
+            "ace_direction_norm": float(np.linalg.norm(ace_vectors.unit_direction)),
+            "original_accuracy": evaluation_results["original_accuracy"],
+            "debiased_accuracy": evaluation_results["debiased_accuracy"],
+            "accuracy_change": evaluation_results["accuracy_change"],
+            "prediction_change_rate": evaluation_results["prediction_change_rate"]
+        }
+        
+        cache.save_json(summary, cache.get_debiasing_summary_path())
+        
+        self.logger.info(f"ACE debiasing completed for layer {best_layer}")
+        self.logger.info(f"Original accuracy: {evaluation_results['original_accuracy']:.1%}")
+        self.logger.info(f"Debiased accuracy: {evaluation_results['debiased_accuracy']:.1%}")
+        self.logger.info(f"Accuracy change: {evaluation_results['accuracy_change']:+.1%}")
+        self.logger.info(f"Predictions changed: {evaluation_results['prediction_changes']}/{evaluation_results['total_samples']} ({evaluation_results['prediction_change_rate']:.1%})")
+        
+        return True
 
     def resume_experiments(self, experiment_ids: Optional[List[str]] = None):
         """Resume incomplete experiments."""

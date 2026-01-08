@@ -16,8 +16,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "src"))
 
 from config import ConfigLoader, ExperimentRunConfig, save_default_configs, suggest_backend_optimization
 from experiment_runner import EnhancedExperimentRunner
-from nnsight_experiment_runner import NNsightExperimentRunner
-from model_factory import get_recommended_backend
+
+from dotenv import load_dotenv
+load_dotenv()
 
 
 def create_parser() -> argparse.ArgumentParser:
@@ -386,10 +387,7 @@ def main():
 
         # Create and run experiments
         print("\n🚀 Starting experiments...")
-        if runner_type == "nnsight":
-            runner = NNsightExperimentRunner(config)
-        else:
-            runner = EnhancedExperimentRunner(config)
+        runner = EnhancedExperimentRunner(config)
         
         runner.run_all_experiments()
 

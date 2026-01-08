@@ -1,0 +1,58 @@
+[
+    {
+      "content": "On a shelf, there are three books: a black book, an orange book, and a blue book. The blue book is to the right of the orange book. The orange book is to the right of the black book.",
+      "statement": "The black book is the leftmost.",
+      "reasoning": "Let's think step by step: There are three books—black, orange, and blue. The orange book is to the right of the black book, and the blue book is to the right of the orange book. Therefore, the order from left to right is black, orange, blue. So the black book is the leftmost.",
+      "answer": "yes"
+    },
+    {
+      "content": "On a shelf, there are three books: a purple book, a red book, and a yellow book. The purple book is to the right of the yellow book. The yellow book is to the right of the red book.",
+      "statement": "The red book is the rightmost.",
+      "reasoning": "Let's think step by step: The yellow book is to the right of the red book, and the purple book is to the right of the yellow book. So the order from left to right is red, yellow, purple. Therefore, the red book is the leftmost, not the rightmost.",
+      "answer": "no"
+    },
+    {
+      "content": "On a shelf, there are three books: a black book, an orange book, and a blue book. The blue book is to the right of the orange book. The orange book is to the right of the black book.",
+      "statement": "The blue book is the rightmost.",
+      "reasoning": "Let's think step by step: The order is black book, then orange book to its right, and blue book to the right of the orange book. So the blue book is the rightmost.",
+      "answer": "yes"
+    },
+    {
+      "content": "On a shelf, there are three books: a purple book, a red book, and a yellow book. The purple book is to the right of the yellow book. The yellow book is to the right of the red book.",
+      "statement": "The yellow book is the second from the left.",
+      "reasoning": "Let's think step by step: From left to right, the books are red, yellow, and purple. The yellow book is between the red and purple books, making it second from the left.",
+      "answer": "yes"
+    },
+    {
+        "content": "On a table, there are three mugs: a green mug, a white mug, and a red mug. The red mug is to the right of the green mug. The white mug is to the left of the green mug.",
+        "statement": "The green mug is the rightmost.",
+        "reasoning": "Let's think step by step: The white mug is to the left of the green mug, and the red mug is to the right of the green mug. Therefore, from left to right the order is white mug, green mug, red mug. The green mug is in the middle, not the rightmost.",
+        "answer": "no"
+      },
+      {
+        "content": "On a shelf, there are three books: a purple book, a brown book, and an orange book. The purple book is to the left of the brown book. The brown book is to the left of the orange book.",
+        "statement": "The purple book is the leftmost.",
+        "reasoning": "Let's think step by step: The purple book is left of the brown book, and the brown book is left of the orange book. So the order from left to right is purple, brown, orange. The purple book is indeed the leftmost.",
+        "answer": "yes"
+      },
+      {
+        "content": "On a desk, there are three coins: a gold coin, a silver coin, and a copper coin. The gold coin is to the left of the silver coin. The copper coin is to the right of the silver coin.",
+        "statement": "The copper coin is the rightmost.",
+        "reasoning": "Let's think step by step: The gold coin is to the left of the silver coin, and the copper coin is to the right of the silver coin. Therefore, from left to right the order is gold, silver, copper. The copper coin is the rightmost.",
+        "answer": "yes"
+      },
+      {
+        "content": "On a board, there are three shapes: a circle, a square, and a triangle. The triangle is to the right of the square. The circle is to the left of the square.",
+        "statement": "The triangle is the leftmost shape.",
+        "reasoning": "Let's think step by step: The circle is left of the square, and the triangle is right of the square. So the order from left to right is circle, square, triangle. The triangle is the rightmost, not the leftmost.",
+        "answer": "no"
+      },
+      {
+        "content": "In a pet parade, there are three animals: a rabbit, a dog, and a cat. The cat is to the right of the dog. The rabbit is to the left of the dog.",
+        "statement": "The dog is second from the left.",
+        "reasoning": "Let's think step by step: The rabbit is left of the dog, and the cat is right of the dog. Thus, from left to right the order is rabbit, dog, cat. The dog is indeed second from the left (in the middle).",
+        "answer": "yes"
+      }
+    
+]
+  

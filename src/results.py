@@ -614,6 +614,210 @@ class ProbeResults:
         return None
 
 
+class DebiasingResults:
+    """
+    Handles ACE debiasing experiment results.
+    
+    Loads all debiasing results into a pandas DataFrame where each row
+    represents a single experiment.
+    """
+    
+    def __init__(self, cache_path: Union[str, Path] = None, verbose: bool = True):
+        """
+        Initialize DebiasingResults from a cache directory.
+        
+        Args:
+            cache_path: Path to cache directory containing experiments
+            verbose: Whether to print loading progress
+        """
+        self.verbose = verbose
+        self.df = pd.DataFrame()
+        
+        if cache_path is not None:
+            self.cache_path = Path(cache_path)
+            if not self.cache_path.exists():
+                raise ValueError(f"Cache path does not exist: {cache_path}")
+            self._load_experiments()
+        else:
+            self.cache_path = None
+    
+    def _load_experiments(self):
+        """Load all debiasing experiments from cache directory into DataFrame."""
+        all_records = []
+        experiments_dir = self.cache_path / "experiments"
+        
+        if not experiments_dir.exists():
+            experiments_dir = self.cache_path
+        
+        if self.verbose:
+            print(f"Loading debiasing experiments from {experiments_dir}")
+        
+        # Iterate through model directories
+        for model_dir in experiments_dir.iterdir():
+            if not model_dir.is_dir():
+                continue
+            
+            model_name = model_dir.name
+            
+            # Iterate through dataset directories
+            for dataset_dir in model_dir.iterdir():
+                if not dataset_dir.is_dir():
+                    continue
+                
+                dataset_name = dataset_dir.name
+                
+                # Find experiment directories (split_*/hash)
+                for split_dir in dataset_dir.iterdir():
+                    if not split_dir.is_dir() or not split_dir.name.startswith("split_"):
+                        continue
+                    
+                    split_info = split_dir.name  # e.g., "split_42_500_500"
+                    
+                    for hash_dir in split_dir.iterdir():
+                        if not hash_dir.is_dir() or len(hash_dir.name) < 10:
+                            continue
+                        
+                        experiment_hash = hash_dir.name
+                        debiasing_dir = hash_dir / "debiasing"
+                        
+                        if not debiasing_dir.exists():
+                            continue
+                        
+                        # Load debiasing results
+                        results_file = debiasing_dir / "debiasing_alpha_0.0.pkl"
+                        summary_file = debiasing_dir / "summary.json"
+                        
+                        if results_file.exists() and summary_file.exists():
+                            try:
+                                # Load main results
+                                with open(results_file, 'rb') as f:
+                                    results_data = pickle.load(f)
+                                
+                                # Load summary
+                                with open(summary_file, 'r') as f:
+                                    summary_data = json.load(f)
+                                
+                                record = {
+                                    'model': model_name,
+                                    'dataset': dataset_name,
+                                    'experiment_hash': experiment_hash,
+                                    'split_info': split_info,
+                                    'layer': summary_data.get('layer'),
+                                    'ace_bias': summary_data.get('ace_bias'),
+                                    'ace_direction_norm': summary_data.get('ace_direction_norm'),
+                                    'original_accuracy': summary_data.get('original_accuracy'),
+                                    'debiased_accuracy': summary_data.get('debiased_accuracy'),
+                                    'accuracy_change': summary_data.get('accuracy_change'),
+                                    'prediction_change_rate': summary_data.get('prediction_change_rate'),
+                                    'n_train_samples': results_data.get('n_train_samples'),
+                                    'n_test_samples': results_data.get('n_test_samples'),
+                                }
+                                all_records.append(record)
+                                
+                            except Exception as e:
+                                if self.verbose:
+                                    print(f"Error loading debiasing results from {results_file}: {e}")
+        
+        # Create DataFrame from all records
+        if all_records:
+            self.df = pd.DataFrame(all_records)
+            if self.verbose:
+                n_experiments = len(self.df)
+                print(f"Loaded {n_experiments} debiasing experiments")
+        else:
+            if self.verbose:
+                print("No debiasing results found")
+    
+    def get_intervention_magnitude(self, model: str = None, dataset: str = None) -> Optional[float]:
+        """Get mean intervention magnitude for specified model/dataset."""
+        df_filtered = self.df
+        
+        if model:
+            df_filtered = df_filtered[df_filtered['model'] == model]
+        if dataset:
+            df_filtered = df_filtered[df_filtered['dataset'] == dataset]
+        
+        if df_filtered.empty:
+            return None
+        
+        return df_filtered['mean_intervention_magnitude'].iloc[0]
+    
+    def get_debiasing_layer(self, model: str = None, dataset: str = None) -> Optional[int]:
+        """Get the layer used for debiasing for specified model/dataset."""
+        df_filtered = self.df
+        
+        if model:
+            df_filtered = df_filtered[df_filtered['model'] == model]
+        if dataset:
+            df_filtered = df_filtered[df_filtered['dataset'] == dataset]
+        
+        if df_filtered.empty:
+            return None
+        
+        return df_filtered['layer'].iloc[0]
+    
+    def get_ace_bias(self, model: str = None, dataset: str = None) -> Optional[float]:
+        """Get ACE bias value for specified model/dataset."""
+        df_filtered = self.df
+        
+        if model:
+            df_filtered = df_filtered[df_filtered['model'] == model]
+        if dataset:
+            df_filtered = df_filtered[df_filtered['dataset'] == dataset]
+        
+        if df_filtered.empty:
+            return None
+        
+        return df_filtered['ace_bias'].iloc[0]
+    
+    def get_accuracy_metrics(self, model: str = None, dataset: str = None) -> Optional[Dict[str, float]]:
+        """Get accuracy metrics for specified model/dataset."""
+        df_filtered = self.df
+        
+        if model:
+            df_filtered = df_filtered[df_filtered['model'] == model]
+        if dataset:
+            df_filtered = df_filtered[df_filtered['dataset'] == dataset]
+        
+        if df_filtered.empty:
+            return None
+        
+        row = df_filtered.iloc[0]
+        return {
+            "original_accuracy": row.get('original_accuracy'),
+            "debiased_accuracy": row.get('debiased_accuracy'),
+            "accuracy_change": row.get('accuracy_change'),
+        }
+    
+    def get_debiased_accuracy(self, model: str = None, dataset: str = None) -> Optional[float]:
+        """Get debiased accuracy for specified model/dataset."""
+        df_filtered = self.df
+        
+        if model:
+            df_filtered = df_filtered[df_filtered['model'] == model]
+        if dataset:
+            df_filtered = df_filtered[df_filtered['dataset'] == dataset]
+        
+        if df_filtered.empty:
+            return None
+        
+        return df_filtered['debiased_accuracy'].iloc[0]
+    
+    def get_accuracy_change(self, model: str = None, dataset: str = None) -> Optional[float]:
+        """Get accuracy change for specified model/dataset."""
+        df_filtered = self.df
+        
+        if model:
+            df_filtered = df_filtered[df_filtered['model'] == model]
+        if dataset:
+            df_filtered = df_filtered[df_filtered['dataset'] == dataset]
+        
+        if df_filtered.empty:
+            return None
+        
+        return df_filtered['accuracy_change'].iloc[0]
+
+
 class Results:
     """
     Main container class for all experiment results.
@@ -643,6 +847,7 @@ class Results:
         self.steering = SteeringResults(cache_path, verbose)
         self.generation = GenerationResults(cache_path, verbose)
         self.probe = ProbeResults(cache_path, verbose)
+        self.debiasing = DebiasingResults(cache_path, verbose)
         
         if verbose:
             print("=" * 60)
@@ -650,6 +855,7 @@ class Results:
             print(f"  - {len(self.steering.df)} steering samples")
             print(f"  - {len(self.generation.df)} generation samples")
             print(f"  - {len(self.probe.df)} probe layer results")
+            print(f"  - {len(self.debiasing.df)} debiasing experiments")
     
     def get_summary(self) -> Dict[str, Any]:
         """Get a comprehensive summary of all results."""
@@ -664,7 +870,8 @@ class Results:
             )),
             'steering_samples': len(self.steering.df),
             'generation_samples': len(self.generation.df),
-            'probe_results': len(self.probe.df)
+            'probe_results': len(self.probe.df),
+            'debiasing_experiments': len(self.debiasing.df)
         }
         
         # Add accuracy summary
@@ -717,13 +924,18 @@ class Results:
         if not self.probe.df.empty:
             self.probe.df.to_csv(output_dir / "probe_results.csv", index=False)
         
+        # Export debiasing results
+        if not self.debiasing.df.empty:
+            self.debiasing.df.to_csv(output_dir / "debiasing_results.csv", index=False)
+        
         if self.verbose:
             print(f"Exported all results to {output_dir}")
     
     def __repr__(self):
         return (f"Results(steering={len(self.steering.df)} samples, "
                 f"generation={len(self.generation.df)} samples, "
-                f"probe={len(self.probe.df)} results)")
+                f"probe={len(self.probe.df)} results, "
+                f"debiasing={len(self.debiasing.df)} experiments)")
 
 
 class ResultsAggregator:

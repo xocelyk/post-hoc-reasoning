@@ -39,6 +39,31 @@ def _steer_generated_token(
     return resid
 
 
+def _ace_debias_generated_token(
+    resid: torch.Tensor,            # [B, 1, d_model] during generation
+    hook: HookPoint,
+    *,
+    ace_unit_direction: torch.Tensor,  # [d_model] unit direction vector
+    ace_bias: float,                   # bias value for centering
+) -> torch.Tensor:
+    """Apply ACE debiasing intervention during generation."""
+    if resid.size(1) == 1:          # skip the prompt pass (seq_len > 1)
+        # Apply ACE intervention: x_debiased = x - (<x, unit_direction> - bias) * unit_direction
+        # resid shape: [B, 1, d_model]
+        # ace_unit_direction shape: [d_model]
+        
+        # Compute projection: <x, unit_direction>
+        projection = torch.sum(resid * ace_unit_direction[None, None, :], dim=-1, keepdim=True)  # [B, 1, 1]
+        
+        # Compute intervention: (projection - bias) * unit_direction
+        intervention = (projection - ace_bias) * ace_unit_direction[None, None, :]  # [B, 1, d_model]
+        
+        # Apply intervention
+        resid = resid - intervention
+    
+    return resid
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Main convenience wrapper
 # ─────────────────────────────────────────────────────────────────────────────
@@ -88,6 +113,50 @@ def generate_with_steering(
     return model.to_string(gen_only)
 
 
+@torch.inference_mode()
+def generate_with_ace_debiasing(
+    model,
+    prompt_tokens: torch.LongTensor,      # [B, prompt_len]
+    ace_unit_direction,                   # NumPy or torch, [d_model]
+    ace_bias: float,                      # bias value for centering
+    max_new_tokens: int = 100,
+    temperature: float = 0.7,
+    layer: int = None,                    # specific layer to apply debiasing
+):
+    """Generate text with ACE debiasing intervention."""
+    # 1. Normalise ace_unit_direction to correct dtype / device
+    ace_unit_direction = torch.as_tensor(
+        ace_unit_direction,
+        dtype=model.W_E.dtype,
+        device=model.W_E.device,
+    )
+
+    # 2. Decide which layer to debias (should be specified)
+    if layer is None:
+        raise ValueError("Layer must be specified for ACE debiasing")
+
+    debias_hook = partial(_ace_debias_generated_token,
+                         ace_unit_direction=ace_unit_direction,
+                         ace_bias=ace_bias)
+
+    # 3. Register hook for the specific layer
+    name = utils.get_act_name("resid_post", layer)
+    model.add_hook(name, debias_hook, dir="fwd")
+
+    # run generate (debiasing active)
+    full_tokens = model.generate(
+        prompt_tokens,
+        max_new_tokens=max_new_tokens,
+        temperature=temperature,
+        do_sample=True,
+        prepend_bos=False,
+    )
+
+    model.reset_hooks()            # ← clear registered hooks
+
+    # Return only the freshly generated part
+    gen_only = full_tokens[:, prompt_tokens.size(1):]
+    return model.to_string(gen_only)
 
 
 def evaluate_confabulation(original_prompt, generation):

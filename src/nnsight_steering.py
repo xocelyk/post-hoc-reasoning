@@ -378,3 +378,77 @@ def normalize_steering_vectors(
     
     else:
         raise ValueError(f"Unknown normalization method: {method}")
+
+
+def generate_with_nnsight_ace_debiasing(
+    model: NNsightChatModel,
+    tokens: torch.Tensor,
+    ace_unit_direction: np.ndarray,
+    ace_bias: float,
+    layer: int,
+    max_new_tokens: int = 100,
+    temperature: float = 0.7,
+    do_sample: bool = True,
+) -> str:
+    """
+    Generate text with ACE debiasing intervention using nnsight.
+    
+    Args:
+        model: NNsightChatModel instance
+        tokens: Input tokens
+        ace_unit_direction: ACE unit direction vector
+        ace_bias: ACE bias value for centering
+        layer: Layer index to apply debiasing
+        max_new_tokens: Maximum new tokens to generate
+        temperature: Sampling temperature
+        do_sample: Whether to use sampling
+        
+    Returns:
+        Generated text with ACE debiasing applied
+    """
+    # Convert to torch tensor if needed
+    if isinstance(ace_unit_direction, np.ndarray):
+        ace_unit_direction = torch.tensor(
+            ace_unit_direction, 
+            dtype=model.model.dtype, 
+            device=model.model.device
+        )
+    
+    # Define ACE intervention function
+    def ace_debias_activation(activation_tensor):
+        """Apply ACE debiasing: x_debiased = x - (<x, unit_direction> - bias) * unit_direction"""
+        # activation_tensor shape: [batch_size, seq_len, d_model]
+        
+        # Compute projection: <x, unit_direction>
+        projection = torch.sum(activation_tensor * ace_unit_direction, dim=-1, keepdim=True)  # [B, seq_len, 1]
+        
+        # Compute intervention: (projection - bias) * unit_direction
+        intervention = (projection - ace_bias) * ace_unit_direction  # [B, seq_len, d_model]
+        
+        # Apply intervention
+        return activation_tensor - intervention
+    
+    # Apply debiasing during generation
+    with model.model.generate(
+        tokens,
+        max_new_tokens=max_new_tokens,
+        temperature=temperature,
+        do_sample=do_sample,
+        pad_token_id=model.tokenizer.eos_token_id,
+    ) as generator:
+        # Apply ACE intervention to the specified layer
+        residual = model.model.model.layers[layer].output
+        residual = residual.intervene(ace_debias_activation)
+        
+        # Save the output
+        output = generator.output.save()
+    
+    # Decode the generated text
+    generated_text = model.to_string(output[0])
+    
+    # Extract only the newly generated portion
+    prompt_text = model.to_string(tokens[0])
+    if generated_text.startswith(prompt_text):
+        return generated_text[len(prompt_text):]
+    else:
+        return generated_text

@@ -28,7 +28,7 @@ from cache_manager import ExperimentCache, ExperimentConfig, ExperimentManager
 from config import ExperimentRunConfig, create_experiment_configs
 from data_loading import load_all_datasets
 from nnsight_models import NNsightChatModel
-from parsing_utils import parse_response
+from parsing_utils import parse_response, parse_responses_batch
 from nnsight_utils import batch_get_resid_activations
 from nnsight_steering import generate_with_nnsight_steering
 
@@ -160,7 +160,17 @@ class NNsightExperimentRunner:
             prompts, model, temperature=temperature, max_new_tokens=max_new_tokens
         )
         
-        responses = [self.parse_response(response) for response in generations]
+        # Use batch parsing for better performance when judge is enabled (if config available)
+        if hasattr(self, 'run_config') and getattr(self.run_config, 'use_judge', False) and len(generations) > 1:
+            responses = parse_responses_batch(
+                generations, 
+                thinking=True, 
+                use_judge=self.run_config.use_judge,
+                judge_batch_size=getattr(self.run_config, 'judge_batch_size', 20),
+                judge_max_workers=getattr(self.run_config, 'judge_max_workers', 5)
+            )
+        else:
+            responses = [self.parse_response(response) for response in generations]
         pred_letters, pred_answers = zip(*responses)
 
         corrects = [
@@ -491,6 +501,16 @@ class NNsightExperimentRunner:
 
         return True
 
+    def run_debiasing_experiments(
+        self, model: NNsightChatModel, config: ExperimentConfig, cache: ExperimentCache
+    ) -> bool:
+        """Run ACE debiasing experiments - delegates to nnsight_utils implementation."""
+        from nnsight_utils.experiment_runner import UnifiedExperimentRunner
+        
+        # Create a temporary unified runner to use its debiasing implementation
+        temp_runner = UnifiedExperimentRunner(self.run_config)
+        return temp_runner.run_debiasing_experiments(model, config, cache)
+
     def generate_steered_examples(
         self,
         model: NNsightChatModel,
@@ -583,6 +603,10 @@ class NNsightExperimentRunner:
             # Step 3: Run steering experiments
             if not self.run_steering_experiments(model, config, cache):
                 return {"success": False, "error": "Failed to run steering"}
+
+            # Step 4: Run debiasing experiments
+            if not self.run_debiasing_experiments(model, config, cache):
+                return {"success": False, "error": "Failed to run debiasing"}
 
             # Update status
             status = cache.get_experiment_status()

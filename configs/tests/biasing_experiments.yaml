@@ -1,0 +1,62 @@
+cache_dir: cache
+
+# Example biasing experiments
+datasets:
+# Basic bias evaluation - same dataset, different biases for train/test
+- name: sports_understanding
+  split_seed: 42
+  test_size: 100
+  train_size: 100
+  train_bias: positive    # All fewshots same as target label
+  test_bias: negative     # All fewshots opposite of target label
+
+# Cross-bias debiasing - train ACE on positive bias, test on negative bias
+- name: anachronisms
+  split_seed: 42
+  test_size: 100
+  train_size: 100
+  train_bias: negative
+  test_bias: positive
+
+# Neutral baseline (no bias specified = balanced fewshots)
+- name: social_chemistry
+  split_seed: 42
+  test_size: 100
+  train_size: 100
+  # train_bias: null (default)
+  # test_bias: null (default)
+
+# Cross-dataset experiments - train on one dataset, test on another
+- name: sports_understanding->anachronisms
+  train_dataset: sports_understanding
+  test_dataset: anachronisms
+  split_seed: 42
+  test_size: 100
+  train_size: 100
+  train_bias: positive
+  test_bias: negative
+
+models:
+- backend: auto
+  batch_size: 1
+  device: auto
+  dtype: bfloat16
+  name: google/gemma-2-2b-it
+
+steering:
+  alpha_range:
+  - 2
+  - 5
+  max_new_tokens: 200
+  temperature: 0.7
+  method: caa-single-layer
+  max_gen: 12
+
+# Experiment type flags
+bias_evaluation: true      # Measure accuracy under bias
+cross_bias_debiasing: true # ACE cross-bias experiments
+
+use_cache: true
+save_generations: true
+evaluate_confabulation: false
+max_concurrent_models: 1

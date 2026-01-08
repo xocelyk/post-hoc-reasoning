@@ -2,10 +2,12 @@ import gc
 import json
 import logging
 import os
+import pickle
 import sys
 import time
 import warnings
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from functools import cache
 from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
@@ -17,10 +19,10 @@ from torch.utils.data import DataLoader, Dataset
 
 from cache_manager import ExperimentCache, ExperimentConfig, ExperimentManager
 from config import ExperimentRunConfig, create_experiment_configs
-from data_loading import load_all_datasets
-from models import ChatModel
-from parsing_utils import parse_response
-from utils import generate_with_steering
+from data_loading import load_dataset
+from models import ChatModel, NNSightChatModel, TransformerLensChatModel
+from parsing_utils import parse_response, parse_responses_batch
+from utils import generate_with_steering, generate_with_ace_debiasing, _steer_generated_token
 from steering_methods import create_steering_method, format_steering_results
 from logging_utils import setup_logging, log_steering_result, log_phase_start, log_batch_progress, console
 
@@ -49,7 +51,8 @@ class PromptDataset(Dataset):
         if not isinstance(prompt_data, list):
             raise TypeError(f"Expected prompt to be a list of chat messages, got {type(prompt_data)}")
         
-        prompt_string = self.model.apply_chat_template(prompt_data)
+        add_generation_prompt = 'gpt-oss' in self.model.model_name.lower()
+        prompt_string = self.model.apply_chat_template(prompt_data, add_generation_prompt=add_generation_prompt)
         
         return prompt_string, (
             self.data[idx]["correct_answer"],
@@ -91,47 +94,152 @@ class EnhancedExperimentRunner:
         # Use our custom logging setup
         self.logger = setup_logging(log_file=log_file, verbose=True)
 
-    def parse_response(self, response: str) -> Tuple[str, str]:
+    @cache
+    def get_batch_size(self, model_name: str) -> int:
+        """Get batch size for a specific model from configuration (cached)."""
+        return next(
+            (
+                m.batch_size
+                for m in self.run_config.models
+                if m.name == model_name
+            ),
+            1,  # Default batch size
+        )
+    
+    def parse_response(self, response: str, prompt_context: str = "") -> Tuple[str, str]:
         """Parse model response to extract answer."""
-        return parse_response(response, thinking=True)
-
-    def batch_get_resid_activations(self, prompts: List[str], model: ChatModel):
-        """Get residual stream activations for a batch of prompts with memory optimization."""
-        layers = list(range(model.cfg.n_layers))
+        return parse_response(response, thinking=True, prompt_context=prompt_context, 
+                            use_judge=self.run_config.use_judge, task_config=None)
+    
+    def parse_responses_batch(self, responses: List[str], prompt_contexts: List[str] = None, dataset_name: str = None) -> List[Tuple[str, str]]:
+        """Parse multiple model responses to extract answers using batch processing."""
+        # Check if dataset is MMLU by checking if dataset_name contains "mmlu" (case-insensitive)
+        use_mmlu = dataset_name is not None and "mmlu" in dataset_name.lower()
         
-        with torch.no_grad():  # Ensure no gradients are computed
-            tokens = model.to_tokens(prompts, prepend_bos=True)
-            _, cache = model.run_with_cache(tokens, pos_slice=-1)
-
-            # Pre-allocate with float32 to save memory
-            activations = np.zeros((len(prompts), model.cfg.n_layers, model.cfg.d_model), dtype=np.float32)
-
-            for layer in layers:
-                layer_activations = cache["resid_post", layer]
-                # Convert to float32 before converting to numpy to avoid BFloat16 issues on MPS
-                layer_activations = layer_activations.squeeze().detach().float().cpu().numpy().astype(np.float32)
-                activations[:, layer, :] = layer_activations
-                
-                # Immediate cleanup
-                del layer_activations
-                
-                # More aggressive memory cleanup
-                if layer % 5 == 0:  # Every 5 layers
-                    if torch.cuda.is_available():
-                        torch.cuda.empty_cache()
-                    elif torch.backends.mps.is_available():
-                        torch.mps.empty_cache()
-                    gc.collect()
+        return parse_responses_batch(
+            responses, 
+            thinking=True, 
+            prompt_contexts=prompt_contexts,
+            use_judge=self.run_config.use_judge, 
+            task_config=None,
+            judge_batch_size=self.run_config.judge_batch_size,
+            judge_max_workers=self.run_config.judge_max_workers,
+            use_mmlu=use_mmlu
+        )
+    
+    def _log_debiasing_result(
+        self,
+        example_idx: int,
+        total_examples: int,
+        original_answer: str,
+        debiased_answer: str,
+        correct_answer: str,
+        response_text: str,
+        category: str,
+        model_name: str,
+        dataset_name: str,
+        original_correct: int,
+        debiased_correct: int,
+        prediction_changes: int,
+    ):
+        """Log debiasing result with nice formatting."""
+        # Category symbols and colors
+        category_symbols = {
+            "corrected": "✓ CORRECTED",
+            "correct_maintained": "✓ MAINTAINED", 
+            "degraded": "⚠ DEGRADED",
+            "still_incorrect": "✗ UNCHANGED",
+            "unparsed": "? UNPARSED",
+            "error": "❌ ERROR"
+        }
+        
+        symbol = category_symbols.get(category, "? UNKNOWN")
+        
+        # Calculate running rates
+        original_rate = original_correct / example_idx if example_idx > 0 else 0
+        debiased_rate = debiased_correct / example_idx if example_idx > 0 else 0
+        change_rate = prediction_changes / example_idx if example_idx > 0 else 0
+        
+        # Truncate response for display
+        display_response = response_text[:100] + "..." if len(response_text) > 100 else response_text
+        
+        self.logger.info(
+            f"DEBIASING {example_idx}/{total_examples}: "
+            f"{original_answer}→{debiased_answer} (correct: {correct_answer}) {symbol} | "
+            f"Orig: {original_rate:.2f}, Debias: {debiased_rate:.2f}, Changes: {change_rate:.2f} | "
+            f"Response: {display_response}"
+        )
+    
+    def _load_biased_train_test_split(self, config: ExperimentConfig) -> Tuple[List[Dict], List[Dict]]:
+        """Load train and test datasets with proper bias handling and no overlap."""
+        from data_loading import create_dataset, create_cot_dataset
+        
+        # Determine train and test dataset names
+        train_dataset_name = getattr(config, 'train_dataset', None) or config.dataset_name.split("->")[0] if "->" in config.dataset_name else config.dataset_name
+        test_dataset_name = getattr(config, 'test_dataset', None) or config.dataset_name.split("->")[1] if "->" in config.dataset_name else config.dataset_name
+        
+        train_bias = getattr(config, 'train_bias', None)
+        test_bias = getattr(config, 'test_bias', None)
+        
+        if train_dataset_name == test_dataset_name:
+            # Same dataset: load raw examples, split, then create biased CoT datasets
+            self.logger.info(f"Loading same dataset with different biases: {train_dataset_name}")
             
-            # Final cleanup
-            del cache, tokens
-            if torch.cuda.is_available():
-                torch.cuda.empty_cache()
-            elif torch.backends.mps.is_available():
-                torch.mps.empty_cache()
-            gc.collect()
-
-        return activations
+            # Load raw examples
+            raw_examples = create_dataset(train_dataset_name, dataset_params=getattr(config, 'dataset_params', None))
+            
+            # Split raw examples to ensure no overlap
+            train_examples, test_examples = train_test_split(
+                raw_examples,
+                train_size=config.train_size,
+                test_size=config.test_size,
+                random_state=config.split_seed,
+            )
+            
+            # Create biased CoT datasets for each split
+            self.logger.info(f"Creating train dataset with bias: {train_bias}")
+            train_dataset = create_cot_dataset(
+                train_dataset_name, 
+                train_examples, 
+                model_name=config.model_name,
+                bias_type=train_bias
+            )
+            
+            self.logger.info(f"Creating test dataset with bias: {test_bias}")
+            test_dataset = create_cot_dataset(
+                test_dataset_name,
+                test_examples,
+                model_name=config.model_name, 
+                bias_type=test_bias
+            )
+            
+        else:
+            # Different datasets: load separately (no overlap concern)
+            self.logger.info(f"Loading cross-datasets: {train_dataset_name} -> {test_dataset_name}")
+            
+            from data_loading import load_biased_dataset
+            
+            self.logger.info(f"Loading train dataset: {train_dataset_name} with bias: {train_bias}")
+            full_train_dataset = load_biased_dataset(
+                train_dataset_name,
+                bias_type=train_bias,
+                sample_size=config.train_size,
+                model_name=config.model_name,
+                dataset_params=getattr(config, 'dataset_params', None)
+            )
+            train_dataset = full_train_dataset[:config.train_size]
+            
+            self.logger.info(f"Loading test dataset: {test_dataset_name} with bias: {test_bias}")
+            full_test_dataset = load_biased_dataset(
+                test_dataset_name,
+                bias_type=test_bias,
+                sample_size=config.test_size,
+                model_name=config.model_name,
+                dataset_params=getattr(config, 'dataset_params', None)
+            )
+            test_dataset = full_test_dataset[:config.test_size]
+        
+        return train_dataset, test_dataset
 
     def batch_get_generations(
         self, prompts: List[str], model: ChatModel, temperature=0.7, max_new_tokens=100
@@ -197,22 +305,26 @@ class EnhancedExperimentRunner:
         temperature=0.7,
         max_new_tokens=100,
         log_first_batch=False,
+        dataset_name: str = None,
     ):
         """Process a batch of prompts."""
         correct_answers, correct_letters = correct_tups
 
-        activations = (
-            self.batch_get_resid_activations(prompts, model)
-            if get_activations
-            else None
-        )
+        if get_activations:
+            activations = model.batch_get_resid_activations(prompts, batch_size=1)
+        else:
+            activations = None
         
-        generations = self.batch_get_generations(
-            prompts, model, temperature=temperature, max_new_tokens=max_new_tokens
+        generations = model.batch_get_generations(
+            prompts, temperature=temperature, max_new_tokens=max_new_tokens
         )
         generations = [gen[len(prompt) :] for gen, prompt in zip(generations, prompts)]
 
-        responses = [self.parse_response(response) for response in generations]
+        # Use batch parsing for better performance when judge is enabled
+        if self.run_config.use_judge and len(generations) > 1:
+            responses = self.parse_responses_batch(generations, prompts, dataset_name=dataset_name)
+        else:
+            responses = [self.parse_response(response, prompt) for response, prompt in zip(generations, prompts)]
         pred_letters, pred_answers = zip(*responses)
 
         corrects = [
@@ -247,31 +359,38 @@ class EnhancedExperimentRunner:
             f"Generating data for {config.model_name} on {config.dataset_name}"
         )
 
-        # Load or use cached dataset
-        if self.run_config.use_cache and cache.has_dataset():
-            dataset = cache.load_pickle(cache.get_dataset_path())
+        # Handle biased vs regular dataset loading
+        has_bias = hasattr(config, 'train_bias') and (config.train_bias or config.test_bias)
+        is_cross_dataset = hasattr(config, 'train_dataset') and config.train_dataset != config.test_dataset
+        
+        if has_bias or is_cross_dataset:
+            # For biased experiments: load train and test datasets separately
+            train_dataset, test_dataset = self._load_biased_train_test_split(config)
         else:
-            datasets = load_all_datasets(model_name=config.model_name)
-            dataset = datasets[config.dataset_name]
-            if self.run_config.use_cache:
-                cache.save_pickle(dataset, cache.get_dataset_path())
+            # Regular dataset loading with normal train/test split
+            if self.run_config.use_cache and cache.has_dataset(): # TODO: this is always false for some reason
+                dataset = cache.load_pickle(cache.get_dataset_path())
+            else:
+                dataset = load_dataset(config.dataset_name, model_name=config.model_name, dataset_params=getattr(config, 'dataset_params', None))
+                if self.run_config.use_cache:
+                    cache.save_pickle(dataset, cache.get_dataset_path())
 
-        # Load or create train/test split
-        if self.run_config.use_cache and cache.has_train_test_split():
-            train_dataset, test_dataset = cache.load_pickle(
-                cache.get_train_test_split_path()
-            )
-        else:
-            train_dataset, test_dataset = train_test_split(
-                dataset,
-                train_size=config.train_size,
-                test_size=config.test_size,
-                random_state=config.split_seed,
-            )
-            if self.run_config.use_cache:
-                cache.save_pickle(
-                    (train_dataset, test_dataset), cache.get_train_test_split_path()
+            # Load or create train/test split
+            if self.run_config.use_cache and cache.has_train_test_split():
+                train_dataset, test_dataset = cache.load_pickle(
+                    cache.get_train_test_split_path()
                 )
+            else:
+                train_dataset, test_dataset = train_test_split(
+                    dataset,
+                    train_size=config.train_size,
+                    test_size=config.test_size,
+                    random_state=config.split_seed,
+                )
+                if self.run_config.use_cache:
+                    cache.save_pickle(
+                        (train_dataset, test_dataset), cache.get_train_test_split_path()
+                    )
         
         # Log data label distributions
         train_labels = [item["correct_answer"] for item in train_dataset]
@@ -283,14 +402,7 @@ class EnhancedExperimentRunner:
         self.logger.info(f"Test data labels: {test_distribution} (total: {len(test_dataset)})")
 
         
-        batch_size = next(
-            (
-                m.batch_size
-                for m in self.run_config.models
-                if m.name == config.model_name
-            ),
-            2,
-        )
+        batch_size = self.get_batch_size(config.model_name)
 
         # Process training data
         if not (self.run_config.use_cache and cache.has_generations()):
@@ -346,6 +458,7 @@ class EnhancedExperimentRunner:
                     temperature=config.temperature,
                     max_new_tokens=config.max_new_tokens,
                     log_first_batch=log_first_batch,
+                    dataset_name=config.dataset_name,
                 )
             )
 
@@ -356,6 +469,7 @@ class EnhancedExperimentRunner:
                 result = {
                     "prompt": prompt,
                     "response": (pred_letters[i], pred_answers[i]),
+                    "generation": generations[i],
                     "correct_letter": correct_tups[1][i],
                     "correct_answer": correct_tups[0][i],
                     "pred_letter": pred_letters[i],
@@ -393,9 +507,13 @@ class EnhancedExperimentRunner:
                     else:
                         prompt_str = str(prompt)
                     
-                    self.logger.info(f"FULL PROMPT:\n{prompt_str}")
+                    # Escape Rich markup to prevent parsing errors
+                    escaped_prompt = prompt_str.replace("[", "\\[").replace("]", "\\]")
+                    self.logger.info(f"FULL PROMPT:\n{escaped_prompt}")
                     self.logger.info("-" * 80)
-                    self.logger.info(f"RESPONSE:\n{generation_text}")
+                    # Escape Rich markup to prevent parsing errors
+                    escaped_response = generation_text.replace("[", "\\[").replace("]", "\\]")
+                    self.logger.info(f"RESPONSE:\n{escaped_response}")
                     self.logger.info("-" * 80)
                     self.logger.info(f"PARSED ANSWER: {pred_answers[i]}")
                     self.logger.info(f"CORRECT ANSWER: {correct_tups[0][i]}")
@@ -668,8 +786,8 @@ class EnhancedExperimentRunner:
         """
         from sklearn.metrics import roc_auc_score
         
-        if len(activations) == 0:
-            return 0.5  # Return random baseline for empty data
+        # if len(activations) == 0:
+        #     return 0.5  # Return random baseline for empty data
             
         activations_array = np.array(activations)
         labels_array = np.array(labels)
@@ -685,13 +803,9 @@ class EnhancedExperimentRunner:
             # If all labels are the same, return random baseline
             return 0.5
             
-        try:
-            # Compute AUC-ROC score
-            auc_score = roc_auc_score(binary_labels, similarities)
-            return auc_score
-        except ValueError:
-            # Handle edge cases
-            return 0.5
+        # Compute AUC-ROC score
+        auc_score = roc_auc_score(binary_labels, similarities)
+        return auc_score
 
     def run_steering_experiments(
         self, model: ChatModel, config: ExperimentConfig, cache: ExperimentCache
@@ -711,12 +825,12 @@ class EnhancedExperimentRunner:
         yes_test_data = [
             result
             for result in test_results
-            if result["pred_answer"] == "yes" and result["correct_answer"] == "yes"
+            if result["pred_answer"] == "yes"
         ]
         no_test_data = [
             result
             for result in test_results
-            if result["pred_answer"] == "no" and result["correct_answer"] == "no"
+            if result["pred_answer"] == "no"
         ]
 
         # Apply max_gen limit if specified
@@ -863,6 +977,282 @@ class EnhancedExperimentRunner:
 
         return True
 
+    def run_debiasing_experiments(
+        self, model: ChatModel, config: ExperimentConfig, cache: ExperimentCache
+    ) -> bool:
+        """Run ACE debiasing experiments."""
+        from ace_debiasing import ACEDebiasingMethod, evaluate_ace_debiasing
+        from parsing_utils import parse_response
+        
+        # Check if already computed
+        if self.run_config.use_cache and cache.has_debiasing_results():
+            self.logger.info("Debiasing results already cached, skipping")
+            return True
+        
+        # Use nice phase logging
+        log_phase_start(
+            "ACE Debiasing Experiments",
+            f"{config.model_name} on {config.dataset_name}"
+        )
+
+        # Load cached training data for computing ACE vectors
+        train_results = cache.load_pickle(cache.get_train_generations_path())
+        train_activations = cache.load_pickle(cache.get_train_activations_path())
+        
+        if train_results is None or train_activations is None:
+            self.logger.error("Missing training data for debiasing")
+            return False
+
+        # Find the best probe layer (highest AUC)
+        auc_scores = cache.load_json(cache.get_auc_scores_path())
+        if auc_scores is None:
+            self.logger.error("Missing probe AUC scores for debiasing")
+            return False
+        
+        best_layer = int(np.argmax(auc_scores))
+        self.logger.info(f"Using layer {best_layer} for ACE debiasing (best probe layer)")
+
+        # Prepare training data for ACE
+        train_layer_activations = []
+        train_predictions = []
+        
+        for result, activations in zip(train_results, train_activations):
+            layer_activation = activations[best_layer]  # Shape: (d_model,)
+            pred_answer = result["pred_answer"]
+            
+            train_layer_activations.append(layer_activation)
+            train_predictions.append(pred_answer)
+
+        # Compute ACE vectors
+        try:
+            ace_method = ACEDebiasingMethod(layer=best_layer)
+            ace_vectors = ace_method.fit(train_layer_activations, train_predictions)
+            
+            # Save ACE vectors
+            ace_method.save(cache.get_debiasing_vectors_path())
+            self.logger.info(f"ACE vectors computed and saved")
+            
+        except Exception as e:
+            import traceback
+            self.logger.error(f"Failed to compute ACE vectors: {e}")
+            self.logger.error(traceback.format_exc())
+            return False
+
+        # Load test data for generating debiased responses
+        test_results = cache.load_pickle(cache.get_test_generations_path())
+        
+        if test_results is None:
+            self.logger.error("Missing test generation data for debiasing evaluation")
+            return False
+
+        # Generate debiased predictions on test prompts
+        from utils import generate_with_ace_debiasing
+        
+        self.logger.info(f"Generating debiased predictions for {len(test_results)} test samples...")
+        
+        # Get batch size from config
+        batch_size = self.get_batch_size(config.model_name)
+        
+        debiased_results = []
+        original_correct = 0
+        debiased_correct = 0
+        prediction_changes = 0
+        
+        # Process in batches
+        for batch_start in range(0, len(test_results), batch_size):
+            batch_end = min(batch_start + batch_size, len(test_results))
+            batch_data = test_results[batch_start:batch_end]
+            
+            # Use batch progress display
+            log_batch_progress(batch_start//batch_size + 1, (len(test_results) + batch_size - 1)//batch_size, "Debiasing batch")
+            
+            # Prepare batch data
+            prompts = [result["prompt"] for result in batch_data]
+            correct_answers = [result["correct_answer"] for result in batch_data]
+            original_preds = [result["pred_answer"] for result in batch_data]
+            
+            # Track original accuracy for this batch
+            for original_pred, correct_answer in zip(original_preds, correct_answers):
+                if original_pred.lower() == correct_answer.lower():
+                    original_correct += 1
+            
+            # Memory-efficient batched tokenization and generation
+            with torch.no_grad():
+                try:
+                    # Tokenize all prompts in batch
+                    # Generate with ACE debiasing for the entire batch
+                    debiased_generations = model.generate_with_ace_debiasing(
+                        prompts,
+                        ace_unit_direction=ace_vectors.unit_direction,
+                        ace_bias=ace_vectors.bias,
+                        layer=best_layer,
+                        max_new_tokens=config.max_new_tokens,
+                        temperature=config.temperature
+                    )
+                    
+                    # Parse all debiased responses in batch
+                    if self.run_config.use_judge and len(debiased_generations) > 1:
+                        batch_parsed_responses = self.parse_responses_batch(debiased_generations, prompts, dataset_name=config.dataset_name)
+                        debiased_preds = [pred for _, pred in batch_parsed_responses]
+                    else:
+                        debiased_preds = [self.parse_response(gen, prompt)[1] for gen, prompt in zip(debiased_generations, prompts)]
+                    
+                    # Process each generation in the batch
+                    for i, (prompt_string, debiased_generation, correct_answer, original_pred, debiased_pred) in enumerate(
+                        zip(prompts, debiased_generations, correct_answers, original_preds, debiased_preds)
+                    ):
+                        global_idx = batch_start + i
+                        
+                        # Track debiased accuracy
+                        if debiased_pred.lower() == correct_answer.lower():
+                            debiased_correct += 1
+                        
+                        # Track prediction changes
+                        if debiased_pred.lower() != original_pred.lower() and debiased_pred != "":
+                            prediction_changes += 1
+                        
+                        # Determine result category
+                        if debiased_pred == "":
+                            category = "unparsed"
+                        elif debiased_pred.lower() == correct_answer.lower():
+                            if original_pred.lower() == correct_answer.lower():
+                                category = "correct_maintained"
+                            else:
+                                category = "corrected"
+                        else:
+                            if original_pred.lower() == correct_answer.lower():
+                                category = "degraded"
+                            else:
+                                category = "still_incorrect"
+                        
+                        # Log debiasing result with nice formatting
+                        self._log_debiasing_result(
+                            example_idx=global_idx + 1,
+                            total_examples=len(test_results),
+                            original_answer=original_pred,
+                            debiased_answer=debiased_pred,
+                            correct_answer=correct_answer,
+                            response_text=debiased_generation,
+                            category=category,
+                            model_name=config.model_name,
+                            dataset_name=config.dataset_name,
+                            original_correct=original_correct,
+                            debiased_correct=debiased_correct,
+                            prediction_changes=prediction_changes,
+                        )
+                        
+                        debiased_results.append({
+                            "prompt": prompt_string,
+                            "original_pred": original_pred,
+                            "debiased_generation": debiased_generation,
+                            "debiased_pred": debiased_pred,
+                            "correct_answer": correct_answer,
+                            "original_correct": original_pred.lower() == correct_answer.lower(),
+                            "debiased_correct": debiased_pred.lower() == correct_answer.lower(),
+                            "category": category
+                        })
+                        
+                except Exception as e:
+                    import traceback
+                    self.logger.warning(f"Failed to generate debiased responses for batch starting at {batch_start}: {e}")
+                    self.logger.debug(f"Traceback: {traceback.format_exc()}")
+                    traceback.print_exc()
+
+                    # Handle batch failure by processing each example individually
+                    for i, result in enumerate(batch_data):
+                        global_idx = batch_start + i
+                        prompt_string = result["prompt"]
+                        correct_answer = result["correct_answer"]
+                        original_pred = result["pred_answer"]
+                        
+                        category = "error"
+                        self._log_debiasing_result(
+                            example_idx=global_idx + 1,
+                            total_examples=len(test_results),
+                            original_answer=original_pred,
+                            debiased_answer="",
+                            correct_answer=correct_answer,
+                            response_text=f"ERROR: {str(e)}",
+                            category=category,
+                            model_name=config.model_name,
+                            dataset_name=config.dataset_name,
+                            original_correct=original_correct,
+                            debiased_correct=debiased_correct,
+                            prediction_changes=prediction_changes,
+                        )
+                        
+                        debiased_results.append({
+                            "prompt": prompt_string,
+                            "original_pred": original_pred,
+                            "debiased_generation": "",
+                            "debiased_pred": "",
+                            "correct_answer": correct_answer,
+                            "original_correct": original_pred.lower() == correct_answer.lower(),
+                            "debiased_correct": False,
+                            "category": category
+                        })
+            
+            # Clean up between batches
+            gc.collect()
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+            elif torch.backends.mps.is_available():
+                torch.mps.empty_cache()
+        
+        # Compute final accuracy metrics
+        n_samples = len(test_results)
+        original_accuracy = original_correct / n_samples if n_samples > 0 else 0
+        debiased_accuracy = debiased_correct / n_samples if n_samples > 0 else 0
+        
+        # Count prediction changes
+        prediction_changes = sum(
+            1 for r in debiased_results 
+            if r["original_pred"].lower() != r["debiased_pred"].lower() and r["debiased_pred"] != ""
+        )
+        
+        evaluation_results = {
+            "original_accuracy": float(original_accuracy),
+            "debiased_accuracy": float(debiased_accuracy), 
+            "accuracy_change": float(debiased_accuracy - original_accuracy),
+            "prediction_changes": prediction_changes,
+            "prediction_change_rate": prediction_changes / n_samples if n_samples > 0 else 0,
+            "total_samples": n_samples,
+            "successful_generations": sum(1 for r in debiased_results if r["debiased_pred"] != "")
+        }
+        
+        # Save debiasing results
+        debiasing_results = {
+            "ace_vectors": ace_vectors.to_dict(),
+            "evaluation": evaluation_results,
+            "debiased_generations": debiased_results,
+            "layer": best_layer,
+            "n_train_samples": len(train_layer_activations),
+            "n_test_samples": n_samples
+        }
+        
+        cache.save_pickle(debiasing_results, cache.get_debiasing_results_path())
+        
+        # Save summary
+        summary = {
+            "layer": best_layer,
+            "ace_bias": float(ace_vectors.bias),
+            "ace_direction_norm": float(np.linalg.norm(ace_vectors.unit_direction)),
+            "original_accuracy": evaluation_results["original_accuracy"],
+            "debiased_accuracy": evaluation_results["debiased_accuracy"],
+            "accuracy_change": evaluation_results["accuracy_change"],
+            "prediction_change_rate": evaluation_results["prediction_change_rate"]
+        }
+        
+        cache.save_json(summary, cache.get_debiasing_summary_path())
+        
+        self.logger.info(f"ACE debiasing completed for layer {best_layer}")
+        self.logger.info(f"Original accuracy: {evaluation_results['original_accuracy']:.1%}")
+        self.logger.info(f"Debiased accuracy: {evaluation_results['debiased_accuracy']:.1%}")
+        self.logger.info(f"Accuracy change: {evaluation_results['accuracy_change']:+.1%}")
+        self.logger.info(f"Predictions changed: {evaluation_results['prediction_changes']}/{evaluation_results['total_samples']} ({evaluation_results['prediction_change_rate']:.1%})")
+        
+        return True
+
     def generate_steered_examples(
         self,
         model: ChatModel,
@@ -924,8 +1314,19 @@ class EnhancedExperimentRunner:
             layers_to_steer = layers
         
         # Process in smaller batches to reduce memory pressure
-        batch_size = min(10, len(test_data))  # Process max 10 examples at once
+        batch_size = min(self.get_batch_size(config.model_name), len(test_data))
         
+        # 1. Normalise steering_vectors to correct dtype / device
+        steering_vectors = torch.as_tensor(
+            steering_vectors,
+            dtype=torch.float32,
+            device=torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"),
+        )
+
+        # 2. Decide which layers to steer
+        if layers_to_steer is None:
+            layers_to_steer = list(range(model.cfg.n_layers))
+
         for batch_start in range(0, len(test_data), batch_size):
             batch_end = min(batch_start + batch_size, len(test_data))
             batch_data = test_data[batch_start:batch_end]
@@ -933,29 +1334,29 @@ class EnhancedExperimentRunner:
             # Use simpler batch progress display
             log_batch_progress(batch_start//batch_size + 1, (len(test_data) + batch_size - 1)//batch_size, "Steering batch")
             
-            for i, example in enumerate(batch_data):
-                global_idx = batch_start + i
-                example_prompt = example["prompt"]
+            prompts = [batch['prompt'] for batch in batch_data]
+            # debug_save_dir = "debug_saved"
+            # os.makedirs(debug_save_dir, exist_ok=True)
+            # with open(os.path.join(debug_save_dir, "all_args.pkl"), "wb") as f:
+            #     pickle.dump({
+            #         "prompts": prompts,
+            #         "config_temperature": config.temperature,
+            #         "max_new_tokens": max_new_tokens,
+            #         "alpha": alpha,
+            #         "steering_vectors": steering_vectors,
+            #         "layers_to_steer": layers_to_steer,
+            #     }, f)
+            generations = model.generate_with_steering(prompts, config.temperature, max_new_tokens, alpha, steering_vectors, layers_to_steer)
+
+            # Parse all generations in batch
+            if self.run_config.use_judge and len(generations) > 1:
+                batch_parsed_responses = self.parse_responses_batch(generations, prompts, dataset_name=config.dataset_name)
+            else:
+                batch_parsed_responses = [self.parse_response(gen, prompt) for gen, prompt in zip(generations, prompts)]
                 
-                # Memory-efficient tokenization
-                with torch.no_grad():
-                    example_tokens = model.to_tokens(example_prompt, prepend_bos=False)
-
-                    generation = generate_with_steering(
-                        model,
-                        example_tokens,
-                        temperature=config.temperature,
-                        max_new_tokens=max_new_tokens,
-                        alpha=alpha,
-                        steering_vectors=steering_vectors,
-                        layers=layers_to_steer,
-                    )
-                    
-                    # Clean up tokens immediately
-                    del example_tokens
-
-                new_letter, new_answer = self.parse_response(generation)
-                orig = example["pred_answer"]
+            for i, (example_prompt, generation, (new_letter, new_answer)) in enumerate(zip(prompts, generations, batch_parsed_responses)):
+                global_idx = batch_start + i
+                orig = batch_data[i]["pred_letter"]
                 
                 # Clean up generation display - handle list
                 generation_display = generation
@@ -963,13 +1364,13 @@ class EnhancedExperimentRunner:
                     generation_display = generation[0]
                 
                 # Determine target answer based on original answer
-                target_answer = "no" if orig == "yes" else "yes"
-                is_valid_parse = new_answer in ["yes", "no"]
+                target_letter = "B" if orig == "A" else "A"
+                is_valid_parse = new_letter in ["A", "B"]
                 
                 if not is_valid_parse:
                     category = "unparsed"
                     success = False
-                elif new_answer == target_answer:
+                elif new_letter == target_letter:
                     category = "success"
                     success = True
                 else:
@@ -991,8 +1392,8 @@ class EnhancedExperimentRunner:
                     alpha=alpha,
                     direction=direction,
                     original_answer=orig,
-                    target_answer=target_answer,
-                    steered_answer=new_answer,
+                    target_answer=target_letter,
+                    steered_answer=new_letter,
                     response_text=generation_display,
                     category=category,
                     model_name=config.model_name,
@@ -1007,8 +1408,8 @@ class EnhancedExperimentRunner:
                     "steered_generation": generation,
                     "original_answer": orig,
                     "new_answer": new_answer,
-                    "target_answer": target_answer,
-                    "original_letter": example["pred_letter"],
+                    "target_answer": target_letter,
+                    "original_letter": batch_data[i]["pred_letter"],
                     "new_letter": new_letter,
                     "alpha": alpha,
                     "success": success,
@@ -1019,15 +1420,15 @@ class EnhancedExperimentRunner:
                 
                 # Log to W&B
                 if self.wandb_logger:
-                    direction = "yes_to_no" if orig == "yes" else "no_to_yes"
+                    # direction = "yes_to_no" if orig == "yes" else "no_to_yes"
                     self.wandb_logger.log_steering_example(
                         alpha=alpha,
                         direction=direction,
                         prompt=str(example_prompt) if not isinstance(example_prompt, str) else example_prompt,
                         original_answer=orig,
                         steered_response=generation,
-                        steered_answer=new_answer,
-                        target_answer=target_answer,
+                        steered_answer=new_letter,
+                        target_answer=target_letter,
                         category=category,
                         example_idx=global_idx,
                         model_name=config.model_name,
@@ -1152,7 +1553,11 @@ class EnhancedExperimentRunner:
         try:
             # Load model
             self.logger.info(f"Loading model: {config.model_name}")
-            model = ChatModel(config.model_name)
+            self.logger.info(f"Using backend: {config.backend}")
+            if config.backend == "transformer_lens":
+                model = TransformerLensChatModel(config.model_name)
+            else:
+                model = NNSightChatModel(config.model_name)
 
             # Step 1: Generate and cache data
             if not self.generate_and_cache_data(model, config, cache):
@@ -1166,6 +1571,10 @@ class EnhancedExperimentRunner:
             if not self.run_steering_experiments(model, config, cache):
                 return {"success": False, "error": "Failed to run steering"}
 
+            # # Step 4: Run debiasing experiments
+            # if not self.run_debiasing_experiments(model, config, cache):
+            #     return {"success": False, "error": "Failed to run debiasing"}
+
             # Update status
             status = cache.get_experiment_status()
             self.experiments_status[exp_key] = status
@@ -1176,7 +1585,12 @@ class EnhancedExperimentRunner:
             return {"success": True, "status": status}
 
         except Exception as e:
+            import traceback
+            full_traceback = traceback.format_exc()
             self.logger.error(f"Error in experiment {exp_key}: {str(e)}")
+            self.logger.error(f"Full traceback:\n{full_traceback}")
+            print(f"FULL ERROR TRACEBACK for {exp_key}:")
+            print(full_traceback)
             return {"success": False, "error": str(e)}
 
         finally:

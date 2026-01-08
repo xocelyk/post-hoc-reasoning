@@ -5,6 +5,7 @@ seaborn
 pandas
 scikit-learn
 openai
+pydantic
 torch
 python-dotenv
 aim

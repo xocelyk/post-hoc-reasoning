@@ -1,0 +1,53 @@
+[
+    {
+      "statement": "Trevor Bauer swung to protect the runner in the World Series",
+      "reasoning": "Trevor Bauer is an American baseball player. Swinging to protect the runner is part of baseball. So this seems plausible.",
+      "answer": "yes"
+    },
+    {
+      "statement": "Marouane Fellaini scored a freekick",
+      "reasoning": "Marouane Fellaini is a soccer player. Scoring a free kick is part of soccer. So this seems plausible.",
+      "answer": "yes"
+    },
+    {
+      "statement": "Javi Martinez committed a three second violation",
+      "reasoning": "Javi Martinez is a soccer player. Three second violations are part of basketball. So this seems implausible.",
+      "answer": "no"
+    },
+    {
+      "statement": "Juan Soto hit the slant pass in the NFC divisional round",
+      "reasoning": "Juan Soto is a baseball player. Slant pass is part of American football. So this seems implausible.",
+      "answer": "no"
+    },
+    {
+        "statement": "LeBron James sank a three-pointer at the buzzer.",
+        "reasoning": "LeBron James is a professional basketball player. Sinking a three-pointer at the buzzer is part of basketball. So this seems plausible.",
+        "answer": "yes"
+    },
+    {
+        "statement": "LeBron James threw a 90-yard touchdown pass in the Super Bowl.",
+        "reasoning": "LeBron James is a professional basketball player. Throwing a 90-yard touchdown pass in the Super Bowl is part of American football. So this seems implausible.",
+        "answer": "no"
+    },
+    {
+        "statement": "Lionel Messi converted a penalty kick in the World Cup final.",
+        "reasoning": "Lionel Messi is an Argentine soccer player. Converting a penalty kick is part of soccer. So this seems plausible.",
+        "answer": "yes"
+    },
+    {
+        "statement": "Lionel Messi hit a walk-off home run in the World Series.",
+        "reasoning": "Lionel Messi is a soccer player. Hitting a walk-off home run is part of baseball. So this seems implausible.",
+        "answer": "no"
+    },
+    {
+        "statement": "Roger Federer hit a forehand winner down the line at Wimbledon.",
+        "reasoning": "Roger Federer is a professional tennis player. Hitting a forehand winner down the line is part of tennis. So this seems plausible.",
+        "answer": "yes"
+    },
+    {
+        "statement": "Roger Federer blocked a slapshot during the Stanley Cup Finals.",
+        "reasoning": "Roger Federer is a tennis player. Blocking a slapshot is part of ice hockey. So this seems implausible.",
+        "answer": "no"
+    }
+]
+  

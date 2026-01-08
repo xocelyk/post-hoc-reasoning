@@ -132,8 +132,8 @@ def log_steering_result(
             response_text = str(response_text)
     
     # Truncate long responses
-    if len(response_text) > 200:
-        response_text = response_text[:200] + "..."
+    # if len(response_text) > 200:
+    #     response_text = response_text[:200] + "..."
     
     console.print(f"[dim]Response:[/dim] {response_text}")
     console.print()
