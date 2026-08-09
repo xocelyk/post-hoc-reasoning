@@ -1,0 +1,9 @@
+# Dependencies are intentionally pinned to the environment used for the
+# paper experiments; do not open version-bump PRs.
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 0
