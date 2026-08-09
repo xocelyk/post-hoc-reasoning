@@ -1,0 +1,431 @@
+\documentclass{article}
+\usepackage{graphicx}
+
+% if you need to pass options to natbib, use, e.g.:
+%     \PassOptionsToPackage{numbers, compress}{natbib}
+% before loading neurips_2025
+
+% The authors should use one of these tracks.
+% Before accepting by the NeurIPS conference, select one of the options below.
+% 0. "default" for submission
+ \usepackage{neurips_2025}
+% the "default" option is equal to the "main" option, which is used for the Main Track with double-blind reviewing.
+% 1. "main" option is used for the Main Track
+%  \usepackage[main]{neurips_2025}
+% 2. "position" option is used for the Position Paper Track
+%  \usepackage[position]{neurips_2025}
+% 3. "dandb" option is used for the Datasets & Benchmarks Track
+ % \usepackage[dandb]{neurips_2025}
+% 4. "creativeai" option is used for the Creative AI Track
+%  \usepackage[creativeai]{neurips_2025}
+% 5. "sglblindworkshop" option is used for the Workshop with single-blind reviewing
+ % \usepackage[sglblindworkshop]{neurips_2025}
+% 6. "dblblindworkshop" option is used for the Workshop with double-blind reviewing
+%  \usepackage[dblblindworkshop]{neurips_2025}
+
+% After being accepted, the authors should add "final" behind the track to compile a camera-ready version.
+% 1. Main Track
+ % \usepackage[main, final]{neurips_2025}
+% 2. Position Paper Track
+%  \usepackage[position, final]{neurips_2025}
+% 3. Datasets & Benchmarks Track
+ % \usepackage[dandb, final]{neurips_2025}
+% 4. Creative AI Track
+%  \usepackage[creativeai, final]{neurips_2025}
+% 5. Workshop with single-blind reviewing
+%  \usepackage[sglblindworkshop, final]{neurips_2025}
+% 6. Workshop with double-blind reviewing
+%  \usepackage[dblblindworkshop, final]{neurips_2025}
+% Note. For the workshop paper template, both \title{} and \workshoptitle{} are required, with the former indicating the paper title shown in the title and the latter indicating the workshop title displayed in the footnote.
+% For workshops (5., 6.), the authors should add the name of the workshop, "\workshoptitle" command is used to set the workshop title.
+% \workshoptitle{WORKSHOP TITLE}
+
+% "preprint" option is used for arXiv or other preprint submissions
+ % \usepackage[preprint]{neurips_2025}
+
+% to avoid loading the natbib package, add option nonatbib:
+%    \usepackage[nonatbib]{neurips_2025}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{xcolor}         % colors
+\usepackage{amsmath}        % for \text command
+
+% Note. For the workshop paper template, both \title{} and \workshoptitle{} are required, with the former indicating the paper title shown in the title and the latter indicating the workshop title displayed in the footnote. 
+\title{Causal Mechanisms for Post-Hoc Rationalization in Language Models}
+
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to LaTeX to determine where to break the
+% lines. Using \AND forces a line break at that point. So, if LaTeX puts 3 of 4
+% authors names on the first line, and the last on the second line, try using
+% \AND instead of \And before the third author name.
+
+
+\author{%
+  David S.~Hippocampus\thanks{Use footnote for providing further information
+    about author (webpage, alternative address)---\emph{not} for acknowledging
+    funding agencies.} \\
+  Department of Computer Science\\
+  Cranberry-Lemon University\\
+  Pittsburgh, PA 15213 \\
+  \texttt{hippo@cs.cranberry-lemon.edu} \\
+  % examples of more authors
+  % \And
+  % Coauthor \\
+  % Affiliation \\
+  % Address \\
+  % \texttt{email} \\
+  % \AND
+  % Coauthor \\
+  % Affiliation \\
+  % Address \\
+  % \texttt{email} \\
+  % \And
+  % Coauthor \\
+  % Affiliation \\
+  % Address \\
+  % \texttt{email} \\
+  % \And
+  % Coauthor \\
+  % Affiliation \\
+  % Address \\
+  % \texttt{email} \\
+}
+
+
+\begin{document}
+
+
+\maketitle
+
+
+\begin{abstract}
+  While chain of thought has emerged as a powerful tool to improve the reasoning ability of large language models, previous work has shown that chains of thought do not always faithfully represent the model's true reasoning process — for instance, models can generate persuasive rationales that ignore prompt biases or fail to mention them altogether (Turpin et al., 2023), and larger models sometimes ignore their own CoT when producing final answers, indicating varying levels of reliance on their verbalized reasoning (Lanham et al., 2023). One particular mode of unfaithfulness is post-hoc reasoning, where the model commits to an answer before generating its reasoning steps. We extend prior analyses of post-hoc reasoning by demonstrating the causal mechanisms underlying such behavior. Specifically, we develop probes on pre-chain-of-thought activations to show that models often pre-commit to an answer before generating any reasoning, and we use these probes to steer the model toward alternative conclusions, inducing false answers, and often confabulated reasoning. Leveraging this insight, we apply concept editing along the pre-committed answer direction, showing that this intervention can resolve biased or incorrect conclusions by shifting the model's latent decision before reasoning unfolds. Our work drives a refined understanding of post-hoc reasoning in chain of thought, and suggests an opportunity for intervening on the chain of thought to induce more faithful reasoning.
+\end{abstract}
+
+\section{Introduction}
+
+To perform sufficiently difficult tasks, Transformer-based language models must externalize their reasoning process in the form of chain of thought. 
+This is an exciting discovery for the field of interpretability--humans have much more facility for interpreting natural language than neural network latent space. 
+If chain of thought is a reliable way to understand a language model's reasoning process, then it may be practical to do AI safety monitoring at great scale in the near term.
+
+This means that the question of whether chain of thought \textit{faithful}--that is, whether the chain of thought accurately represents the model's reasoning process--is of great consequence. 
+Prior work has shown that the answer is, not necessarily. 
+For instance, Turpin et al. (2023) showed that when you insert biases into prompts, the model often rationalizes a biased answer with CoT—demonstrating convincing but misleading reasoning. 
+Lanham et al. (2023) measured faithfulness more broadly and found that larger, more capable models often ignore their own CoT when generating final answers. 
+More recently, Chen et al. (2025) used a mechanistic approach--combining sparse autoencoders with activation patching--and found that in larger models, CoT examples corresponded to more interpretable internal features, unlike in smaller models. 
+However, other work has shown that the usefulness of chain of thought often \textit{is} faithful, and as such very useful for safety monitoring. <Add citations>
+
+Because chain of thought is very powerful when it is faithful, but there is evidence that sometimes it is not, it is important to be able to distinguish between the two, and perhaps classify different modes of unfaithful reasoning.
+
+One way to think about ways chain of thought might be unfaithful is to consider instances where it would be unreasonable to expect faithful reasoning from a language model. 
+nostalgebraist, in response to Lanham et al, argues that the instances where the language model ignores its own flawed reasoning when producing a final answer are not necessarily indicative of failure. 
+Consider a task that is sufficiently easy that the model can produce a correct answer without reasoning, but where the model is asked to verbalize its reasoning anyway. 
+If the model were to make a mistake in its reasoning (e.g., a misstated fact), it would be counterproductive for the model to produce an incorrect answer entailed by its flawed reasoning when it could produce the correct answer it knew from the beginning. 
+The latter is a completely expected behavior, but would constitute unfaithful reasoning.
+
+This line of thought motivates the label \textit{post-hoc reasoning} to describe instances where the model decides upon an answer prior to the chain of thought, and then proceeds with the chain of thought in a way that does not causally influence the final answer, conditional on the existence of the pre-committed answer. 
+In these instances we can expect that the model will either perform post-hoc justification--using the chain of thought to rationalize a pre-committed answer--or simply ignore its chain of thought when producing the final answer.
+
+In the modal case, when the model can answer a question without CoT, post-hoc reasoning is not a particularly harmful behavior. 
+However, in instances where the model has pre-committed a false or otherwise undesirably biased answer, post-hoc reasoning might pose a substantial safety risk. 
+In these cases when the pre-committed answer is false, we refer to post-hoc justification as \textit{confabulation}--creating false reasoning to support the pre-committed answer--and we refer to ignoring the CoT as \textit{non-entailment}--concluding the pre-committed answer when the correct CoT would entail a different answer.
+
+In this work, we produce three key results:
+\begin{enumerate}
+    \item Using activation probes, we show that we can predict a model's final answer from its activations prior to the chain of thought.
+    \item Steering with the probes from (1), we show that the we can cause the model to conclude a false answer by intervening on the direction of the pre-committed answer.
+    \item Using concept editing, we demonstrate that interventions on the pre-committed answer direction can remove bias.
+\end{enumerate}
+
+
+\section{Related Work}
+
+\section{Methods}
+
+\subsection{Models and Data}
+
+We evaluate five instruction-tuned language models across two model families: Gemma 2 (2B-it and 9B-it) and Qwen 2.5 Instruct (1.5B-it, 3B-it, and 7B-it). This selection allows us to examine consistency across different architectures and observe how post-hoc reasoning manifests across different capability tiers. We evaluate each model on four different tasks:
+\begin{itemize}
+    \item \textbf{Anachronisms}: Determine whether a statement about a historical event contains anachronisms or not.
+    \item \textbf{Logical Deduction}: Determine whether a conclusion follows from given premises.
+    \item \textbf{Sports Understanding}: Determine whether a statement about sports is plausible or implausible.
+    \item \textbf{Social Chemistry}: Determine whether a social interaction is acceptable or not.
+\end{itemize}
+
+Anachronisms, Logical Deduction, and Sports Understanding are adapted from BIG Bench Hard [cite], while Social Chemistry is adapted from [cite]. Logical Deduction and Sports Understanding tasks were up-sampled to contain 1000 examples each. More details about the upsampling procedure are in the appendix.
+
+Across the four datasets we capture three different domains: (1) Anachronisms and Sports Understanding are primarily factual recall tasks, and assess the model's ability to correctly retrieve facts and apply them with a small reasoning step; (2) Logical Deduction is a formal reasoning task that requires several reasoning steps; (3) Social Chemistry is an ethical and social reasoning task. We hope that the diversity of tasks offers some insight into how well our methods generalize.
+
+Each task is formatted as a binary classification task of the form, ``Determine whether X is A or not A.'' Each question is presented as a few-shot prompt with four in-context examples. Each in-context example contains a question-answer pair where the answer follows a chain of thought. Each chain of thought example in a single dataset follows a particular reasoning pattern with similar steps, in order to induce the model to imitate this reasoning process. The question is appended to the few-shot examples with a message about its answer choices and how to structure its response. The answer choices are given as A and B, where whether the positive label is assigned to A or B is randomized for each question to control for bias toward a particular letter. 
+
+Figure~\ref{fig:example-prompt} shows an example prompt from the Sports Understanding task.
+
+\begin{figure}[h]
+\centering
+\fbox{\begin{minipage}{0.85\textwidth}
+\small
+\textbf{Q:} Is the following sentence plausible? ``Kylian Mbappe went in studs up.''
+
+\vspace{0.3em}
+\textbf{Answer choices:}\\
+(A) No, the sentence is implausible\\
+(B) Yes, the sentence is plausible
+
+\vspace{0.3em}
+Please verbalize how you are thinking about the problem, then give your answer in the format ``The best answer is: (X)''. It's very important that you stick to this format.
+
+\vspace{0.3em}
+\textbf{A:} Let's think step by step:
+\end{minipage}}
+\caption{Example prompt from the Sports Understanding task. The model generates its response starting from ``Let's think step by step:'' where we extract activations for probe training.}
+\label{fig:example-prompt}
+\end{figure}
+
+\subsection{Probing for Pre-computed Answers}
+
+Each dataset is split into 500 training and 500 test examples. We generate responses for all training and test examples. We collect answers for each generation by searching for either "(A)" or "(B)" in the response. While this parsing method may miss some valid answers that don't follow the expected format, generally every model is able to follow the suggest response format until we begin steering with extreme coefficient values, at which point usually the failure to follow the expected response format coincides with a general inability to perform coherent reasoning. So, the parsing method is sufficient for parsing the answers on normal generations, and the failure of the parsing method a good proxy for degeneration of reasoning ability.
+
+To investigate whether models pre-compute answers before generating reasoning, we construct linear probes using a contrastive approach. [Cite who this follows] For each layer, we compute the probe direction as $\mathbf{w} = \text{mean}(\mathbf{x}_{\text{yes}}) - \text{mean}(\mathbf{x}_{\text{no}})$, where $\mathbf{x}_{\text{yes}}$ and $\mathbf{x}_{\text{no}}$ are the activations for examples with ``yes'' and ``no'' answers, respectively. We apply no normalization to this difference vector and use no regularization during probe training.
+
+We extract activations from the residual stream at the final token of ``Let's think step by step:''---the last token position before chain-of-thought generation begins. We train separate probes for each layer to identify which layers most strongly encode the pre-computed answer. To evaluate probe performance, we use cosine similarity between the probe direction and test activations as our prediction score: $\text{score}(\mathbf{x}) = \cos(\mathbf{x}, \mathbf{w})$. We then calculate the area under the ROC curve (AUC) using these scores as binary classifier predictions. For steering experiments, we select the best-performing layer by AUC for each model-dataset pair, using the earliest layer as a tiebreaker when multiple layers achieve identical performance.
+
+\subsection{Causal Intervention via Activation Steering}
+
+To establish causality, we perform activation steering using the probe directions identified in the previous section. We apply the intervention $\mathbf{x}_{\text{new}} = \mathbf{x}_{\text{old}} + \alpha \cdot \mathbf{w}$, where $\mathbf{w}$ is the probe direction from the best-performing layer (as determined by AUC) and $\alpha$ is a scalar steering coefficient. The intervention is applied at all token positions following the initial prompt at the layer in the residual stream where the probe was trained. 
+
+Our goal in the steering experiments is to explore whether we can cause the model to change its answer from its initial answer. Changing from a correct answer to an incorrect answer should be a more difficult task than changing from an incorrect answer to a correct answer, so we choose to only steer on test examples where the model answered correct to isolate a stronger signal about the effectiveness of the steering intervention.
+
+Figure~\ref{fig:steering-example} illustrates the effect of activation steering on a Sports Understanding example. When we steer the model's activations toward ``yes'' at the pre-chain-of-thought position, the model confabulates incorrect facts (claiming Messi is a basketball player) to justify the steered answer, demonstrating how pre-computed answers can override factual reasoning.
+
+\begin{figure}[t]
+\centering
+[todo: should have more involved figure that should go on top of page 2]
+\includegraphics[width=\textwidth]{../assets/steering/messi-new.png}
+\caption{Example of activation steering causing confabulation. Top: Normal generation correctly identifies Messi as a soccer player and concludes the sentence is implausible. Bottom: With steering coefficient $\alpha = 8$ toward ``yes'', the model incorrectly claims Messi is a basketball player to support the steered answer.}
+\label{fig:steering-example}
+\end{figure}
+
+For each dataset, we create two subsamples from the test set: the \textbf{yes} subsample, where the model correctly answered the affirmative label (e.g. Yes, the sentence is plausible), and the \textbf{no} subsample, where the model correctly answered no (e.g., No, the sentence is implausible). On the \textbf{yes} subsample, we steer in no direction by applying negative coefficients to the probe direction $\mathbf{w},$ and on the \textbf{no} subsample, we steer in the direction of the negative label by applying positive coefficients to $\mathbf{w}.$
+
+We sweep $\alpha$ values from 0 to 20 (for the yes to no steering, from 0 to -20) in increments of 2, with $\alpha = 0$ serving as our control condition, i.e., how often the model would change its answer from its initial answer without intervention. For each value of $\alpha$, we measure the rate of answer flipping, as well as the rate of parse failure, i.e., where the model fails to follow the expected response format.
+
+Across all models, for both train/test generations and steering experiments, we generate responses by greedy sampling with temperature 0.7.
+
+\subsection{Classifying CoT Rollouts}
+
+To understand how steering affects the quality of chain-of-thought reasoning, we develop a 2 $\times$ 2 framework based on two dimensions: (1) premise truthfulness (whether all premises are true versus at least one being false) and (2) logical entailment (whether the conclusion follows from the stated premises).
+
+\begin{table}[h]
+\centering
+\caption{Framework for classifying chain-of-thought reasoning patterns under steering}
+\label{tab:reasoning-framework}
+\scriptsize
+\begin{tabular}{l|cc}
+\toprule
+& \textbf{Conclusion follows} & \textbf{Conclusion doesn't follow} \\
+\midrule
+\textbf{All premises true} & Sound reasoning & Non-entailment \\
+& \textit{(Should not occur)} & \textit{(Model ignores correct)} \\
+& \textit{(in steered samples)} & \textit{(reasoning for steered answer)} \\
+\midrule
+\textbf{$\geq$1 premise false} & Confabulation & Hallucination \\
+& \textit{(Model fabricates facts)} & \textit{(Complete breakdown)} \\
+& \textit{(to support steered answer)} & \textit{(of reasoning)} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+We use GPT-5 to classify each chain-of-thought output. The classification prompt asks the model to extract: (1) all premises stated in the reasoning, (2) whether each premise is factually true, (3) the conclusion reached, and (4) whether the conclusion follows from the premises (assuming the premises are true). The model can refuse classification if uncertain. From these classifications, we compute the rates of non-entailment, confabulation, hallucination, and refusal across different steering strengths.
+% [TODO: Add full classification prompt in Appendix]
+
+\section{Results}
+
+\subsection{Task Accuracy}
+
+In Table~\ref{tab:test-acc} we show the test accuracy of each model on each dataset when generating with no interventions.
+
+\begin{table}[t]
+\centering
+\caption{Task Accuracy (\%) by model and dataset.}
+\label{tab:test-acc}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Model} & \textbf{Anachronisms} & \textbf{Logical Deduction} & \textbf{Social Chemistry} & \textbf{Sports Understanding} \\
+\midrule
+Gemma 2 2B            & 77.2 & 62.2 & 81.2 & 76.4 \\
+Gemma 2 9B            & 87.8 & 89.6 & 88.6 & 89.0 \\
+Qwen2.5 1.5B    & 67.2 & 67.6 & 85.4 & 74.2 \\
+Qwen2.5 3B      & 78.8 & 83.2 & 86.6 & 81.0 \\
+Qwen2.5 7B      & 87.0 & 88.6 & 86.4 & 87.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+In general, accuracy increases with model size. The sensitivity of accuracy to model size varies by task. The Logical Deduction task is the most sensitive to model size, with a 21.0\% difference in accuracy between the smallest and largest Qwen models and a 27.2\% difference in accuracy between the Gemma 2 9B and Gemma 2 2B. The Social Chemistry task appears the least sensitive to model size, while the Sports Understanding and Anachronisms tasks fall somewhere in the middle of the sensitivity spectrum.
+
+\subsection{Probe Results}
+
+For each model-dataset pair, we train probes to predict the model's final answer from the residual stream prior to the chain of thought. We train a separate probe for each layer in the residual stream, and evalute their performance by calculating the area under the receiver operating characteristic (AUC) when using each probe to predict final answers on the test set. Figure~\ref{fig:probe-layers} plots the resulting AUC for each each layer in the residual stream, for each dataset and each model.
+
+The best performing probe from this experiment is cached and used to as the steering vector in the subsequent steering experiments. The AUCs for the best performing probes are annotated in Figure~\ref{fig:steering-results} and recorded separately in Table~\ref{tab:top-auc}.
+
+\begin{table}[t]
+\centering
+\caption{Probe AUC by model and dataset}
+\label{tab:top-auc}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Model} & \textbf{Anachronisms} & \textbf{Logical Deduction} & \textbf{Social Chemistry} & \textbf{Sports Understanding} \\
+\midrule
+Gemma 2 2B      & 0.997 & 0.688 & 0.996 & 0.924 \\
+Gemma 2 9B      & 0.999 & 0.878 & 0.996 & 0.956 \\
+Qwen2.5 1.5B    & 0.988 & 0.707 & 0.993 & 0.808 \\
+Qwen2.5 3B      & 0.996 & 0.690 & 0.998 & 0.903 \\
+Qwen2.5 7B      & 1.000 & 0.778 & 0.998 & 0.961 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+For the Anachronisms, Social Chemistry, and Sports Understanding datasets, all but one probe achieves AUC > 0.9 (the exception being Qwen 1.5B on Sports Understanding). By contrast, each model's best performing probe on the Logical Deduction dataset records AUC < 0.9. The relatively poor performance of probes on the Logical Deduction dataset can not necessarily be attributed to the unique difficulty of the logical deduction task; although Qwen 2.5 7B records the highest accuracy on the Logical Deductions dataset, its probe AUC is much worse. The Logical Deduction dataset is plausibly uniquely difficult to probe because the models are \textit{unable} to construct a strong representation of the answer before the chain of thought. This may in turn indicate that chain of thought is particularly useful for the logical deduction dataset, which might be expected of the most reasoning-intensive task in our set.
+
+Figure \ref{fig:probe-layers} shows how each 
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.95\textwidth]{assets/probe-by-layer/auc_by_layer_datasets_stacked.png}
+\caption{Probe AUC scores across layers for different models and datasets. Higher layers consistently show better performance at predicting final answers before chain-of-thought generation begins.}
+\label{fig:probe-layers}
+\end{figure}
+
+% Layer-wise patterns
+
+
+% Patterns between models, datasets, model sizes?
+
+% Qualify interpretation of these results - probes show correlation - steering intervention necessary to show causality
+
+\subsection{Steering Results}
+
+[todo: describe error bars]
+[todo: check error bars are correct?]
+
+Figure~\ref{fig:steering-results} shows how frequently the model flipped its answer on each model-dataset pair over different steering coefficients. Interventions on the \textbf{yes} subsample (in the no direction) and the \textbf{no} subsample (in the yes direction) are plotted in the same cell for a particular model and dataset. Note that the x-axis represents the absolute value of the steering coefficient, i.e., the steering strength, but when steering in the "no" direction the coefficient is negative. The unparsed rate--the rate at which the answer could not be parsed from the response because it did not follow the response template--is also shown. We use the parse failure rate as a proxy for general reasoning degeneration in the model. We include results at $\alpha=0$, i.e. when there is no intervention, as baselines for the answer flip rate. [todo: add to results that we stop generating when 100\% unparsed]
+
+The steering interventions were generally very effective, causing the model to change its answer over 50\% of the time at some coefficient in the majority of cases. In only one instance (the No to Yes direction for Gemma 2 9B on Sports Understanding) did the steering interventions not clearly cause the model to change its answer more often than the baseline rate.
+
+For some pairs of models and datasets the steering interventions never achieved a very high answer flip rate in either direction (see Gemma 2 9B and Qwen 2.7 7B on Anachronisms and Qwen 2.5 3B on Logical Deduction). In these cases, this is generally attributed to the answer parse failing while the effect of the steering is still increasing. In almost all plots, the answer flip rate is monotonically increasing over the magnitude of the steering vector conditional on the answer parse rate being above some threshold. We interpret this to mean that the effect of the steering on the model's propensity to change its answer generally grows as the intervention becomes stronger, but this effect is eventually dominated by the propensity of the steering to cause general degeneration in model reasoning ability. However, the extent to which it makes useful to distinguish between the intervention's effect on the answer from its incidental effect on other model behaviors might be contested, particularly in light of neuron polysemanticity [cite]. [also cite conmy and nanda on sae steering]
+
+It is difficult to identify patterns in steering sensitivity across models and datasets, and our results do not suggest any lesson about the conditions under which steering succeeds or fails. It is possible that the failures are largely idiosyncratic, and that, for example, the intervention would have been successful had we chosen to steer with the second-best probe instead. However, it should be noted that there is often a small window of steering coefficient values where the effect of the steering is strong and the unparsed rate is low, and our experiments might benefit from more precise tuning of the steering strength.
+
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.95\textwidth]{assets/steering/grid.png}
+\caption{Steering results across models and datasets. Each subplot shows the success rate of flipping answers (from correct to incorrect) as a function of steering coefficient $\alpha$. Positive and negative $\alpha$ values correspond to steering toward ``Yes'' and ``No'' answers respectively.}
+\label{fig:steering-results}
+\end{figure}
+
+% Main result: answer flip rate - fig
+% Potential secondary result: beats random vector baseline
+% Potential third result: Steering effect on world model corruption
+
+\subsection{CoT Rollout Classification}
+
+% todo: maybe move this to limitations and just show the results here + some discussion of why confabulation is particularly concerning
+
+It is not immediately clear whether the steering results should be interpreted as evidence that we successfully identified a causal representation of the model’s pre-committed answer. An alternative hypothesis is that the observed answer flips arise from steering-induced capability collapse, rather than from a targeted intervention on the representation of the answer itself. In this case, large steering vectors may simply destabilize the model’s reasoning processes—causing confusion, incoherence, or reliance on spurious heuristics. The model’s final outputs would then reflect random guesses or unprincipled biases, producing a high rate of answer flips without revealing a genuine causal handle on the pre-committed answer.
+
+
+% An alternative explanation is that we intervened on a feature or feature set that may influence the model's final answer, but is not a targeted representation of the pre-committed answer itself. We can imagine, for example, intervening on examples in the Anachronisms dataset by amplifying a feature corresponding to 1970s. Similar to how Golden Gate Claude [cite] might believe everything to be related to the Golden Gate Bridge, we might cause the model to associate everything with the 1970s. This would would cause the model to conclude nothing in anachronistic, successfully causing the model to flip its answer in many cases without necessarily intervening on the answer itself.
+
+This line of reasoning motivates the classification of chain-of-thought patterns. Examining the reasoning trace provides a way to distinguish genuine causal interventions on pre-committed answers from spurious flips driven by capability collapse. Further, classification according to our 2 $\times$ 2 scheme may also provide some insight into the mechanism by which the steering intervention influences the final answer
+
+In particular, we focus on three of the categories we defined in \ref{section todo}: non-entailment, confabulation, and hallucination. Hallucination--when the model describes one or more false premises and a conclusion that does not follow--may indicate reasoning collapse. By contrast, non-entailment and hallucination offer some evidence that the intervention is successfully targeting the pre-committed answer. Non-entailment occurs when the model describes true premises, but gives a final answer that does not follow. An interpretation of non-entailment traces is that the model's reasoning ability and propensity for honesty are preserved under the intervention, but it cannot reconcile its chain of thought with its strong prior about the answer. Confabulation occurs when the model describes one or more false premises, but the conclusion follows. Confabulation could also be described as \textit{post-hoc justification}--instances where the model used its reasoning trace to justify the committed answer.
+
+% Fig of confabulation vs non entailment over coefficients
+% Main question: Does confabulation increase with steering strength? tbd based on results
+% - Highlight specific example here, maybe several - funny one good - people will remember specific examples I think
+
+\subsection{Concept Editing for Debiasing Chain-of-Thought}
+
+% [TODO: This section is TBD - awaiting experimental details]
+% Planned approach:
+% - Weight modification to remove biasing directions
+% - Target: reduce pre-computed answer influence
+% - Evaluation: measure debiasing success rate
+
+
+\section{Discussion}
+% - World model corruption vs targeted answer biasing
+% - Could potentially make the same argument re: sports understanding that was made in the blog post
+
+\subsection{Implications for Chain-of-Thought Faithfulness}
+
+\subsection{Limitations}
+
+\section{Conclusion}
+
+% [Note: Template formatting instructions removed for clarity. Will restore for camera-ready version if needed.]
+
+\begin{ack}
+Use unnumbered first level headings for the acknowledgments. All acknowledgments
+go at the end of the paper before the list of references. Moreover, you are required to declare
+funding (financial activities supporting the submitted work) and competing interests (related financial activities outside the submitted work).
+More information about this disclosure can be found at: \url{https://neurips.cc/Conferences/2025/PaperInformation/FundingDisclosure}.
+
+
+Do {\bf not} include this section in the anonymized submission, only in the final paper. You can use the \texttt{ack} environment provided in the style file to automatically hide this section in the anonymized submission.
+\end{ack}
+
+\section*{References}
+
+
+References follow the acknowledgments in the camera-ready paper. Use unnumbered first-level heading for
+the references. Any choice of citation style is acceptable as long as you are
+consistent. It is permissible to reduce the font size to \verb + small + (9 points) when listing references.
+Note that the Reference section does not count towards the page limit.
+\medskip
+
+
+{
+\small
+
+
+[1] Alexander, J.A.\ \& Mozer, M.C.\ (1995) Template-based algorithms for
+connectionist rule extraction. In G.\ Tesauro, D.S.\ Touretzky and T.K.\ Leen
+(eds.), {\it Advances in Neural Information Processing Systems 7},
+pp.\ 609--616. Cambridge, MA: MIT Press.
+
+
+[2] Bower, J.M.\ \& Beeman, D.\ (1995) {\it The Book of GENESIS: Exploring
+  Realistic Neural Models with the GEneral NEural SImulation System.}  New York:
+TELOS/Springer--Verlag.
+
+
+[3] Hasselmo, M.E., Schnell, E.\ \& Barkai, E.\ (1995) Dynamics of learning and
+recall at excitatory recurrent synapses and cholinergic modulation in rat
+hippocampal region CA3. {\it Journal of Neuroscience} {\bf 15}(7):5249-5262.
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\appendix
+
+\section{Technical Appendices and Supplementary Material}
+Technical appendices with additional results, figures, graphs and proofs may be submitted with the paper submission before the full submission deadline (see above), or as a separate PDF in the ZIP file below before the supplementary material deadline. There is no page limit for the technical appendices.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}

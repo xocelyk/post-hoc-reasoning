@@ -50,3 +50,14 @@ build/
 # OS
 Thumbs.db
 desktop.ini
+
+# large experiment caches (kept on disk, not in git)
+final_cache/
+darius_cache/
+archive_cache/
+archive_cache_10_08_25/
+cache_08_11_25/
+cache_debiasing/
+experiment_cache/
+filtered_results_cache/
+gpt_oss_cache/

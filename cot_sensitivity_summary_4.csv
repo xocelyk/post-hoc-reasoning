@@ -1,0 +1,9 @@
+model_name,dataset_name,modification_type,change_rate,n_changed,parse_rate,n_parsed,n_examples
+Qwen_Qwen2.5-1.5B-Instruct,anachronisms,incorrect_cot,0.54,54,1.0,100,100
+Qwen_Qwen2.5-1.5B-Instruct,logical_deduction,incorrect_cot,0.55,55,1.0,100,100
+Qwen_Qwen2.5-1.5B-Instruct,social_chemistry,incorrect_cot,0.15,15,1.0,100,100
+Qwen_Qwen2.5-1.5B-Instruct,sports_understanding,incorrect_cot,0.44,44,1.0,100,100
+google_gemma-2-2b-it,anachronisms,incorrect_cot,0.73,73,1.0,100,100
+google_gemma-2-2b-it,logical_deduction,incorrect_cot,0.53,53,1.0,100,100
+google_gemma-2-2b-it,social_chemistry,incorrect_cot,0.12,12,1.0,100,100
+google_gemma-2-2b-it,sports_understanding,incorrect_cot,0.52,52,1.0,100,100

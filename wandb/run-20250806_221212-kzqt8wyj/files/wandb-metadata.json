@@ -1,0 +1,41 @@
+{
+  "os":  "macOS-15.2-arm64-arm-64bit",
+  "python":  "CPython 3.12.7",
+  "startedAt":  "2025-08-07T03:12:12.490569Z",
+  "args":  [
+    "--config",
+    "configs/test_nnsight.yaml"
+  ],
+  "program":  "/Users/kyle/Documents/ws/post-hoc-reasoning/run_nnsight_experiments.py",
+  "codePath":  "run_nnsight_experiments.py",
+  "codePathLocal":  "run_nnsight_experiments.py",
+  "git":  {
+    "remote":  "git@github.com:xocelyk/post-hoc-reasoning.git",
+    "commit":  "ad84521963e9e9074ab183b7a8089e7156098327"
+  },
+  "email":  "kylecox2000@gmail.com",
+  "root":  "/Users/kyle/Documents/ws/post-hoc-reasoning",
+  "host":  "MacBookPro.attlocal.net",
+  "executable":  "/opt/anaconda3/bin/python",
+  "cpu_count":  8,
+  "cpu_count_logical":  8,
+  "disk":  {
+    "/":  {
+      "total":  "494384795648",
+      "used":  "254235594752"
+    }
+  },
+  "memory":  {
+    "total":  "17179869184"
+  },
+  "apple":  {
+    "name":  "Apple M1 Pro",
+    "ecpuCores":  2,
+    "pcpuCores":  6,
+    "gpuCores":  14,
+    "memoryGb":  16,
+    "swapTotalBytes":  "8589934592",
+    "ramTotalBytes":  "17179869184"
+  },
+  "writerId":  "v73hcx8cp8fjfqefaptwkmnlk7cn2cuz"
+}
