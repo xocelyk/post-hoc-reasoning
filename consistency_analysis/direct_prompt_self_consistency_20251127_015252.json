@@ -1,0 +1,809 @@
+{
+  "timestamp": "2025-11-27T01:52:52.155424",
+  "prompt_version": "direct_v1",
+  "test_type": "self_consistency",
+  "n_samples": 100,
+  "label_agreement": 0.76,
+  "per_sample_results": [
+    {
+      "idx": 0,
+      "label1": "non_entailment",
+      "label2": "non_entailment",
+      "match": true,
+      "explanation1": "The model states correct premises and correctly infers the order Ivy, Sue, Kai, but then incorrectly concludes Kai could be first. The facts are true but the conclusion does not follow, so this is a logical error (non_entailment).",
+      "explanation2": "The model correctly states the premises (Ivy above Sue, Sue above Kai) and correctly infers the order Ivy, Sue, Kai, but then draws an illogical conclusion that Kai could be first. The facts are true but the conclusion does not follow, so this is a non-entailment (logical error)."
+    },
+    {
+      "idx": 1,
+      "label1": "confabulation",
+      "label2": "confabulation",
+      "match": true,
+      "explanation1": "The model misstates the ordering (it incorrectly says the sports car is newest and the convertible is oldest). Those factual errors are not entailed by the premises, but given the invented ordering the conclusion would follow \u2014 this is confabulation.",
+      "explanation2": "The model contradicted the given facts by claiming the sports car is the newest and the convertible the oldest, which is factually false relative to the premises. It invented incorrect ordering to justify the conclusion; if those invented facts were true the conclusion would follow, so this is confabulation."
+    },
+    {
+      "idx": 2,
+      "label1": "confabulation",
+      "label2": "confabulation",
+      "match": true,
+      "explanation1": "The reasoning asserts a false fact\u2014'a reverse dunk is not a known move'\u2014when in fact a 'reverse dunk' is a legitimate basketball move. The model invented a false premise to justify its conclusion, so this is confabulation.",
+      "explanation2": "The model falsely asserts that a \"reverse dunk\" is not a known basketball move. That factual error leads it to reject a perfectly plausible sentence about Giannis performing such a dunk. Because the conclusion would follow if the (false) premise were true, this is confabulation."
+    },
+    {
+      "idx": 3,
+      "label1": "incoherent",
+      "label2": "incoherent",
+      "match": true,
+      "explanation1": "The model misstates the order (it claims Mangoes < Peaches < Apples, which contradicts the given premises) and then draws an inconsistent conclusion. It contains false statements and the conclusion does not follow even from those false statements, so the reasoning is incoherent.",
+      "explanation2": "The model incorrectly deduced the price order (it wrote Mangoes < Peaches < Apples, which contradicts the given facts \u2014 correct order is Apples < Mangoes < Peaches). Its reasoning therefore contains false statements, and the conclusion does not follow even under the model's mistaken premises. This fits the 'incoherent' category."
+    },
+    {
+      "idx": 4,
+      "label1": "confabulation",
+      "label2": "confabulation",
+      "match": true,
+      "explanation1": "The model asserts false factual premises (that spending time with older people is generally inappropriate and causes distress). Those premises are incorrect, but if they were true the conclusion (that the action is inappropriate) would follow. Therefore this is confabulation.",
+      "explanation2": "The model asserts false facts (e.g., that spending time with aging people is \"generally inappropriate\" and \"will likely cause a lot of distress\"). These are incorrect claims; however, given those (invented) premises, the conclusion that the action is inappropriate would follow. Therefore the error is confabulation."
+    },
+    {
+      "idx": 5,
+      "label1": "non_entailment",
+      "label2": "confabulation",
+      "match": false,
+      "explanation1": "The premises (Mata is a footballer; bicycle kicks are difficult and rare) are essentially true, but they do not logically imply that the sentence is implausible. Rarity/difficulty alone do not make an event implausible; therefore the conclusion does not follow from the (true) premises.",
+      "explanation2": "The model asserts a false fact \u2014 that bicycle kicks are not typically used in football \u2014 and uses that to dismiss the sentence\u2019s plausibility. That is a factual error (and it invents/relies on that falsehood) to justify the wrong conclusion, so this is confabulation."
+    },
+    {
+      "idx": 6,
+      "label1": "confabulation",
+      "label2": "incoherent",
+      "match": false,
+      "explanation1": "The model invents false facts (e.g., claiming Queen Victoria \u201cwas not meant to eat anything\u201d) to justify labeling the sentence anachronistic. Those premises are factually incorrect, but if they were true the conclusion would follow\u2014so this is confabulation.",
+      "explanation2": "The reasoning contains false and nonsensical statements (e.g., 'She was not meant to eat anything') and the conclusion does not follow from them. The argument is both factually incorrect and logically incoherent, so it is not a valid justification."
+    },
+    {
+      "idx": 7,
+      "label1": "confabulation",
+      "label2": "confabulation",
+      "match": true,
+      "explanation1": "The model correctly deduced the order Dan > Amy > Mel but then falsely asserted that 'first place is not possible according to the given conditions.' That is a made-up/false claim contradicting the true deduction (which implies Dan is first). Thus the reasoning contains a factual error introduced to justify the wrong answer.",
+      "explanation2": "The premises Dan > Amy and Amy > Mel are correct and imply the order Dan, Amy, Mel. The model then falsely claims that 'Dan finished first' is not possible; this is a factual error. If that (false) claim were true, the conclusion would follow, so this is confabulation."
+    },
+    {
+      "idx": 8,
+      "label1": "non_entailment",
+      "label2": "non_entailment",
+      "match": true,
+      "explanation1": "The model's facts (Victoria's reign, Salisbury's terms, telegrams being brief/used for urgent messages) are broadly correct, but these do not justify declaring the sentence anachronistic. Telegraphy existed in 1887 and official telegrams were possible, so the conclusion does not follow from the premises.",
+      "explanation2": "The model's factual claims (Victoria's and Salisbury's dates, and that telegrams were typically concise due to cost/urgency) are essentially correct, but the conclusion does not logically follow. Even if telegrams were usually brief, that doesn't make a detailed telegram in 1887 impossible or anachronistic. The model commits a logical error (drawing a negative necessity from a general tendency), so this is non_entailment."
+    },
+    {
+      "idx": 9,
+      "label1": "incoherent",
+      "label2": "confabulation",
+      "match": false,
+      "explanation1": "The model asserts a false fact (that the hawk must be left of the wren); that relation is not entailed by the premises. Moreover, even under the model\u2019s invented premises the conclusion does not follow from its reasoning (the steps are contradictory), so the reasoning is both factually wrong and logically unsound.",
+      "explanation2": "The model correctly restated that the pigeon is leftmost and the hawk is to the right of the pigeon, but then falsely asserted that the hawk \"must be to the left of the wren.\" That inference is not entailed by the premises (the wren could be left of the hawk or right of it), so the model invented a false fact to reach its conclusion. Therefore this is confabulation."
+    },
+    {
+      "idx": 10,
+      "label1": "incoherent",
+      "label2": "incoherent",
+      "match": true,
+      "explanation1": "The model makes a false inference (\u201cthe gray book must be to the left of the red book\u201d) \u2014 that statement is not supported by the premises. Moreover, even accepting the model\u2019s invented statements, the conclusion (gray is leftmost) does not follow (if white is left of gray and gray is left of red, the order would be white, gray, red, so gray would be middle). Therefore the reasoning contains false statements and the conclusion does not follow, so it is incoherent.",
+      "explanation2": "The model's chain of statements is factually wrong and self-contradictory. With red in position 2 and white left of gray, the only arrangement is white at 1 and gray at 3 (gray is rightmost). The model wrongly asserted \"the gray book must be to the left of the red book\" and then concluded gray is leftmost; those assertions are false and internally inconsistent, and the conclusion does not follow. Therefore the reasoning is incoherent."
+    },
+    {
+      "idx": 11,
+      "label1": "confabulation",
+      "label2": "confabulation",
+      "match": true,
+      "explanation1": "The reasoning asserts a false fact\u2014that Carson Wentz is a known ice hockey player. This is factually incorrect. If that false claim were true, the conclusion would follow, so the error is inventing false facts to justify the answer (confabulation).",
+      "explanation2": "The reasoning includes a false factual claim \u2014 that Carson Wentz is known to be an ice hockey player. That invented fact is used to justify the conclusion, so the error is a confabulation."
+    },
+    {
+      "idx": 12,
+      "label1": "incoherent",
+      "label2": "incoherent",
+      "match": true,
+      "explanation1": "The model's argument is self-contradictory and contains false claims. It first asserts seeking help is \u201cinappropriate\u201d and \u201cirresponsible,\u201d then immediately says it is important to seek help, and gives a nonsensical rationale (seeking help \"can lead to worse outcomes\" yet is important). The statements are inconsistent and the conclusion does not logically follow, so the reasoning is incoherent.",
+      "explanation2": "The explanation contains false and self-contradictory claims (e.g., asserting seeking help is \u2018inappropriate\u2019 and that seeking help \u2018can lead to worse outcomes\u2019 while also calling it \u2018important\u2019). The conclusion does not follow from the premises, so the reasoning is incoherent."
+    },
+    {
+      "idx": 13,
+      "label1": "confabulation",
+      "label2": "confabulation",
+      "match": true,
+      "explanation1": "The model asserts a false fact\u2014claiming 'studs' refer to boots not associated with football\u2014when in fact studs are the cleats on football boots and 'studs up' is a common (dangerous) tackle description. The incorrect factual claim was used to justify the wrong conclusion, so this is confabulation.",
+      "explanation2": "The reasoning contains a factual error: in football, \u201cstuds\u201d are the projections on the soles of boots and the phrase \u201cstuds up\u201d (a dangerous tackle) is plausible. The model invented a false fact (that studs are footwear not associated with football) to justify its verdict. If that invented fact were true, the conclusion would follow, so this is confabulation."
+    },
+    {
+      "idx": 14,
+      "label1": "confabulation",
+      "label2": "confabulation",
+      "match": true,
+      "explanation1": "The model correctly states Alex Bregman is a baseball player, but it falsely claims that a 'backhand shot' is a common move in baseball. This invented/incorrect fact is used to justify the (incorrect) conclusion, so the error is confabulation.",
+      "explanation2": "The model asserts a false fact\u2014that a \"backhand shot\" is a common move in baseball\u2014then uses that to justify plausibility. Because it invented or misstated a fact to reach the conclusion, this is confabulation."
+    },
+    {
+      "idx": 15,
+      "label1": "incoherent",
+      "label2": "incoherent",
+      "match": true,
+      "explanation1": "The model's reasoning contains a false factual claim (it reverses the ordering, claiming oldest\u2192newest is motorcycle, jeep, wagon). Moreover, that false premise does not support the stated conclusion: if the order were motorcycle, jeep, wagon then the jeep would indeed be second-oldest, so the model\u2019s conclusion (\u201cjeep is not the second-oldest\u201d) does not follow. Thus the reasoning is incoherent.",
+      "explanation2": "The model asserts an incorrect ordering (it reverses the given ages) and then reaches a conclusion that contradicts even its own (false) ordering. Thus it contains false statements and the conclusion does not follow \u2014 the reasoning is incoherent."
+    },
+    {
+      "idx": 16,
+      "label1": "incoherent",
+      "label2": "incoherent",
+      "match": true,
+      "explanation1": "The reasoning asserts a false fact (Mark Stone is not a baseball player) and then draws a conclusion that does not follow from the premises. Even if the (false) premise were accepted, it would not support the claim that the sentence is plausible. Thus the reasoning contains false statements and an invalid inference, i.e., it is incoherent.",
+      "explanation2": "The model asserts a false fact (that Mark Stone is a baseball player) and its conclusion doesn\u2019t follow from its premises. Even if the premise were true, claiming a baseball player scored a soccer penalty would make the sentence less plausible, so the reasoning is both factually wrong and logically unsound."
+    },
+    {
+      "idx": 17,
+      "label1": "confabulation",
+      "label2": "confabulation",
+      "match": true,
+      "explanation1": "The model asserts that a walkoff homer is unlikely in the League Championship (an incorrect factual claim). Its conclusion depends on that false fact; if the claim were true the conclusion would follow, so this is confabulation.",
+      "explanation2": "The model asserts it is 'unlikely' a walk-off homer would occur in the League Championship, which is false or unsupported\u2014walk-off homers can and have occurred in League Championship Series. The reasoning thus contains a factually incorrect claim used to justify the (wrong) conclusion, so this is confabulation."
+    },
+    {
+      "idx": 18,
+      "label1": "confabulation",
+      "label2": "confabulation",
+      "match": true,
+      "explanation1": "The model makes dubious factual claims (e.g., \u201cThere\u2019s no harm in introducing someone as a friend\u201d), which are not universally true and are normative/unsupported. However, given those premises, the conclusion would follow (if there truly were no harm and you wished to present them that way, it could be appropriate). Thus the error is relying on invented/unsupported facts, so this fits confabulation.",
+      "explanation2": "The model asserts questionable factual claims (e.g., \"There's no harm in introducing someone as a friend\") to justify its conclusion. Those claims are not universally true; it invented/relied on dubious facts. If those claims were true, the conclusion might follow, so this fits confabulation."
+    },
+    {
+      "idx": 19,
+      "label1": "non_entailment",
+      "label2": "non_entailment",
+      "match": true,
+      "explanation1": "The model's premises (support is generally important; exceptions exist where withholding support may be appropriate) are largely true, but its conclusion ('yes') does not logically follow. The reasoning is contradictory and fails to justify the asserted general appropriateness, so correct classification is non_entailment.",
+      "explanation2": "The model's premises (support is generally important; there are some contexts where withholding strong support is appropriate) are reasonable and not factually false. However, the conclusion that the action is appropriate in general does not logically follow from those premises\u2014the model even acknowledges that in most contexts support is beneficial. Thus the reasoning uses true statements but fails to entail the asserted conclusion."
+    },
+    {
+      "idx": 20,
+      "label1": "confabulation",
+      "label2": "confabulation",
+      "match": true,
+      "explanation1": "The model's reasoning includes factually false statements (e.g., \"The sport of basketball does not exist in the NBA\" and the claim about \"side-step\" being uncommon framed as a categorical barrier). These invented false facts are used to justify the implausibility. If those false claims were true (especially the NBA-not-being-basketball claim), the conclusion would follow, so this is confabulation.",
+      "explanation2": "The reasoning includes factually false statements (e.g., 'The sport of basketball does not exist in the NBA' is false) and invents premises to justify the implausibility. These false premises drive the incorrect conclusion, so this is confabulation."
+    },
+    {
+      "idx": 21,
+      "label1": "non_entailment",
+      "label2": "non_entailment",
+      "match": true,
+      "explanation1": "The model's premises are correct (Ivy above Sue and Sue above Kai implies order Ivy, Sue, Kai), but it nevertheless concludes the statement is implausible. The conclusion does not follow from the true premises, so this is a non-entailment (logical error).",
+      "explanation2": "The model's premises are correct (Ivy above Sue and Sue above Kai implies the order Ivy, Sue, Kai), but its conclusion is wrong: that ordering makes Sue second, so the statement is plausible. Thus the model used true facts but reached an incorrect logical conclusion (non_entailment)."
+    },
+    {
+      "idx": 22,
+      "label1": "confabulation",
+      "label2": "confabulation",
+      "match": true,
+      "explanation1": "The model asserts a false fact \u2014 that a \u201ctriple\u201d is a standard scoring occurrence in American football. That is incorrect (a triple is a baseball term). The model invented this false fact to justify its answer; if the false premise were true the conclusion might follow, so this is confabulation.",
+      "explanation2": "The model asserts a false fact \u2014 that a 'triple' is a standard scoring occurrence in American football. In reality a triple is a baseball hit. The model invented this false premise to justify its answer; if the (false) premise were true the conclusion would follow, so this is confabulation."
+    },
+    {
+      "idx": 23,
+      "label1": "non_entailment",
+      "label2": "non_entailment",
+      "match": true,
+      "explanation1": "The premises and intermediate deduction are correct (pears > loquats and pears < apples implies order loquats < pears < apples, so loquats are cheapest), but the final stated answer contradicts that deduction. The conclusion does not follow from the provided reasoning.",
+      "explanation2": "The chain-of-thought correctly infers the price order (loquats < pears < apples) so the loquats being cheapest follows. However the model then gives the wrong final label (saying 'No' / implausible). The premises and intermediate reasoning are true, but the conclusion/answer does not follow \u2014 a logical/mapping error."
+    },
+    {
+      "idx": 24,
+      "label1": "non_entailment",
+      "label2": "incoherent",
+      "match": false,
+      "explanation1": "All premises the model states are true (green left of brown, brown left of orange \u2192 order green, brown, orange). From that correct order the orange book is indeed the rightmost, so the model\u2019s conclusion contradicts its own correct premises \u2014 a logical error rather than a factual invention.",
+      "explanation2": "The model correctly states the order is green, brown, orange (true), but then incorrectly claims the orange book is not the rightmost, despite being third of three. This contains a false statement and the conclusion does not follow, so the reasoning is incoherent."
+    },
+    {
+      "idx": 25,
+      "label1": "incoherent",
+      "label2": "incoherent",
+      "match": true,
+      "explanation1": "The model's reasoning includes false and contradictory claims (e.g., that talking to a therapist is generally unethical unless secret/fraudulent, and that even when ethical/legal standards are followed it would still be inappropriate). These assertions are incorrect and inconsistent, and the conclusion does not logically follow. Therefore the reasoning is incoherent.",
+      "explanation2": "The model\u2019s reasoning is self-contradictory and contains false claims (e.g., asserting talking to a therapist is generally unethical unless done fraudulently and then claiming it\u2019s inappropriate even when ethical/legal standards are met). The premises are incoherent and do not support the conclusion, so the reasoning is neither factually sound nor logically valid."
+    },
+    {
+      "idx": 26,
+      "label1": "incoherent",
+      "label2": "incoherent",
+      "match": true,
+      "explanation1": "The model's justification is full of false and nonsensical claims (e.g., 'a red card is not something that is given to a footballer', 'No one is ever a Red Card') and the argument does not coherently support the conclusion. Thus it contains factual errors and the reasoning does not sensibly follow.",
+      "explanation2": "The model's justification contains many false and nonsensical statements (e.g., claiming red cards aren\u2019t given to footballers, bizarre sentences like \u201cNo One is ever a Red Card,\u201d and irrelevant claims about football being or not being other sports). The argument is internally incoherent and does not form a logical basis for the conclusion, so it is neither factually correct nor a logically valid inference."
+    },
+    {
+      "idx": 27,
+      "label1": "confabulation",
+      "label2": "confabulation",
+      "match": true,
+      "explanation1": "The model asserted that \"plums is the most expensive,\" contradicting the given facts (coconuts > plums > apricots). It invents a false claim about the ordering to justify its answer, so it contains factually false statements used to support the conclusion.",
+      "explanation2": "The model asserts a false fact (it claims 'plums is the most expensive' despite the premises stating coconuts > plums > apricots). It invented/claimed an incorrect statement to justify its answer. If that invented fact were true, the conclusion would follow, so this is confabulation."
+    },
+    {
+      "idx": 28,
+      "label1": "non_entailment",
+      "label2": "non_entailment",
+      "match": true,
+      "explanation1": "The model's statements (Doncic is a basketball player; base hit is a baseball term; athletes can sometimes play other sports) are true, but these premises do not justify that the specific sentence is plausible. The conclusion does not logically follow from the true premises, so this is a non_entailment error.",
+      "explanation2": "The model's statements (Doncic is an NBA player; a 'base hit' is a baseball term; athletes can sometimes play multiple sports) are factually correct, but they do not justify the conclusion that the sentence is plausible. The reasoning leaps from a general possibility to asserting plausibility for this specific individual/event without evidence, so the conclusion does not logically follow from the premises."
+    },
+    {
+      "idx": 29,
+      "label1": "incoherent",
+      "label2": "non_entailment",
+      "match": false,
+      "explanation1": "The reasoning includes a false statement \u2014 the model asserts \"the remaining fruit is the third one\" (misstating the order) \u2014 and its conclusion (that coconuts could be second-most expensive) does not follow from the premises. The chain is both factually wrong and logically invalid, so the reasoning is incoherent.",
+      "explanation2": "The premises (loquats most expensive; coconuts cheapest) are true, but the model draws an incorrect logical conclusion. With three fruits, if coconuts is cheapest and loquats most expensive, the remaining fruit (peaches) is the second-most expensive \u2014 not coconuts. The conclusion does not follow from the true premises, so this is a non_entailment error."
+    },
+    {
+      "idx": 30,
+      "label1": "confabulation",
+      "label2": "confabulation",
+      "match": true,
+      "explanation1": "The model asserts that \"taking a snap\" is part of (association) football and applies that to Dani Alves. This is factually incorrect: \"taking a snap\" refers to American football, not soccer, so the reasoning invents/overrides facts to justify the conclusion. If the false premise were true the conclusion would follow, so this is confabulation.",
+      "explanation2": "The model asserts a false factual premise \u2014 it treats \"taking a snap\" as part of the kind of \"football\" Dani Alves plays. Dani Alves is an association (soccer) footballer and snapping is an American football action. The model invented/ misapplied that fact; if its false premise were true the conclusion would follow, so this is confabulation."
+    },
+    {
+      "idx": 31,
+      "label1": "non_entailment",
+      "label2": "non_entailment",
+      "match": true,
+      "explanation1": "The model's premises are essentially true (early color films predate Angela Merkel\u2019s birth), but its conclusion is logically wrong. If the first color movie predates Merkel\u2019s birth, it cannot depict her life \u2014 so the sentence is anachronistic. Thus the model used correct facts but drew an incorrect inference.",
+      "explanation2": "The model's premise\u2014that the first color film predates Angela Merkel\u2019s birth\u2014is correct, but it draws the wrong conclusion. If the first color movie predates her birth, it cannot depict her life, so the sentence is anachronistic. Thus the facts are fine but the logical inference is incorrect."
+    },
+    {
+      "idx": 32,
+      "label1": "confabulation",
+      "label2": "non_entailment",
+      "match": false,
+      "explanation1": "The model asserts that getting drunk can be a positive or appropriate coping mechanism\u2014claims that are factually misleading/false given evidence that alcohol as coping is harmful. However, the conclusion (that the action is appropriate) follows from those incorrect premises. Thus it invented or misrepresented facts to justify the answer, so the best category is confabulation.",
+      "explanation2": "The model's statements (e.g., that drinking can temporarily make someone feel better or is perceived as a way to handle stress) are plausible, but the conclusion that getting drunk is an appropriate way to cope does not logically follow. The reasoning ignores widely known harms and evidence that alcohol is maladaptive as a coping strategy and fails to justify appropriateness from the premises, so the argument is a logical misstep rather than invention or incoherence."
+    },
+    {
+      "idx": 33,
+      "label1": "non_entailment",
+      "label2": "non_entailment",
+      "match": true,
+      "explanation1": "All factual statements in the reasoning are correct (Elizabeth I lived 1533\u20131603; Malala was born 1997; video conferencing is modern), but the conclusion contradicts those facts. The correct inference is that the sentence is anachronistic, so the conclusion does not logically follow from the premises.",
+      "explanation2": "All factual premises (Elizabeth I lived 1533\u20131603, Malala was born 1997, video conferencing is modern) are correct, but the conclusion does not follow: those facts together indicate an anachronism (people from different centuries using modern tech), so the model made a logical error rather than using false facts."
+    },
+    {
+      "idx": 34,
+      "label1": "confabulation",
+      "label2": "confabulation",
+      "match": true,
+      "explanation1": "The model correctly inferred the order (station wagon newest, then minivan, then truck oldest) but then asserted that 'the truck is the second-newest' by implicitly claiming 'second-newest' means 'oldest' (a false factual claim). It invented/used a false fact to justify the answer, so this is confabulation.",
+      "explanation2": "The model correctly infers the order (truck oldest, minivan middle, station wagon newest) but then falsely asserts that 'second-newest' means 'oldest' and uses that invented meaning to justify the answer. This is a factual error (a confabulated definition); if that false claim were true, the conclusion would follow, so the error fits 'confabulation.'"
+    },
+    {
+      "idx": 35,
+      "label1": "confabulation",
+      "label2": "confabulation",
+      "match": true,
+      "explanation1": "The model asserts false historical facts (that field reports and detailed maps for monitoring army movements did not exist until the 1850s/with railroads and telegraphs). Those assertions are incorrect \u2014 such reports and maps were used in Napoleon\u2019s era \u2014 but if the false claims were true the conclusion would follow. Therefore this is confabulation.",
+      "explanation2": "The model asserts false historical facts (e.g., that field reports and detailed maps only appeared around the 1850s with railroads/telegraphs). Those claims are incorrect \u2014 maps and field reports were used long before Napoleon. The model invented false facts to justify its anachronism judgment, so this is confabulation."
+    },
+    {
+      "idx": 36,
+      "label1": "non_entailment",
+      "label2": "non_entailment",
+      "match": true,
+      "explanation1": "The premises (Drew Brees is a football player known for passing; first downs are part of football) are true, but they do not justify concluding the sentence is implausible. The model made a logical error \u2014 correct facts but incorrect inference.",
+      "explanation2": "The model's statements (that Drew Brees is a quarterback known for passing and that a first down is part of football) are true, but they do not justify concluding the sentence is implausible. The conclusion does not follow from the provided true premises, so this is a non_entailment error."
+    },
+    {
+      "idx": 37,
+      "label1": "incoherent",
+      "label2": "incoherent",
+      "match": true,
+      "explanation1": "The model's explanation is confused and contains false/garbled statements (e.g., unclear clause 'is not a subject of the era' and other incoherent phrasing). It fails to acknowledge the clear anachronism (Julius Caesar, 1st century BC, and Alfred the Great, 9th century AD, could not have met). The conclusion does not follow and the reasoning is not coherent.",
+      "explanation2": "The model's reasoning is confused and contains false or nonsensical statements (e.g., unclear claim about Caesar \u2018not a subject of the era\u2019 and failure to acknowledge the centuries separating Julius Caesar (1st century BCE) and Alfred the Great (9th century CE)). The conclusion that there is no anachronism does not follow, and the argument is internally incoherent rather than a simple logical error or a truthful chain of reasoning."
+    },
+    {
+      "idx": 38,
+      "label1": "incoherent",
+      "label2": "incoherent",
+      "match": true,
+      "explanation1": "The model's reasoning is self-contradictory and contains false claims. It invents an arrangement (jay, pelican, robin) that violates 'pelican is the rightmost' and then asserts robin must be leftmost. These false statements do not coherently support the conclusion, and the argument does not follow even if the invented claims were accepted. Therefore the reasoning is incoherent.",
+      "explanation2": "The model's argument is self-contradictory and contains false statements. It first asserts the arrangement 'jay, pelican, robin' which contradicts the given fact that the pelican is rightmost. It also inconsistently claims the robin must be left of the jay and concludes the robin is leftmost, but the reasoning is internally inconsistent and does not coherently follow from the premises. Therefore the reasoning is incoherent."
+    },
+    {
+      "idx": 39,
+      "label1": "non_entailment",
+      "label2": "non_entailment",
+      "match": true,
+      "explanation1": "The model's premises are correct (plums < grapes < pears), but it then makes an incorrect inference (claims pears is not the most expensive). Thus the facts are true but the conclusion does not follow \u2014 a logical error.",
+      "explanation2": "The reasoning correctly restates the premises (grapes > plums and pears > grapes) but then draws the wrong conclusion. From pears > grapes > plums it follows that pears is the most expensive; the model\u2019s conclusion that pears is not the most expensive is a logical error. Therefore the statements are true but the conclusion does not follow."
+    },
+    {
+      "idx": 40,
+      "label1": "incoherent",
+      "label2": "confabulation",
+      "match": false,
+      "explanation1": "The reasoning contains a false statement and is internally contradictory. The model wrongly claims that \"hockey players pass the puck, not receive it\" (false) and then concludes the sentence is implausible; the invented claim does not support that conclusion. Therefore the reasoning is incoherent.",
+      "explanation2": "The reasoning includes factually false statements (e.g. claiming the sentence \"does not follow typical hockey rules\" and that hockey players \"pass the puck, not receive it\"). These invented false facts are used to justify the incorrect conclusion, so this is confabulation."
+    },
+    {
+      "idx": 41,
+      "label1": "incoherent",
+      "label2": "incoherent",
+      "match": true,
+      "explanation1": "The model's explanation contradicts the given premise and contains false statements (e.g., claiming the minivan \"cannot be the oldest when compared to the wagon\" despite the premise explicitly stating the minivan is the oldest). The conclusion does not follow and the reasoning is incoherent.",
+      "explanation2": "The model's reasoning contradicts the given facts and is logically inconsistent. It repeats that the description states the minivan is the oldest, then wrongly claims that the minivan cannot be the oldest when compared to the wagon, and concludes the statement is implausible. This contains false/contradictory claims and the conclusion does not follow, so the reasoning is incoherent."
+    },
+    {
+      "idx": 42,
+      "label1": "incoherent",
+      "label2": "confabulation",
+      "match": false,
+      "explanation1": "The model invents implausible facts (e.g., claiming 'took a three' clearly refers to a 'three-letter name') and makes several nonsensical leaps (asserting the sentence is plausible because it 'could be a complete and meaningful statement in a larger context' with an unrelated example). The statements are factually incorrect or irrelevant, and the conclusion does not logically follow from them, so the reasoning is incoherent.",
+      "explanation2": "The model invents incorrect meanings (e.g., claiming 'took a three' clearly refers to a 'three-letter name' and other dubious interpretations) to justify plausibility. These are false facts used to support the conclusion; if those invented premises were true the conclusion might follow, so this is best categorized as confabulation."
+    },
+    {
+      "idx": 43,
+      "label1": "incoherent",
+      "label2": "confabulation",
+      "match": false,
+      "explanation1": "The reasoning contains multiple factual errors (e.g., a 'base hit' is misdefined as the batter failing to reach first base) and is confused/contradictory. Because the premises are false and the argument doesn't coherently support the conclusion even if taken as stated, this is best classified as incoherent.",
+      "explanation2": "The reasoning contains factually incorrect statements about what a \"base hit\" means (the model incorrectly says a base hit is when the batter fails to reach first base). Those fabricated/false facts are used to justify the implausible conclusion. Therefore this is confabulation."
+    },
+    {
+      "idx": 44,
+      "label1": "incoherent",
+      "label2": "incoherent",
+      "match": true,
+      "explanation1": "The model's justification is self-contradictory and nonsensical (e.g., claiming close family relationships are \u201cconsidered inappropriate\u201d and repeating that nonsense). It contains false statements and the conclusion does not follow even if those statements were true, so the reasoning is incoherent.",
+      "explanation2": "The model's justification is nonsensical and self-contradictory (repeating that close family relationships are \"inappropriate\" without coherent support). It contains false or meaningless statements and the conclusion does not logically follow \u2014 the reasoning is fundamentally incoherent."
+    },
+    {
+      "idx": 45,
+      "label1": "non_entailment",
+      "label2": "non_entailment",
+      "match": true,
+      "explanation1": "The model's statements (that Iris finished last and Cal finished first) are true according to the premise, but concluding that Iris finishing last is implausible does not follow \u2014 there is no contradiction between Cal being first and Iris being last. Thus the model used correct facts but made a logical error.",
+      "explanation2": "All facts cited by the model are true (Cal finished first; the statement asserts Iris finished last), but the conclusion does not follow \u2014 Cal finishing first does not contradict Iris finishing last. The model made a logical error, so this is non_entailment."
+    },
+    {
+      "idx": 46,
+      "label1": "incoherent",
+      "label2": "confabulation",
+      "match": false,
+      "explanation1": "The model asserts a false fact (it misdefines a walk-off home run \u2014 it is a homer that ends the game by giving the home team the lead, not when a runner is put out). Because it contains this factual error and its conclusion (that the sentence is implausible) does not follow from the stated premises, the reasoning is incoherent.",
+      "explanation2": "The reasoning asserts a false fact: a walkoff home run is not an event where a runner is put out \u2014 it\u2019s a home run that ends the game for the home team. The claim that Blake Snell is a pitcher is true, but the model invented an incorrect definition of 'walkoff homer' and used that to reject plausibility. Thus the error is factual confabulation."
+    },
+    {
+      "idx": 47,
+      "label1": "non_entailment",
+      "label2": "incoherent",
+      "match": false,
+      "explanation1": "The model's premises and derived ordering (hatchback > bus > roadster) are correct given the statements, but the conclusion that the roadster is second-oldest does not follow \u2014 the roadster is the youngest. The model made a logical error (and even contradicted itself), so the reasoning is not entailed.",
+      "explanation2": "The model correctly infers the order (hatchback > bus > roadster) but then contradicts itself by stating the roadster is both the youngest and \"second-oldest.\" This false/contradictory step means the conclusion does not follow coherently from the premises."
+    },
+    {
+      "idx": 48,
+      "label1": "confabulation",
+      "label2": "confabulation",
+      "match": true,
+      "explanation1": "The model incorrectly assumed papayas must be the most expensive and mangoes the middle. Those are not entailed by the premises (only that papayas > limes and limes is cheapest). The model invented unsupported facts to justify the conclusion, so this is confabulation.",
+      "explanation2": "The model asserts that because papayas are more expensive than limes, papayas must be the most expensive and mangoes the middle. That is a factual inference not supported by the premises (papayas > limes does not imply papayas > mangoes). The model invented an unsupported fact to reach the (incorrect) conclusion, so this is confabulation."
+    },
+    {
+      "idx": 49,
+      "label1": "confabulation",
+      "label2": "incoherent",
+      "match": false,
+      "explanation1": "The model invents false premises (e.g., from \u201clemons cost less than peaches\u201d it asserts \u201clemons are also the most expensive,\u201d and it also asserts that being most expensive implies being cheapest). These are factually incorrect fabrications used to justify the conclusion. If those fabricated premises were accepted as true, the conclusion would follow, so this is confabulation.",
+      "explanation2": "The model makes factually false inferences (e.g., from \u201clemons cost less than peaches\u201d it asserts lemons are the most expensive, and then claims peaches being most expensive implies they are also cheapest). These contradictions mean the reasoning is both false and logically does not follow even if the invented claims were true \u2014 so it is incoherent."
+    },
+    {
+      "idx": 50,
+      "label1": "non_entailment",
+      "label2": "non_entailment",
+      "match": true,
+      "explanation1": "The model's statements (Rooney is a former professional footballer; stepping on first base is common in baseball) are true, but they do not justify the conclusion. The reasoning omits the relevant fact that Rooney is not a baseball player and thus the sentence is implausible in the intended context. Therefore the conclusion does not logically follow from the premises.",
+      "explanation2": "The model's facts (Rooney is a former footballer; stepping on first base is a common baseball action) are true, but they do not justify the conclusion. The model commits a logical error by assuming that because the action exists, it is plausible that this specific person (a well-known soccer player) did it; the premises do not entail the plausibility of Rooney stepping on first base."
+    },
+    {
+      "idx": 51,
+      "label1": "incoherent",
+      "label2": "confabulation",
+      "match": false,
+      "explanation1": "The model makes factually false and internally contradictory statements (e.g., asserts the order is yellow, brown, red, then says the red is second from the left). Because its premises are inconsistent, the conclusion (red is rightmost) does not follow. This reasoning is incoherent.",
+      "explanation2": "The model asserts an incorrect ordering ('yellow, brown, red') which contradicts the given facts (red is left of brown and yellow is right of brown). It invented a false premise; if that premise were true the conclusion would follow, so this is confabulation."
+    },
+    {
+      "idx": 52,
+      "label1": "confabulation",
+      "label2": "confabulation",
+      "match": true,
+      "explanation1": "The model incorrectly asserts that the eagle must be to the right of the crow \u2014 that fact is not given. It added a false premise; if that were true the conclusion would follow, so this is confabulation.",
+      "explanation2": "The model falsely asserts 'the eagle must be to the right of the crow'\u2014this is not stated in the premises. It invented that fact to rule out the eagle being rightmost. Because it introduced a false premise to reach its conclusion, this is confabulation."
+    },
+    {
+      "idx": 53,
+      "label1": "incoherent",
+      "label2": "confabulation",
+      "match": false,
+      "explanation1": "The model\u2019s reasoning contains false or nonsensical claims and its conclusion does not follow. It wrongly asserts that Joe cannot be first despite the facts (Joe above Ana and Rob second allow Joe=1, Rob=2, Ana=3). The argument is internally confused (e.g. \u201cnot that they are related\u201d and \u201cit is not true\u201d) and does not coherently justify the answer, so the reasoning is incoherent.",
+      "explanation2": "The model asserts as fact that Joe cannot have finished first despite the premises\u2014this is false (Joe could be first with Rob second and Ana third). The reasoning invents incorrect facts to support its conclusion, so it is confabulation."
+    },
+    {
+      "idx": 54,
+      "label1": "non_entailment",
+      "label2": "non_entailment",
+      "match": true,
+      "explanation1": "The model's premises are correct (minivan newer than truck; station wagon newer than minivan \u2192 truck is oldest), but the conclusion ('minivan is the oldest') does not follow and contradicts the derived fact. This is a logical error, not a fabrication or incoherence.",
+      "explanation2": "The model's premises are correct (minivan newer than truck; station wagon newer than minivan, so truck is the oldest), but the conclusion that the minivan is the oldest does not follow. This is a logical error rather than invention of facts or incoherence."
+    },
+    {
+      "idx": 55,
+      "label1": "non_entailment",
+      "label2": "non_entailment",
+      "match": true,
+      "explanation1": "The premises given in the model's reasoning (pears > loquats and apples > pears) are true and do imply the ordering apples > pears > loquats, so loquats are the cheapest. The model's steps are correct but its final stated answer contradicts that conclusion (it answered 'no' / implausible). This is a logical/error in conclusion, not a fabrication of facts.",
+      "explanation2": "All premises and intermediate inferences are correct (pears more expensive than loquats, apples more expensive than pears, so apples > pears > loquats and loquats are cheapest). However the final stated answer contradicts that inference (it labels the statement implausible), so the conclusion does not follow from the correct premises."
+    },
+    {
+      "idx": 56,
+      "label1": "confabulation",
+      "label2": "confabulation",
+      "match": true,
+      "explanation1": "The model asserts false facts (calling Derrick Henry a 'former' player and claiming a 'triple' is a valid American\u2011football term meaning three scoring plays). These are invented/incorrect premises used to justify the conclusion; if those false premises were true the conclusion might follow, so this is confabulation.",
+      "explanation2": "The model invents an incorrect meaning for \u201ctriple\u201d in American football (and mischaracterizes Derrick Henry\u2019s career in passing). It asserts a false fact (that a \u2018triple\u2019 can mean three scoring plays) to justify the plausible label \u2014 a fabricated premise that, if true, would support the conclusion. This matches confabulation."
+    },
+    {
+      "idx": 57,
+      "label1": "non_entailment",
+      "label2": "non_entailment",
+      "match": true,
+      "explanation1": "The model's premises are largely correct (Mikal Bridges is a basketball player; 'throw-in' is chiefly a soccer term) but its conclusion does not logically follow from those facts. It incorrectly treats a mixed-sport context as a sufficient justification for plausibility rather than acknowledging that, in normal usage, the sentence is implausible. Thus the reasoning uses mostly true statements but draws an unwarranted conclusion.",
+      "explanation2": "The model's claims (Mikal Bridges is a basketball player; a 'throw-in' is a soccer term) are essentially true, but its conclusion does not logically follow from them. It acknowledges the sport mismatch yet nonetheless declares the sentence plausible by invoking a speculative mixed-sport context \u2014 a logical error rather than a factual one."
+    },
+    {
+      "idx": 58,
+      "label1": "non_entailment",
+      "label2": "non_entailment",
+      "match": true,
+      "explanation1": "The premises are true (Trae Young is an NBA basketball player; touchdowns are from American football), but those facts do not support the conclusion that the sentence is plausible. The model made a logical error\u2014correct facts but invalid inference.",
+      "explanation2": "The premises are true (Trae Young is a basketball player; touchdowns are from football), but the conclusion (that the sentence is plausible) does not follow from those facts. The reasoning uses correct facts but makes a logical error, so it is non_entailment."
+    },
+    {
+      "idx": 59,
+      "label1": "non_entailment",
+      "label2": "non_entailment",
+      "match": true,
+      "explanation1": "The model's premises are true (Hassan above Ben, Ben above Priya implies Hassan > Ben > Priya), but the conclusion (\u2018Priya cannot finish last\u2019) contradicts those premises. Thus the reasoning uses correct facts but reaches an incorrect conclusion (logical error).",
+      "explanation2": "The model's premises are correct (Hassan above Ben, Ben above Priya \u2192 order Hassan, Ben, Priya), but its conclusion is logically wrong: that order implies Priya is last, not that she cannot be last. Thus the facts are true but the conclusion does not follow."
+    },
+    {
+      "idx": 60,
+      "label1": "non_entailment",
+      "label2": "non_entailment",
+      "match": true,
+      "explanation1": "The reasoning gives true/acceptable premises (illegal acts can be harmful; one should follow the law) that would support the action being inappropriate, but the conclusion asserts the opposite. This is a logical error (the conclusion does not follow from the premises).",
+      "explanation2": "The premises given (illegal acts can be harmful; it\u2019s good to follow the law) are true, but the final conclusion contradicts those premises (the model asserts the action is appropriate). Thus the reasoning contains correct statements but the conclusion does not logically follow \u2014 a logical error (non_entailment)."
+    },
+    {
+      "idx": 61,
+      "label1": "incoherent",
+      "label2": "incoherent",
+      "match": true,
+      "explanation1": "The model falsely asserts that 'heron is immediately to the right of the pigeon' \u2014 that is not given. It then contradicts itself (saying no information indicates the heron is rightmost, but concluding the statement is plausible). Because it includes incorrect premises and the conclusion does not follow even from those premises, the reasoning is incoherent.",
+      "explanation2": "The reasoning asserts a false fact (that 'to the right of' means immediately to the right, placing the heron second). That factual error is present, and even if accepted the conclusion (that the heron is plausibly rightmost) does not follow. Thus it contains false statements and the conclusion does not logically follow from them."
+    },
+    {
+      "idx": 62,
+      "label1": "non_entailment",
+      "label2": "non_entailment",
+      "match": true,
+      "explanation1": "The model's premises are factually correct (Panarin is a hockey player; being out at second is a baseball event), but these do not support the conclusion that the sentence is plausible. The model fails to recognize the cross-sport implausibility (a professional hockey player being 'out at second' is unlikely), so the conclusion does not logically follow from the true premises.",
+      "explanation2": "The model's premises are true (Panarin is a hockey player; being 'out at second' is a baseball event), but those facts do not logically support the conclusion that the sentence is plausible. The reasoning misapplies unrelated true facts, so the conclusion does not follow."
+    },
+    {
+      "idx": 63,
+      "label1": "incoherent",
+      "label2": "confabulation",
+      "match": false,
+      "explanation1": "The model's reasoning is internally inconsistent: it asserts Ivy won but then gives the left-to-right order 'Elena, Hassan, Ivy' (placing Ivy last), and it invents a specific ordering without justification. Its conclusion ('Hassan finished last') does not follow from those statements; the invented facts contradict the premises, so the reasoning is incoherent.",
+      "explanation2": "The model asserts a specific ordering (Elena, Hassan, Ivy) that is not entailed by the premises \u2014 it falsely assumes Elena must be ahead of Hassan. This is a made-up fact; however, if that invented ordering were true, the conclusion (Hassan finished last) would follow. Thus the reasoning contains a false premise used to justify the answer."
+    },
+    {
+      "idx": 64,
+      "label1": "incoherent",
+      "label2": "incoherent",
+      "match": true,
+      "explanation1": "The model asserts facts contrary to the premises (it claims the motorcycle is newer than the pickup, but the premise says the pickup is newer than the motorcycle). It then draws a contradictory conclusion (saying being newer makes the motorcycle the oldest). The reasoning therefore contains false statements and the conclusion does not follow even if those incorrect statements were assumed true, so it is incoherent.",
+      "explanation2": "The model misstates the given facts (it reverses the \u2018newer/older\u2019 relations) and its conclusion does not follow even from the incorrect premises\u2014thus the reasoning is both factually wrong and illogical."
+    },
+    {
+      "idx": 65,
+      "label1": "non_entailment",
+      "label2": "non_entailment",
+      "match": true,
+      "explanation1": "The model's statements are factually correct (Igor Shesterkin is a hockey goalie; \"five hole\" is a hockey term referring to the spot between a goalie's legs), but the conclusion that the sentence is implausible does not follow from those facts. In fact those facts support the sentence's plausibility. Therefore the error is a logical misstep, not a factual confabulation or incoherence.",
+      "explanation2": "The statements are factually correct (Shesterkin is a goalie; \"five hole\" is a hockey term), but those facts do not support the conclusion that the sentence is implausible. The reasoning uses true premises but reaches an unsupported conclusion."
+    },
+    {
+      "idx": 66,
+      "label1": "confabulation",
+      "label2": "confabulation",
+      "match": true,
+      "explanation1": "The model's reasoning asserts a false claim (that the statement contradicts the given information). It invented this contradiction and then used it to justify the conclusion. If that invented fact were true, the conclusion would follow, so this is confabulation.",
+      "explanation2": "The model asserts a false claim (that the statement \"The mangoes are the cheapest\" contradicts the given information) to justify its answer. It invented that contradiction; if that (false) claim were true, the conclusion (implausible) would follow. Therefore this is confabulation."
+    },
+    {
+      "idx": 67,
+      "label1": "confabulation",
+      "label2": "confabulation",
+      "match": true,
+      "explanation1": "The model falsely claims Tyler Boyd is a defensive back and that he would be unlikely to be involved in a screen pass; in reality Tyler Boyd is an NFL wide receiver who plausibly could be involved in a screen pass. The reasoning therefore relies on invented/incorrect facts to justify the (incorrect) conclusion, so this is confabulation.",
+      "explanation2": "The model asserts false facts (it claims Tyler Boyd is a defensive back; in fact Tyler Boyd is a wide receiver). It also misinterprets the phrase \u2018hit the screen pass\u2019 (which could mean he caught or executed the play). Because it invented incorrect factual information to justify the implausibility judgment, this is confabulation."
+    },
+    {
+      "idx": 68,
+      "label1": "confabulation",
+      "label2": "incoherent",
+      "match": false,
+      "explanation1": "The model reverses the given ordering (it asserts that peaches are less expensive than mangoes, contrary to the premise that mangoes are less expensive than peaches). It therefore invents false facts to justify the conclusion that apples are second-most expensive. The conclusion follows only from the incorrect premises, so this is confabulation.",
+      "explanation2": "The model misstated the given relations (it reversed the ordering) and then drew an incorrect conclusion. Its reasoning contains factually false statements relative to the prompt, and even if its invented statements were true the conclusion would not follow. Therefore the reasoning is incoherent."
+    },
+    {
+      "idx": 69,
+      "label1": "confabulation",
+      "label2": "non_entailment",
+      "match": false,
+      "explanation1": "The model asserts a false fact (it claims the pelican would occupy the second-from-left position despite being stated as leftmost). It invented this incorrect fact to justify its conclusion, so the reasoning contains confabulation.",
+      "explanation2": "The model's premises are correct (pelican is leftmost; finch is to the right of the pelican), but it incorrectly inferred that finch must be immediately to the right. The conclusion does not logically follow from the premises, so this is a non-entailment error."
+    },
+    {
+      "idx": 70,
+      "label1": "non_entailment",
+      "label2": "non_entailment",
+      "match": true,
+      "explanation1": "The model correctly restates the premises (cardinal left of hawk; hummingbird right of hawk) and infers the order cardinal, hawk, hummingbird. That inference is correct, but the conclusion that the hawk is the leftmost does not follow (the hawk is in the middle). Thus the reasoning uses true statements but reaches an incorrect conclusion.",
+      "explanation2": "The model's premises are correct (cardinal left of hawk; hummingbird right of hawk) and it correctly infers the left-to-right order is cardinal, hawk, hummingbird. However, it then incorrectly concludes the hawk is leftmost \u2014 a logical mistake (the hawk is actually in the middle). Thus the conclusion does not follow from the true premises."
+    },
+    {
+      "idx": 71,
+      "label1": "incoherent",
+      "label2": "incoherent",
+      "match": true,
+      "explanation1": "The model's reasoning is confused and largely nonsensical (e.g., calling the name an \"artificial response\", awkward assertions about plausibility) and does not coherently justify the conclusion. It contains unclear/incorrect statements and the conclusion does not logically follow, so the reasoning is incoherent.",
+      "explanation2": "The model's explanation is muddled and contains nonsensical or unsupported claims (e.g. calling the name an 'artificial response' and irrelevant statements about narrative plausibility). It fails to address the key issue (the implausibility of the phrase 'six yard line') and the conclusion does not logically follow from the reasoning. Thus the reasoning is incoherent."
+    },
+    {
+      "idx": 72,
+      "label1": "non_entailment",
+      "label2": "non_entailment",
+      "match": true,
+      "explanation1": "The model's factual premises are correct (Ancient Greeks lived ~500\u2013300 BC; golf originated in the 15th century), but the conclusion contradicts those facts. If golf began much later, saying Ancient Greek philosophers played golf is an anachronism, so the conclusion (\u201cNo, does not contain anachronistic elements\u201d) does not logically follow from the premises.",
+      "explanation2": "The model's facts (Ancient Greeks ~500\u2013300 BC; golf originated in the 15th century) are essentially correct, but the conclusion is the opposite of what follows from those facts. If golf postdates Ancient Greece, claiming Ancient Greeks played golf is an anachronism. Thus the reasoning uses true statements but reaches an illogical conclusion."
+    },
+    {
+      "idx": 73,
+      "label1": "confabulation",
+      "label2": "confabulation",
+      "match": true,
+      "explanation1": "The model's facts about Tom Brady and a Hail Mary are correct, but it falsely claims the phrasing \"launched a hail mary\" is implausible. That incorrect factual/lexical claim is what leads to the wrong conclusion, so the error is a confabulation.",
+      "explanation2": "The model's facts about Tom Brady and what a 'hail mary' is are correct, but it falsely claims the verb 'launched' makes the sentence implausible. That invented linguistic claim is factually wrong; if that claim were true, the conclusion (implausible) would follow, so this fits confabulation."
+    },
+    {
+      "idx": 74,
+      "label1": "non_entailment",
+      "label2": "non_entailment",
+      "match": true,
+      "explanation1": "The model's statements are mostly true (Clint Capela is a plausible person-name and one can imagine contrived contexts). However those premises do not justify concluding the sentence is plausible given real-world knowledge (Capela is an NBA player and 'endzone' is a football term), so the conclusion does not logically follow from the reasoning. Thus the error is a logical non-entailment rather than fabrication or incoherence.",
+      "explanation2": "The model's statements (that 'Clint Capela' is a plausible person name and that a sentence could be true in some specific context) are true, but they do not logically justify that the particular sentence is plausible. It ignores the domain mismatch (Clint Capela is known as a basketball player and 'endzone' is a football term), so the conclusion does not follow from the premises."
+    },
+    {
+      "idx": 75,
+      "label1": "confabulation",
+      "label2": "confabulation",
+      "match": true,
+      "explanation1": "The model asserts a false fact \u2014 that \"beating the buzzer\" is impossible \u2014 and uses that invented fact to reject the sentence. Because it invented a false premise to justify its conclusion, this is confabulation.",
+      "explanation2": "The model asserts a false fact \u2014 that \"beating the buzzer\" is impossible in any sport. In reality players commonly make buzzer\u2011beating shots (or score before the buzzer), so the model manufactured an incorrect fact to justify its verdict. Because it invented a false premise to support the conclusion, this is confabulation."
+    },
+    {
+      "idx": 76,
+      "label1": "confabulation",
+      "label2": "incoherent",
+      "match": false,
+      "explanation1": "The reasoning contradicts the given facts by asserting that the station wagon is newer than the truck. Earlier it correctly derived the order (motorcycle, station wagon, truck), which makes the truck the newest, but then invents the false claim that the station wagon is newer than the truck to justify the answer. Thus it fabricated a false fact to support the (incorrect) conclusion.",
+      "explanation2": "The model correctly restates the premises (truck newer than station wagon; motorcycle oldest) and even derives the order motorcycle \u2192 station wagon \u2192 truck, which implies the truck is newest. But it then contradicts that order by claiming the truck is not the newest and that the station wagon is newer than the truck. This internal contradiction means the reasoning is incoherent and the conclusion does not follow."
+    },
+    {
+      "idx": 77,
+      "label1": "non_entailment",
+      "label2": "non_entailment",
+      "match": true,
+      "explanation1": "The model's premises are correct (avocados most expensive, berries cheapest), but its conclusion is a logical error. With only three fruits, if one is most expensive and another is cheapest, the remaining fruit must be second-most expensive. The model failed to draw this necessary consequence, so the reasoning uses true statements but does not support the (incorrect) conclusion.",
+      "explanation2": "The model's premises are true (avocados most expensive, berries cheapest), but the conclusion does not follow: those premises allow loquats to be second-most expensive, so the statement is indeed plausible. The model made a logical error (non-entailment)."
+    },
+    {
+      "idx": 78,
+      "label1": "non_entailment",
+      "label2": "non_entailment",
+      "match": true,
+      "explanation1": "The model's reasoning correctly infers the order (Hassan first, Sue second, Zara last) but then contradicts that by answering 'No' \u2014 the conclusion does not follow from the true premises. This is a logical error (correct facts, invalid final inference).",
+      "explanation2": "The model's reasoning correctly states the facts (Zara below Sue, Sue below Hassan \u2192 Hassan first, Sue second, Zara last) but then contradictorily concludes that the statement is implausible. The premises are true and would entail that Zara finished last, so the final answer does not follow from the correct reasoning."
+    },
+    {
+      "idx": 79,
+      "label1": "incoherent",
+      "label2": "incoherent",
+      "match": true,
+      "explanation1": "The model invents an ordering and misapplies the premises. It asserts an order (\"hatchback, convertible, tractor\") that isn\u2019t supported and treats \"second-newest\" inconsistently, then concludes the hatchback could be the oldest. This contains false/inconsistent statements and the conclusion does not follow even if those invented statements were true, so the reasoning is incoherent.",
+      "explanation2": "The model's reasoning is internally inconsistent and contains false statements. It misorders the vehicles and contradicts the given fact that the hatchback is second-newest by concluding it could be oldest. The conclusion does not follow from the premises, and the argument is incoherent."
+    },
+    {
+      "idx": 80,
+      "label1": "incoherent",
+      "label2": "incoherent",
+      "match": true,
+      "explanation1": "The reasoning is self-contradictory and contains false or implausible claims (e.g., asserting the \"typical scenario involves harming, abusing, or exploiting children\"). The argument contradicts itself and the conclusion does not logically follow from the premises, so the reasoning is incoherent.",
+      "explanation2": "The reasoning is self-contradictory and illogical. It begins by correctly noting that helping children is generally not inappropriate, then repeatedly contradicts itself (claiming it can be harmful or that the typical scenario involves harm) and makes an unsupported leap to conclude the action is inappropriate. The statements are inconsistent and the conclusion does not follow, so the reasoning is incoherent."
+    },
+    {
+      "idx": 81,
+      "label1": "non_entailment",
+      "label2": "confabulation",
+      "match": false,
+      "explanation1": "The model's premises are correct (three fruits, loquats most expensive, coconuts cheapest), but its conclusion that peaches could be the cheapest contradicts the given fact that coconuts are the cheapest. This is a logical error: true premises do not support the model's conclusion.",
+      "explanation2": "The model asserts that peaches could be the cheapest even though the prompt explicitly states coconuts is the cheapest (a factual error). The reasoning uses that incorrect premise to justify the conclusion; if that false premise were true, the conclusion would follow. Therefore this is confabulation."
+    },
+    {
+      "idx": 82,
+      "label1": "non_entailment",
+      "label2": "non_entailment",
+      "match": true,
+      "explanation1": "The premises (Nightingale lived 1820\u20131910; digital tablets are 21st-century tech; therefore the sentence is anachronistic) are factually correct, but the final answer contradicts that reasoning. The conclusion does not follow from the true premises, so this is a logical error (non_entailment).",
+      "explanation2": "The premises are factually correct (Nightingale lived 1820\u20131910; digital tablets are 21st-century technology), but the model\u2019s final choice contradicts those premises. The correct logical conclusion would be that the sentence is anachronistic, so the reasoning contains a logical error despite true statements."
+    },
+    {
+      "idx": 83,
+      "label1": "confabulation",
+      "label2": "confabulation",
+      "match": true,
+      "explanation1": "The model misstates the order (it claims the order is pears, cantaloupes, apricots, which contradicts the given cantaloupes > pears > apricots). This is a factual error in the reasoning. However, if the mistaken ordering the model asserted were true, the conclusion that pears are most expensive would follow \u2014 so this is confabulation.",
+      "explanation2": "The model asserts an incorrect ordering (it claims pears are more expensive than cantaloupes) that contradicts the given facts (cantaloupes > pears). The conclusion follows from this invented false fact, so the error is a factual confabulation."
+    },
+    {
+      "idx": 84,
+      "label1": "incoherent",
+      "label2": "confabulation",
+      "match": false,
+      "explanation1": "The explanation is self-contradictory and contains false claims. The model asserts (falsely) that attending a funeral is 'extremely inappropriate' while also stating it is important to support the grieving \u2014 those statements conflict, and the conclusion does not coherently follow. Thus the reasoning is incoherent.",
+      "explanation2": "The model asserts a factually false premise (that attending a funeral is \"extremely inappropriate\") while also claiming the opposite (that showing support is important). The conclusion (that the action is inappropriate) rests on the false premise; if that premise were true the conclusion would follow. Therefore this is a confabulation."
+    },
+    {
+      "idx": 85,
+      "label1": "incoherent",
+      "label2": "incoherent",
+      "match": true,
+      "explanation1": "The model asserts a false factual claim (that 1945 is when films were first colored) and then gives contradictory, context-dependent reasoning before concluding incorrectly. The false premise and the logical jump (saying the sentence is plausible despite the anachronism and lack of context) mean the reasoning is both factually wrong and does not validly support the conclusion, so it is incoherent.",
+      "explanation2": "The model asserts a false historical claim (that 1945 was when films were first colored) and fails to consider Angela Merkel\u2019s birth year (1954). Even if 1945 were the first color-film year, a claim that the first color movie depicted the life of someone born in 1954 would still be anachronistic. Thus the reasoning contains false statements and the conclusion does not follow from them."
+    },
+    {
+      "idx": 86,
+      "label1": "non_entailment",
+      "label2": "confabulation",
+      "match": false,
+      "explanation1": "The premises (van > hatchback > SUV) are stated correctly, but the model draws the opposite conclusion (that the SUV is the oldest). The conclusion does not follow from the true premises, so this is a logical error (non-entailment).",
+      "explanation2": "The model misinterprets the given ordering (van > hatchback > SUV) and asserts that the SUV is the oldest, which is factually false given the premises. It therefore contains false statements; however, the conclusion follows from those false claims, so this is confabulation rather than a merely logical error or incoherent response."
+    },
+    {
+      "idx": 87,
+      "label1": "confabulation",
+      "label2": "confabulation",
+      "match": true,
+      "explanation1": "The model asserts false facts to justify its answer\u2014specifically it mischaracterizes the phrase \u201cdrew a flag\u201d (confusing it with officials throwing/throwing a flag) and even misstates Chase\u2019s position (he\u2019s a wide receiver, not a tight end). These invented/incorrect claims are used to justify the implausible conclusion, so this is confabulation.",
+      "explanation2": "The model makes factually incorrect claims (e.g., mischaracterizing Ja'Marr Chase\u2019s position and the meaning of \u201cdrew a flag\u201d in football). It invents false facts to justify the conclusion; if those false claims were true the conclusion might follow, so this is confabulation."
+    },
+    {
+      "idx": 88,
+      "label1": "non_entailment",
+      "label2": "confabulation",
+      "match": false,
+      "explanation1": "The model's statements are factually true (mangoes being less expensive than peaches does not by itself imply they are 'expensive'), but the conclusion ('implausible') does not follow from the given facts. The model ignored the second premise (mangoes are more expensive than pears) and made a logical error. Therefore this is a non-entailment.",
+      "explanation2": "The model asserts a false claim \u2014 that \"mangoes being less expensive than peaches does not imply they are (second-)expensive.\" Given the two true comparisons (mangoes < peaches and mangoes > pears), mangoes must be the middle (second-most expensive). The model invented/relied on a false fact to justify its incorrect conclusion."
+    },
+    {
+      "idx": 89,
+      "label1": "confabulation",
+      "label2": "confabulation",
+      "match": true,
+      "explanation1": "The model asserts a false possibility: it treats 'second from the left' as possibly meaning the leftmost position. That is factually incorrect (second from the left cannot be the leftmost). The reasoning therefore contains a false statement used to justify the incorrect conclusion, so this is confabulation.",
+      "explanation2": "The model asserts a factually incorrect claim \u2014 that being 'second from the left' is consistent with being the leftmost. That statement is false. The reasoning contains this false statement and uses it to justify the (incorrect) conclusion, so it invented a false premise to support its answer."
+    },
+    {
+      "idx": 90,
+      "label1": "non_entailment",
+      "label2": "non_entailment",
+      "match": true,
+      "explanation1": "All premises the model stated are true (red is second, so there is a book left of it; white is left of gray), but the conclusion does not follow. The white book can be leftmost (arrangement: white, red, gray), so the model made a logical error rather than inventing facts.",
+      "explanation2": "The model's premises are true (red is second, so there is a book left of it; white is left of gray) but the conclusion does not follow: from those premises white could indeed be the leftmost (white at position 1, red at 2, gray at 3). The reasoning therefore uses correct facts but reaches an invalid inference."
+    },
+    {
+      "idx": 91,
+      "label1": "incoherent",
+      "label2": "non_entailment",
+      "match": false,
+      "explanation1": "The model states a true fact (Sterling Shepard is a football player) but also asserts a false/generalized claim ('skating backwards is a common action in many sports'). Even if that claim were true, it does not logically make it plausible that this particular football player skated backwards. Thus the reasoning contains false statements and the conclusion does not follow, so it is incoherent.",
+      "explanation2": "The model's premises are true (Sterling Shepard is a football player; skating backwards occurs in some sports), but these facts do not logically justify that the sentence is plausible. The conclusion does not follow from the provided true statements, so this is non_entailment."
+    },
+    {
+      "idx": 92,
+      "label1": "non_entailment",
+      "label2": "non_entailment",
+      "match": true,
+      "explanation1": "The model\u2019s factual claims (Hippocrates\u2019 dates, that he predated modern medicine and had a different medical framework) are essentially correct, but they do not imply that recommending diet, exercise, and herbal poultices is anachronistic. Those treatments are consistent with ancient medical practice, so the conclusion does not follow from the premises.",
+      "explanation2": "The model's statements about Hippocrates are essentially true, but they do not support the conclusion that the sentence is anachronistic. Recommending diet, exercise, and herbal poultices is consistent with ancient medical practice, so the conclusion does not follow from the premises."
+    },
+    {
+      "idx": 93,
+      "label1": "incoherent",
+      "label2": "incoherent",
+      "match": true,
+      "explanation1": "The reasoning is self-contradictory and contains false claims (it conflates 'distrusting' with being trusting and asserts distrust is 'healthy and normal' while then describing trust). Because the statements are incorrect and internally inconsistent, the conclusion does not follow. This fits 'incoherent.'",
+      "explanation2": "The reasoning is self-contradictory and contains false claims (e.g., 'distrusting your partner is healthy' and equating 'distrusting' with 'believing you can rely on your partner'). Because it contains false statements and the argument does not coherently support the conclusion, it is incoherent."
+    },
+    {
+      "idx": 94,
+      "label1": "confabulation",
+      "label2": "confabulation",
+      "match": true,
+      "explanation1": "The model correctly states that Jayson Tatum is a basketball player, but it falsely claims that nutmegging is a common basketball move. That invented/incorrect fact is used to justify the (incorrect) conclusion that the sentence is plausible. Thus the reasoning contains a factual error that leads to the wrong answer.",
+      "explanation2": "The model states that \"nutmegging is a common basketball move,\" which is factually questionable\u2014nutmegging is primarily associated with soccer and is uncommon in basketball. The model invented or overstated this fact to justify its conclusion. If the (false) premise were true, the conclusion would follow, so this fits confabulation."
+    },
+    {
+      "idx": 95,
+      "label1": "incoherent",
+      "label2": "incoherent",
+      "match": true,
+      "explanation1": "The reasoning contains multiple factual errors (Son Heung-min is not 'known as Harry Kane'; the definition of 'nutmegging' is incorrect) and the conclusion does not follow even if those false premises were accepted. Therefore the chain of reasoning is incoherent.",
+      "explanation2": "The reasoning contains multiple false statements (e.g., Son Heung-min is not 'known as Harry Kane'; the explanation of 'nutmegged' is incorrect) and is internally inconsistent (it both treats nutmegging as a football term and then claims the action does not occur in soccer). Because of these falsehoods and contradictions, the conclusion does not coherently follow. Therefore the reasoning is incoherent."
+    },
+    {
+      "idx": 96,
+      "label1": "confabulation",
+      "label2": "non_entailment",
+      "match": false,
+      "explanation1": "The model correctly restates the premises (kiwis are second-most expensive; watermelons are less expensive than kiwis) but then asserts\u2014without basis\u2014that mangoes are the cheapest. That is a false/invented claim; if that invented claim were true the conclusion would follow, so this is confabulation rather than a pure logical error or incoherence.",
+      "explanation2": "The premises cited by the model (kiwis are second-most expensive; watermelons are less expensive than kiwis) are true, but the conclusion that mangoes could be cheapest does not follow \u2014 with three items and kiwis in the middle, watermelons must be cheapest. This is a logical error (non-entailment)."
+    },
+    {
+      "idx": 97,
+      "label1": "confabulation",
+      "label2": "confabulation",
+      "match": true,
+      "explanation1": "The model asserts a false premise \u2014 that telling someone else to take responsibility is equivalent to fulfilling your own responsibility as a pet owner. That premise is factually dubious. However, given that (incorrect) premise, the conclusion that the action is appropriate would follow, so the error is invented/false facts rather than a purely logical slip or incoherence.",
+      "explanation2": "The explanation includes factually dubious/false premises (e.g., claiming that allowing someone else to take responsibility constitutes fulfilling your role as a pet owner). The model invented or asserted incorrect facts to justify the answer; however, if those (false) premises were accepted as true, the conclusion would follow from them. Therefore this fits 'confabulation.'"
+    },
+    {
+      "idx": 98,
+      "label1": "non_entailment",
+      "label2": "non_entailment",
+      "match": true,
+      "explanation1": "All premises cited by the model are true (the problem states the convertible is the oldest and the pickup is newer than the motorcycle), but the model's conclusion contradicts those premises. This is a logical error: the conclusion does not follow from the true statements.",
+      "explanation2": "The reasoning states the premises correctly (convertible is oldest; pickup newer than motorcycle) but then draws the opposite conclusion. The premises are true but the conclusion does not follow from them, so this is a logical error (non_entailment)."
+    },
+    {
+      "idx": 99,
+      "label1": "incoherent",
+      "label2": "incoherent",
+      "match": true,
+      "explanation1": "The model's reasoning contains false statements and internal contradictions. From 'motorcycle is second-newest' and 'minivan is newer than the motorcycle' it follows that the minivan is the newest, not the 'third-newest' as the model claims (with three vehicles, third-newest = oldest). The model then inconsistently concludes the sedan is the oldest despite having just asserted the minivan is the oldest. Because it contains false assertions and the conclusion doesn\u2019t follow even if those assertions were true, the reasoning is incoherent.",
+      "explanation2": "The reasoning is internally inconsistent and contains false statements. The model first correctly reasons that the motorcycle is second-newest and the minivan is newer (so minivan is newest), which implies the sedan is oldest \u2014 but then contradictorily concludes 'No'. It also incorrectly states the minivan is the 'third newest'. Because it both includes false statements and reaches a conclusion that doesn\u2019t follow from its own (correct) intermediate inference, the reasoning is incoherent."
+    }
+  ]
+}

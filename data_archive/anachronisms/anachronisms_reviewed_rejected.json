@@ -1,0 +1,2125 @@
+{
+  "metadata": {
+    "review_date": "2025-07-28",
+    "reviewer": "o3-mini",
+    "review_type": "comprehensive_quality_check",
+    "total_reviewed": 972,
+    "rejected_count": 100
+  },
+  "rejected_samples": [
+    {
+      "sample": {
+        "input": "Charlemagne was crowned Emperor by Pope Leo III in Rome on Christmas Day 800.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0408",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Charlemagne was crowned Emperor by Pope Leo III in Rome on Christmas Day 800.",
+          "target_scores": {
+            "Yes": 0,
+            "No": 1
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0408"
+    },
+    {
+      "sample": {
+        "input": "Leonardo da Vinci snapped a selfie with a smartphone while painting The Last Supper.",
+        "target_scores": {
+          "Yes": 1,
+          "No": 0
+        }
+      },
+      "review": {
+        "sample_id": "sample_0409",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Leonardo da Vinci snapped a selfie with a smartphone while painting The Last Supper.",
+          "target_scores": {
+            "Yes": 1,
+            "No": 0
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0409"
+    },
+    {
+      "sample": {
+        "input": "William Shakespeare updated his Facebook status to announce the debut of Hamlet.",
+        "target_scores": {
+          "Yes": 1,
+          "No": 0
+        }
+      },
+      "review": {
+        "sample_id": "sample_0410",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "William Shakespeare updated his Facebook status to announce the debut of Hamlet.",
+          "target_scores": {
+            "Yes": 1,
+            "No": 0
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0410"
+    },
+    {
+      "sample": {
+        "input": "Isaac Newton explained planetary motion to his students using Einstein's general theory of relativity.",
+        "target_scores": {
+          "Yes": 1,
+          "No": 0
+        }
+      },
+      "review": {
+        "sample_id": "sample_0411",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Isaac Newton explained planetary motion to his students using Einstein's general theory of relativity.",
+          "target_scores": {
+            "Yes": 1,
+            "No": 0
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0411"
+    },
+    {
+      "sample": {
+        "input": "Napoleon Bonaparte diversified his war chest by investing in Bitcoin and other cryptocurrencies during the Napoleonic Wars.",
+        "target_scores": {
+          "Yes": 1,
+          "No": 0
+        }
+      },
+      "review": {
+        "sample_id": "sample_0412",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Napoleon Bonaparte diversified his war chest by investing in Bitcoin and other cryptocurrencies during the Napoleonic Wars.",
+          "target_scores": {
+            "Yes": 1,
+            "No": 0
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0412"
+    },
+    {
+      "sample": {
+        "input": "Marie Curie protected her lab notes by keeping them in lead-lined boxes.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0413",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Marie Curie protected her lab notes by keeping them in lead-lined boxes.",
+          "target_scores": {
+            "Yes": 0,
+            "No": 1
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0413"
+    },
+    {
+      "sample": {
+        "input": "Marie Curie collaborated with her husband Pierre Curie on experiments involving radium in the late 1890s.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0414",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Marie Curie collaborated with her husband Pierre Curie on experiments involving radium in the late 1890s.",
+          "target_scores": {
+            "Yes": 0,
+            "No": 1
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0414"
+    },
+    {
+      "sample": {
+        "input": "Abraham Lincoln revised his handwritten notes before delivering the Gettysburg Address.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0415",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Abraham Lincoln revised his handwritten notes before delivering the Gettysburg Address.",
+          "target_scores": {
+            "Yes": 0,
+            "No": 1
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0415"
+    },
+    {
+      "sample": {
+        "input": "Cleopatra had artisans paint her likeness during a feast at Alexandria.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0416",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Cleopatra had artisans paint her likeness during a feast at Alexandria.",
+          "target_scores": {
+            "Yes": 0,
+            "No": 1
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0416"
+    },
+    {
+      "sample": {
+        "input": "Genghis Khan attended a lecture by Albert Einstein to better understand the theory of relativity before invading Khwarezm.",
+        "target_scores": {
+          "Yes": 1,
+          "No": 0
+        }
+      },
+      "review": {
+        "sample_id": "sample_0417",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Genghis Khan attended a lecture by Albert Einstein to better understand the theory of relativity before invading Khwarezm.",
+          "target_scores": {
+            "Yes": 1,
+            "No": 0
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0417"
+    },
+    {
+      "sample": {
+        "input": "Cleopatra dispatched a handwritten letter carried by messenger to negotiate with the Roman Senate.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0418",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Cleopatra dispatched a handwritten letter carried by messenger to negotiate with the Roman Senate.",
+          "target_scores": {
+            "Yes": 0,
+            "No": 1
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0418"
+    },
+    {
+      "sample": {
+        "input": "During the Crimean War, Florence Nightingale meticulously recorded patient data in handwritten ledgers to track infection rates.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0419",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "During the Crimean War, Florence Nightingale meticulously recorded patient data in handwritten ledgers to track infection rates.",
+          "target_scores": {
+            "Yes": 0,
+            "No": 1
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0419"
+    },
+    {
+      "sample": {
+        "input": "Napoleon Bonaparte entrusted Marshal Michel Ney with leading the rear guard during the retreat from Moscow.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0420",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Napoleon Bonaparte entrusted Marshal Michel Ney with leading the rear guard during the retreat from Moscow.",
+          "target_scores": {
+            "Yes": 0,
+            "No": 1
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0420"
+    },
+    {
+      "sample": {
+        "input": "Leonardo da Vinci listened to church choirs while sketching designs for his flying machines.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0421",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Leonardo da Vinci listened to church choirs while sketching designs for his flying machines.",
+          "target_scores": {
+            "Yes": 0,
+            "No": 1
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0421"
+    },
+    {
+      "sample": {
+        "input": "Socrates strutted through Athens wearing a pair of limited-edition Air Jordan sneakers.",
+        "target_scores": {
+          "Yes": 1,
+          "No": 0
+        }
+      },
+      "review": {
+        "sample_id": "sample_0422",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Socrates strutted through Athens wearing a pair of limited-edition Air Jordan sneakers.",
+          "target_scores": {
+            "Yes": 1,
+            "No": 0
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0422"
+    },
+    {
+      "sample": {
+        "input": "At Valley Forge, General George Washington ordered widespread smallpox variolation to protect his troops from disease.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0423",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "At Valley Forge, General George Washington ordered widespread smallpox variolation to protect his troops from disease.",
+          "target_scores": {
+            "Yes": 0,
+            "No": 1
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0423"
+    },
+    {
+      "sample": {
+        "input": "Katherine Johnson reviewed Ada Lovelace's code for the Analytical Engine over a video conference.",
+        "target_scores": {
+          "Yes": 1,
+          "No": 0
+        }
+      },
+      "review": {
+        "sample_id": "sample_0424",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Katherine Johnson reviewed Ada Lovelace's code for the Analytical Engine over a video conference.",
+          "target_scores": {
+            "Yes": 1,
+            "No": 0
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0424"
+    },
+    {
+      "sample": {
+        "input": "Julius Caesar demanded that the United Nations Security Council intervene in the Gallic Wars.",
+        "target_scores": {
+          "Yes": 1,
+          "No": 0
+        }
+      },
+      "review": {
+        "sample_id": "sample_0425",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Julius Caesar demanded that the United Nations Security Council intervene in the Gallic Wars.",
+          "target_scores": {
+            "Yes": 1,
+            "No": 0
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0425"
+    },
+    {
+      "sample": {
+        "input": "Abraham Lincoln circulated the Emancipation Proclamation via email to Union generals.",
+        "target_scores": {
+          "Yes": 1,
+          "No": 0
+        }
+      },
+      "review": {
+        "sample_id": "sample_0426",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Abraham Lincoln circulated the Emancipation Proclamation via email to Union generals.",
+          "target_scores": {
+            "Yes": 1,
+            "No": 0
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0426"
+    },
+    {
+      "sample": {
+        "input": "George Washington insisted that his troops carry pocket-sized bottles of alcohol-based hand sanitizer to prevent infection.",
+        "target_scores": {
+          "Yes": 1,
+          "No": 0
+        }
+      },
+      "review": {
+        "sample_id": "sample_0427",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "George Washington insisted that his troops carry pocket-sized bottles of alcohol-based hand sanitizer to prevent infection.",
+          "target_scores": {
+            "Yes": 1,
+            "No": 0
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0427"
+    },
+    {
+      "sample": {
+        "input": "Queen Elizabeth I wrote a letter to Sir Francis Drake to congratulate him on his circumnavigation.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0428",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Queen Elizabeth I wrote a letter to Sir Francis Drake to congratulate him on his circumnavigation.",
+          "target_scores": {
+            "Yes": 0,
+            "No": 1
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0428"
+    },
+    {
+      "sample": {
+        "input": "Thomas Aquinas attended a lecture by Albertus Magnus at the University of Paris.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0429",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Thomas Aquinas attended a lecture by Albertus Magnus at the University of Paris.",
+          "target_scores": {
+            "Yes": 0,
+            "No": 1
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0429"
+    },
+    {
+      "sample": {
+        "input": "Cleopatra summoned Greek physicians to examine her brother's head injury.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0430",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Cleopatra summoned Greek physicians to examine her brother's head injury.",
+          "target_scores": {
+            "Yes": 0,
+            "No": 1
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0430"
+    },
+    {
+      "sample": {
+        "input": "Genghis Khan received a congratulatory telegram from Abraham Lincoln after conquering Zhongdu.",
+        "target_scores": {
+          "Yes": 1,
+          "No": 0
+        }
+      },
+      "review": {
+        "sample_id": "sample_0431",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Genghis Khan received a congratulatory telegram from Abraham Lincoln after conquering Zhongdu.",
+          "target_scores": {
+            "Yes": 1,
+            "No": 0
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0431"
+    },
+    {
+      "sample": {
+        "input": "During the 13th-century siege of Zhongdu, Genghis Khan reputedly wore sturdy leather boots and a heavy deel suited to the Mongol steppe climate.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0432",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "During the 13th-century siege of Zhongdu, Genghis Khan reputedly wore sturdy leather boots and a heavy deel suited to the Mongol steppe climate.",
+          "target_scores": {
+            "Yes": 0,
+            "No": 1
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0432"
+    },
+    {
+      "sample": {
+        "input": "Cleopatra commissioned artists to depict her alongside Mark Antony during a lavish banquet in Alexandria.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0433",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Cleopatra commissioned artists to depict her alongside Mark Antony during a lavish banquet in Alexandria.",
+          "target_scores": {
+            "Yes": 0,
+            "No": 1
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0433"
+    },
+    {
+      "sample": {
+        "input": "Marie Antoinette often passed time with card games such as faro in the salons of Versailles.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0434",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Marie Antoinette often passed time with card games such as faro in the salons of Versailles.",
+          "target_scores": {
+            "Yes": 0,
+            "No": 1
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0434"
+    },
+    {
+      "sample": {
+        "input": "George Washington sent an urgent email to his generals just before crossing the Delaware River.",
+        "target_scores": {
+          "Yes": 1,
+          "No": 0
+        }
+      },
+      "review": {
+        "sample_id": "sample_0435",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "George Washington sent an urgent email to his generals just before crossing the Delaware River.",
+          "target_scores": {
+            "Yes": 1,
+            "No": 0
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0435"
+    },
+    {
+      "sample": {
+        "input": "During the Civil War, Abraham Lincoln was occasionally seen driving a Tesla Model S around Washington, D.C.",
+        "target_scores": {
+          "Yes": 1,
+          "No": 0
+        }
+      },
+      "review": {
+        "sample_id": "sample_0436",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "During the Civil War, Abraham Lincoln was occasionally seen driving a Tesla Model S around Washington, D.C.",
+          "target_scores": {
+            "Yes": 1,
+            "No": 0
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0436"
+    },
+    {
+      "sample": {
+        "input": "Marie Curie taught Hippocrates how to use X rays to diagnose broken bones.",
+        "target_scores": {
+          "Yes": 1,
+          "No": 0
+        }
+      },
+      "review": {
+        "sample_id": "sample_0437",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Marie Curie taught Hippocrates how to use X rays to diagnose broken bones.",
+          "target_scores": {
+            "Yes": 1,
+            "No": 0
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0437"
+    },
+    {
+      "sample": {
+        "input": "Benjamin Franklin presented his electricity experiments to the World Health Organization in Geneva.",
+        "target_scores": {
+          "Yes": 1,
+          "No": 0
+        }
+      },
+      "review": {
+        "sample_id": "sample_0438",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Benjamin Franklin presented his electricity experiments to the World Health Organization in Geneva.",
+          "target_scores": {
+            "Yes": 1,
+            "No": 0
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0438"
+    },
+    {
+      "sample": {
+        "input": "Queen Elizabeth I took to her smartphone to tweet a defiant message after hearing of the approaching Spanish Armada.",
+        "target_scores": {
+          "Yes": 1,
+          "No": 0
+        }
+      },
+      "review": {
+        "sample_id": "sample_0439",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Queen Elizabeth I took to her smartphone to tweet a defiant message after hearing of the approaching Spanish Armada.",
+          "target_scores": {
+            "Yes": 1,
+            "No": 0
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0439"
+    },
+    {
+      "sample": {
+        "input": "Socrates walked barefoot through Athens engaging fellow citizens in philosophical dialogue.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0440",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Socrates walked barefoot through Athens engaging fellow citizens in philosophical dialogue.",
+          "target_scores": {
+            "Yes": 0,
+            "No": 1
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0440"
+    },
+    {
+      "sample": {
+        "input": "During the Salt March, Mahatma Gandhi delivered speeches to reporters who relayed updates to his followers.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0441",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "During the Salt March, Mahatma Gandhi delivered speeches to reporters who relayed updates to his followers.",
+          "target_scores": {
+            "Yes": 0,
+            "No": 1
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0441"
+    },
+    {
+      "sample": {
+        "input": "Isaac Newton spent long evenings in 1666 drafting Latin manuscripts to refine the principles later published in the Principia.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0442",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Isaac Newton spent long evenings in 1666 drafting Latin manuscripts to refine the principles later published in the Principia.",
+          "target_scores": {
+            "Yes": 0,
+            "No": 1
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0442"
+    },
+    {
+      "sample": {
+        "input": "Socrates shared his latest philosophical thoughts with students in the Athenian Agora.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0443",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Socrates shared his latest philosophical thoughts with students in the Athenian Agora.",
+          "target_scores": {
+            "Yes": 0,
+            "No": 1
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0443"
+    },
+    {
+      "sample": {
+        "input": "Confucius invited Marco Polo to dinner in the state of Lu to discuss their travel experiences.",
+        "target_scores": {
+          "Yes": 1,
+          "No": 0
+        }
+      },
+      "review": {
+        "sample_id": "sample_0444",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Confucius invited Marco Polo to dinner in the state of Lu to discuss their travel experiences.",
+          "target_scores": {
+            "Yes": 1,
+            "No": 0
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0444"
+    },
+    {
+      "sample": {
+        "input": "Julius Caesar dictated his Gallic War commentaries to scribes while stationed in Gaul.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0445",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Julius Caesar dictated his Gallic War commentaries to scribes while stationed in Gaul.",
+          "target_scores": {
+            "Yes": 0,
+            "No": 1
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0445"
+    },
+    {
+      "sample": {
+        "input": "Leonardo da Vinci coded a flight-simulation program on his laptop to test his flying machine designs.",
+        "target_scores": {
+          "Yes": 1,
+          "No": 0
+        }
+      },
+      "review": {
+        "sample_id": "sample_0446",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Leonardo da Vinci coded a flight-simulation program on his laptop to test his flying machine designs.",
+          "target_scores": {
+            "Yes": 1,
+            "No": 0
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0446"
+    },
+    {
+      "sample": {
+        "input": "Before besieging Baghdad, Genghis Khan ordered his generals to follow traditional Mongol laws on the treatment of prisoners.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0447",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Before besieging Baghdad, Genghis Khan ordered his generals to follow traditional Mongol laws on the treatment of prisoners.",
+          "target_scores": {
+            "Yes": 0,
+            "No": 1
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0447"
+    },
+    {
+      "sample": {
+        "input": "Julius Caesar used a laptop computer to keep track of troop movements during the Gallic Wars.",
+        "target_scores": {
+          "Yes": 1,
+          "No": 0
+        }
+      },
+      "review": {
+        "sample_id": "sample_0448",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Julius Caesar used a laptop computer to keep track of troop movements during the Gallic Wars.",
+          "target_scores": {
+            "Yes": 1,
+            "No": 0
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0448"
+    },
+    {
+      "sample": {
+        "input": "Cleopatra VII messaged Queen Victoria to discuss governance of their respective empires.",
+        "target_scores": {
+          "Yes": 1,
+          "No": 0
+        }
+      },
+      "review": {
+        "sample_id": "sample_0449",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "Cleopatra VII messaged Queen Victoria to discuss governance of their respective empires.",
+          "target_scores": {
+            "Yes": 1,
+            "No": 0
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0449"
+    },
+    {
+      "sample": {
+        "input": "In 1687, Isaac Newton cited quantum entanglement to explain how gravitational forces act at a distance.",
+        "target_scores": {
+          "Yes": 1,
+          "No": 0
+        }
+      },
+      "review": {
+        "sample_id": "sample_0450",
+        "recommendation": "REJECT",
+        "original_sample": {
+          "input": "In 1687, Isaac Newton cited quantum entanglement to explain how gravitational forces act at a distance.",
+          "target_scores": {
+            "Yes": 1,
+            "No": 0
+          }
+        },
+        "severity": "MODERATE",
+        "detailed_feedback": "Sample rejected in batch review"
+      },
+      "reason": "Sample rejected in batch review",
+      "sample_id": "sample_0450"
+    },
+    {
+      "sample": {
+        "input": "Sitting Bull toured with Buffalo Bill Cody's Wild West show in the 1880s.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0456",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0456"
+    },
+    {
+      "sample": {
+        "input": "In 1791, Wolfgang Amadeus Mozart premiered his latest symphony at a concert hall in Vienna before audiences from across Europe.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0457",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0457"
+    },
+    {
+      "sample": {
+        "input": "Cleopatra VII spent her evenings in 30 BCE sending messenger boats with papyrus letters to keep in contact with her allies around the Mediterranean.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0461",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "{\n  \"severity\": \"MINOR\",\n  \"recommendation\": \"APPROVE\",\n  \"issues_found\": [\n    {\n      \"type\": \"historical_accuracy\",\n      \"description\": \"While Cleopatra VII did reign until 30 BCE, the depiction of her 'evenings spent sending messenger boats' is slightly anachronistic in tone given the political and military tension of that final year. However, the detail of using papyrus letters and messenger boats is plausible within the context of the era.\",\n      \"severity\": \"MINOR\"\n    }\n  ],\n  \"historical_accuracy_score\": 8,\n  \"overall_quality_score\": 8,\n  \"detailed_feedback\": \"The sample generally respects historical facts: Cleopatra VII's timeline and the technology (messenger boats and papyrus letters) are appropriately referenced. The slight issue is the casual, evening routine description during a tumultuous period, which might seem a bit out of sync with the historical context. Linguistically, the sentence is well-formed and the JSON format is correct, making the sample suitable for an anachronism detection task.\",\n  \"suggested_fix\": \"Consider rephrasing to something like: 'In 30 BCE, Cleopatra VII is depicted as dispatch",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0461"
+    },
+    {
+      "sample": {
+        "input": "In the first edition of the Principia, Isaac Newton dedicated a chapter to planetary motion and the universal law of gravitation.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0475",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "{\n  \"severity\": \"MINOR\",\n  \"recommendation\": \"APPROVE\",\n  \"issues_found\": [\n    {\n      \"type\": \"historical_accuracy\",\n      \"description\": \"The description implies that the first edition of Principia is organized into chapters, while in reality it is structured into books (e.g., Book I, Book II, and Book III). This is a minor misrepresentation of its internal structure.\",\n      \"severity\": \"MINOR\"\n    }\n  ],\n  \"historical_accuracy_score\": 8,\n  \"overall",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0475"
+    },
+    {
+      "sample": {
+        "input": "George Washington wrote detailed letters from the Continental Congress with a quill and ink.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0488",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0488"
+    },
+    {
+      "sample": {
+        "input": "George Washington loved penning motivational circulars to his troops after battles.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0491",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0491"
+    },
+    {
+      "sample": {
+        "input": "Queen Victoria issued a royal proclamation to announce the establishment of the British Raj.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0513",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0513"
+    },
+    {
+      "sample": {
+        "input": "Genghis Khan established relay stations along the Silk Road to speed communication and facilitate trade across his growing empire.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0514",
+        "sample_type": "PLAUSIBLE",
+        "error": "API call failed: Error code: 400 - {'error': {'message': 'Could not finish the message because max_tokens or model output limit was reached. Please try again with higher max_tokens.', 'type': 'invalid_request_error', 'param': None, 'code': None}}",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0514"
+    },
+    {
+      "sample": {
+        "input": "Socrates discussed earth, air, fire, and water as the fundamental components of matter.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0527",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0527"
+    },
+    {
+      "sample": {
+        "input": "President Theodore Roosevelt explored the Amazon with Brazilian explorer C\u00e2ndido Rondon in 1914.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0533",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0533"
+    },
+    {
+      "sample": {
+        "input": "In 1880, Louis Pasteur used light microscopes and controlled experiments to demonstrate that microorganisms caused fermentation and disease, helping disprove spontaneous generation.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0551",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0551"
+    },
+    {
+      "sample": {
+        "input": "In 1789, Marie Antoinette considered fleeing Paris by traveling in a fast horse-drawn carriage to Vienna.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0552",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0552"
+    },
+    {
+      "sample": {
+        "input": "Benjamin Franklin demonstrated his electricity experiments to the Royal Society in London.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0553",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0553"
+    },
+    {
+      "sample": {
+        "input": "Joan of Arc dictated a letter rallying her supporters before leading the charge at Orl\u00e9ans.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0556",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "{\n  \"severity\": \"MINOR\",\n  \"recommendation\": \"APPROVE\",\n  \"issues_found\": [\n    {\n      \"type\": \"historical_accuracy\",\n      \"description\": \"The sample states that Joan of Arc 'dictated a letter rallying her supporters' before leading the charge at Orl\u00e9ans. While Joan of Arc",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0556"
+    },
+    {
+      "sample": {
+        "input": "In 1770, Benjamin Franklin measured atmospheric CO\u2082 concentrations with an infrared gas analyzer to study climate change.",
+        "target_scores": {
+          "Yes": 1,
+          "No": 0
+        }
+      },
+      "review": {
+        "sample_id": "sample_0568",
+        "sample_type": "ANACHRONISTIC",
+        "error": "Failed to parse review response",
+        "raw_response": "{\n  \"severity\": \"NONE\",\n  \"recommendation\": \"APPROVE\",\n  \"issues_found\": [],\n  \"historical_accuracy_score\": 8,\n  \"overall_quality_score\": 8,\n  \"detailed_feedback\": \"The sample clearly presents an anachronistic scenario: Benjamin Franklin in 1770 using an infrared gas analyzer, a technology that was developed much later, thereby fulfilling the requirements for an anachronism detection sample. The historical figure is correctly referenced, the modern element is unambiguously out of time, the sentence is fluent, and the JSON format complies with the guidelines. The sample is fully appropriate for an anach",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0568"
+    },
+    {
+      "sample": {
+        "input": "While lounging at Versailles in 1778, Marie Antoinette hosted intimate musicales featuring works by Gluck, whom she helped patronize.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0596",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "{\n  \"severity\": \"NONE\",\n  \"recommendation\": \"APPROVE\",\n  \"issues_found\": [],\n  \"historical_accuracy_score\": 8,\n  \"overall_quality_score\": 8,\n  \"detailed_feedback\": \"The sample is historically plausible with accurate dates and correct overlap of figures. Marie Antoinette's residence at",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0596"
+    },
+    {
+      "sample": {
+        "input": "Queen Elizabeth II formally knighted Sir Edmund Hillary at Buckingham Palace in 1953.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0600",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0600"
+    },
+    {
+      "sample": {
+        "input": "During the American Revolution, George Washington sought advice from the Marquis de Lafayette on crossing the Delaware.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0608",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0608"
+    },
+    {
+      "sample": {
+        "input": "Marie Antoinette took fashion tips from Rose Bertin during the French Revolution.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0610",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0610"
+    },
+    {
+      "sample": {
+        "input": "Cleopatra was famous for dabbing a blend of myrrh and rose oils before meeting Mark Antony.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0630",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "{\n  \"severity\": \"MINOR\",\n  \"recommendation\": \"APPROVE\",\n  \"issues_found\": [\n    {\n      \"type\": \"linguistic_quality\",\n      \"description\": \"The term 'dabbing' is modern slang that introduces a slight linguistic anachronism. Although it may not affect the overall plausibility for an anachronism detection task, it is a minor deviation from a historically neutral tone.\",\n      \"severity\": \"MINOR\"\n    }\n  ],\n  \"historical_accuracy_score\": 8,",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0630"
+    },
+    {
+      "sample": {
+        "input": "In 1755, Benjamin Franklin arranged for printing supplies by writing to his contacts in London.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0632",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0632"
+    },
+    {
+      "sample": {
+        "input": "William Shakespeare revised drafts of Hamlet by consulting his own notes and commonplace books in the early 1600s.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0672",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0672"
+    },
+    {
+      "sample": {
+        "input": "Genghis Khan demanded that Mongol throat singers perform for his generals before the next campaign.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0673",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0673"
+    },
+    {
+      "sample": {
+        "input": "Florence Nightingale ran randomized controlled trials using computer spreadsheets to analyze vaccine efficacy during the Crimean War.",
+        "target_scores": {
+          "Yes": 1,
+          "No": 0
+        }
+      },
+      "review": {
+        "sample_id": "sample_0698",
+        "sample_type": "ANACHRONISTIC",
+        "error": "Failed to parse review response",
+        "raw_response": "{\n  \"severity\": \"NONE\",\n  \"recommendation\": \"APPROVE\",\n  \"issues_found\": [\n    {\n      \"type\": \"historical_accuracy/anachronism_validity\",\n      \"description\": \"The sample clearly juxtaposes elements from different time periods. Florence Nightingale did work during the Crimean War, but the use of computer spreadsheets and the concept of randomized controlled trials are unmistakably modern.\",\n      \"severity\": \"NONE\"\n    },\n    {\n      \"type\": \"historical_context\",\n      \"description\": \"The historical figure and period (Florence Nightingale and the Crimean War) are correctly identified, further emphasizing the anachronism.\",\n      \"severity\": \"NONE\"\n    },\n    {\n      \"type\": \"modern element\",\n      \"description\": \"Computer spreadsheets are a distinctly modern invention, which is appropriately flagged as the anachronistic element in the context.\",\n      \"severity\": \"NONE\"\n    },\n    {\n      \"type\": \"linguistic_quality\",\n      \"description\": \"The sentence is well-formed, natural, and fluent.\",\n      \"severity\": \"NONE\"\n    },\n    {\n      \"type\": \"format_compliance\",\n      \"description\": \"The sample follows the exact JSON format requirements.\",\n      \"severity\": \"NONE\"\n    },\n    {\n      \"type\": \"appropriateness\",\n      \"description\": \"The sample is completely suitable for an anachronism detection task.\",\n      \"severity\": \"NONE\"\n    }\n  ],\n  \"historical_accuracy_score\": 8,\n  \"overall_quality_score\": 8,\n  \"detailed_feedback\": \"The sample successfully employs anachronistic elements by combining historical context with modern technology and methods that could not have existed during that time. This creates a clear, unambiguous anachronism that is readily identifiable. Every component of the sample, from the historical references to the modern elements, is accurate in highlighting the intended temporal mismatch, and the format and linguistic quality are excellent.\",\n  \"suggested_fix\": \"No corrections necessary. The sample meets the intended anachronism",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0698"
+    },
+    {
+      "sample": {
+        "input": "Queen Elizabeth I gave a rousing speech at Tilbury during the defeat of the Spanish Armada.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0701",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "{\n  \"severity\": \"MINOR\",\n  \"recommendation\": \"APPROVE\",\n  \"issues_found\": [\n    {\n      \"type\": \"historical_accuracy\",\n      \"description\": \"The phrase 'during the defeat of the Spanish Armada' could be slightly misleading since Queen Elizabeth I\u2019s speech at Tilbury was delivered as a morale booster in the face of the looming threat rather than during the actual moment of defeat. However, this is a minor nuance and does not change the overall plausibility of the sample.\",\n      \"severity\": \"MINOR\"\n    }\n  ],\n  \"historical_accuracy_score\": 8,",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0701"
+    },
+    {
+      "sample": {
+        "input": "Leonardo da Vinci dissected human cadavers in his workshop to improve the accuracy of his anatomical studies.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0705",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0705"
+    },
+    {
+      "sample": {
+        "input": "George Washington recorded his thoughts in a personal journal before and after the crossing of the Delaware River.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0711",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "{\n  \"severity\": \"MINOR\",\n  \"recommendation\": \"APPROVE\",\n  \"issues_found\": [\n    {\n      \"type\": \"historical_accuracy\",\n      \"description\": \"It is debatable whether George Washington kept a personal journal recording his thoughts. While he did leave behind many writings and correspondence, there is little established evidence of a personal journal in the modern sense.\",\n      \"severity\": \"MINOR\"\n    }\n  ],\n  \"historical_accuracy_score\": 8,\n  \"overall_quality_score\": 8,\n  \"detailed_feedback\": \"The sample is generally well-formed, linguistically sound, and fits the plausible category for an anachronism detection task. The minor historical issue regarding Washington's personal journal does not undermine the overall task, as it remains within plausible bounds.\",\n  \"suggested_fix\": \"Consider rephrasing or adding a qualifier (for example: 'It is sometimes suggested that...') to acknowledge the",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0711"
+    },
+    {
+      "sample": {
+        "input": "Leonardo da Vinci dissected human cadavers to make detailed anatomical drawings in the late 15th century.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0719",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "{\n  \"severity\": \"NONE\",\n  \"recommendation\": \"APPROVE\",\n  \"issues_found\": [],\n  \"historical_accuracy_score\": 8,\n  \"overall_quality_score\": 8,\n  \"detailed_feedback\": \"The sample is historically accurate and well-formed. Leonardo da Vinci is known for his",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0719"
+    },
+    {
+      "sample": {
+        "input": "Leonardo da Vinci sought patronage from Ludovico Sforza to fund his studies of human anatomy.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0727",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "{\n  \"severity\": \"MINOR\",\n  \"recommendation\": \"APPROVE\",\n  \"issues_found\": [\n    {\n      \"type\": \"historical_accuracy\",\n      \"description\": \"While Leonardo da Vinci did seek patronage from Ludovico Sforza and did study human anatomy, the phrasing may oversimplify the complexity of his patronage relationships and the funding of his anatomical studies. This is a minor nuance rather than a factual error.\",\n      \"severity\": \"MINOR\"\n    }\n  ],\n  \"historical_accuracy_score\": 8,\n  \"overall_quality_score\": 8,\n  \"detailed_feedback\": \"The sample is mostly historically accurate: Leonardo da Vinci and Ludovico Sforza were contemporaries and Leonardo did work under Sfor",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0727"
+    },
+    {
+      "sample": {
+        "input": "Leonardo da Vinci made detailed ink sketches and wooden models of his flying machine in his Florentine workshop.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0739",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "{\n  \"severity\": \"MINOR\",\n  \"recommendation\": \"APPROVE\",\n  \"issues_found\": [\n    {\n      \"type\": \"historical_accuracy\",\n      \"description\": \"While Leonardo da Vinci is well known for his detailed sketches of flying machines, the claim that he built wooden models of his flying machine is not widely documented. This discrepancy is minor given the plausible context of",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0739"
+    },
+    {
+      "sample": {
+        "input": "Ludwig van Beethoven accepted a gift of a Broadwood piano, which influenced the sound of his later compositions.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0742",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0742"
+    },
+    {
+      "sample": {
+        "input": "Leonardo da Vinci inferred the age of fossils by observing the layers of sediment in which they were found.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0749",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "{\n  \"severity\": \"NONE\",\n  \"recommendation\": \"APPROVE\",\n  \"issues_found\": [],\n  \"historical_accuracy_score\": 8,\n  \"overall_quality_score\": 8,\n  \"",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0749"
+    },
+    {
+      "sample": {
+        "input": "Benjamin Franklin used temperature readings from water samples to chart the Gulf Stream.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0753",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0753"
+    },
+    {
+      "sample": {
+        "input": "Galileo Galilei debated lunar observations with Johannes Kepler.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0755",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "{\n  \"severity\": \"MINOR\",\n  \"recommendation\": \"APPROVE\",\n  \"issues_found\": [\n    {\n      \"type\": \"historical_accuracy\",\n      \"description\": \"While Galileo and Kepler were contemporaries and both made significant astronomical observations, there is no well-documented historical record of them engaging in a formal debate over lunar observations. This is a minor historical nuance since the sample is intended to be plausible for an anachronism detection task.\",\n      \"severity\": \"MINOR\"\n    }\n  ],\n  \"historical_accuracy_score\": 8,\n  \"overall_quality_score\": 8,\n  \"detailed_feedback\": \"The sample correctly places both Galileo and Kepler in the same historical period, and the sentence is linguistically clear and well-formatted. The only issue is the slight inaccuracy regarding the nature of their interaction, as there is no solid evidence of a direct debate on lunar observations. However, given the task's intent to detect anachronisms and the sample being marked as plausible, this nuance does not significantly undermine its validity.\",\n  \"suggested_fix\": \"If greater historical accuracy is desired, consider adjusting the sample to indicate that Galileo and Kepler were aware of each other\u2019s work or that their ideas indirectly influenced astronomical debates, rather than stating they directly debated",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0755"
+    },
+    {
+      "sample": {
+        "input": "Emperor Augustus relaxed in the palace watching athletic contests with his adopted sons.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0779",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0779"
+    },
+    {
+      "sample": {
+        "input": "Queen Elizabeth I exchanged a series of letters with Mary, Queen of Scots, concerning the Scottish succession.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0783",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "{\n  \"severity\": \"MINOR\",\n  \"recommendation\": \"APPROVE\",\n  \"issues_found\": [\n    {\n      \"type\": \"historical_accuracy\",\n      \"description\": \"While Queen Elizabeth I and Mary, Queen of Scots did have correspondence, the specific claim that they exchanged letters concerning the 'Scottish succession' is not a well-documented focus of their exchanges. However, it remains a plausible, if simplified, depiction.\",\n      \"severity\": \"MINOR\"\n    }\n  ],\n  \"historical_accuracy_score\": 8,\n  \"overall_quality_score\": 8,\n  \"detailed_feedback\": \"The sample is overall well-conceived and historically plausible. Queen Elizabeth I and Mary, Queen of Scots did indeed correspond, and their historical timelines overlap. The particular focus on 'Scottish succession' is a minor interpretative choice that does not undermine the sample's adequacy for",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0783"
+    },
+    {
+      "sample": {
+        "input": "In 1799, President George Washington was treated with common medical practices of the day, including bloodletting performed by his physicians.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0788",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "{\n  \"severity\": \"MINOR\",\n  \"recommendation\": \"APPROVE\",\n  \"issues_found\": [\n    {\n      \"type",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0788"
+    },
+    {
+      "sample": {
+        "input": "Karl Marx co-authored a treatise on labor rights with Friedrich Engels.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0800",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "{\n  \"severity\": \"MINOR\",\n  \"recommendation\": \"APPROVE\",\n  \"issues_found\": [\n    {\n      \"type\": \"historical_accuracy\",\n      \"description\": \"The phrase 'treatise on labor rights' is a loose description of the collaborative work between Marx and Engels; they are best known for 'The Communist Manifesto', which is more a political pamphlet than a formal treatise specifically on labor rights. While not strictly incorrect, it introduces a slight nuance that could be viewed as imprecise.\",\n      \"severity\": \"MINOR\"\n    }\n  ],\n  \"historical_accuracy_score\": 8,\n  \"overall_quality_score\": 8,\n  \"detailed_feedback\": \"The sample correctly identifies that Karl Marx and Friedrich Engels collaborated and were contemporaries, making the timeline consistent. The wording 'treatise on labor rights' is somewhat vague and not the most conventional description of their joint work (The Communist Manifesto), but it remains plausible and does not constitute a major inaccuracy.\",\n  \"suggested_fix\": \"Consider rephrasing to 'Karl Marx co-authored The Communist Manifesto with Friedrich Engels.' if a more precise and",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0800"
+    },
+    {
+      "sample": {
+        "input": "Mary Shelley spent the night trading ghost stories with Lord Byron and Percy Shelley before drafting another chapter of Frankenstein.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0813",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "{\n  \"severity\": \"MODERATE\",\n  \"recommend",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0813"
+    },
+    {
+      "sample": {
+        "input": "Cleopatra sent envoys to the Roman Senate to negotiate alliances.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0814",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0814"
+    },
+    {
+      "sample": {
+        "input": "Medieval king Richard the Lionheart negotiated ransoms with Holy Roman Emperor Henry VI.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0826",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0826"
+    },
+    {
+      "sample": {
+        "input": "Napoleon Bonaparte exchanged letters with Tsar Alexander I about the terms of the Treaty of Tilsit.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0833",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "{\n  \"severity\": \"NONE\",\n  \"recommendation\": \"APPROVE\",\n  \"issues_found\": [],\n  \"historical_accuracy_score\": 8,\n  \"overall_quality_score\": 8,\n  \"detailed_feedback\": \"The sample states that Napoleon Bonaparte exchanged letters with Tsar Alexander I about the terms of the Treaty of Tilsit. Both figures were contemporaries, and the Treaty of Tilsit (signed in 1807) falls squarely within their lifetimes. Despite the fact that detailed correspondence records of this negotiation are not as widely publicized, the claim is plausible in the context of diplomatic communications of that era. Moreover, the sentence is well-formed, natural, and follows the expected JSON format, making it appropriate for an anachronism detection task.\",\n  \"suggested_fix\": \"No",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0833"
+    },
+    {
+      "sample": {
+        "input": "Hippocrates routinely recommended regimen and diet changes, such as honey and wine mixtures, to treat his Athenian patients.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0849",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "{\n  \"severity\": \"MINOR\",\n  \"recommendation\": \"APPROVE\",\n  \"issues_found\": [\n    {\n      \"type\": \"historical_accuracy\",\n      \"description\": \"The sample mentions 'Athenian patients' in relation to Hippocrates. While Hippocrates is primarily associated with Cos, the reference to Athenian patients is not entirely out of context but could be seen as slightly misleading. This is a very minor issue in a plausible context.\",\n      \"severity\": \"MINOR\"",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0849"
+    },
+    {
+      "sample": {
+        "input": "In 1799, President George Washington kept a digital wrist-mounted blood-pressure monitor nearby to track his vital signs during illness.",
+        "target_scores": {
+          "Yes": 1,
+          "No": 0
+        }
+      },
+      "review": {
+        "sample_id": "sample_0853",
+        "sample_type": "ANACHRONISTIC",
+        "error": "Failed to parse review response",
+        "raw_response": "",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0853"
+    },
+    {
+      "sample": {
+        "input": "Mahatma Gandhi wrote articles in \"Harijan\" and delivered speeches during the 1942 Quit India movement.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0867",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "{\n  \"severity\": \"NONE\",\n  \"recommendation\": \"APPROVE\",\n  \"issues_found\": [],\n  \"historical_accuracy_score\":",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0867"
+    },
+    {
+      "sample": {
+        "input": "William Shakespeare penned the first draft of Hamlet with quill and ink on parchment.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0874",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0874"
+    },
+    {
+      "sample": {
+        "input": "Albert Einstein consulted astronomical observations of Mercury\u2019s orbit while developing general relativity.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0885",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "{\n  \"severity\": \"NONE\",\n  \"recommendation\": \"APPROVE\",\n  \"issues_found\": [],\n  \"historical_accuracy_score\": 8,\n  \"overall_quality_score\": 8,\n  \"detailed_feedback\": \"The sample accurately reflects historical facts. Einstein's work on general relativity indeed involved understanding phenomena such as Mercury\u2019s anomalous perihelion precession, and his consultation of astronomical observations to test his theory is consistent with historical accounts. The timeline is correct, the linguistic quality is good, and",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0885"
+    },
+    {
+      "sample": {
+        "input": "Before besieging Baghdad, Genghis Khan ordered his generals to comply with the Geneva Conventions on the treatment of prisoners.",
+        "target_scores": {
+          "Yes": 1,
+          "No": 0
+        }
+      },
+      "review": {
+        "sample_id": "sample_0887",
+        "sample_type": "ANACHRONISTIC",
+        "error": "Failed to parse review response",
+        "raw_response": "",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0887"
+    },
+    {
+      "sample": {
+        "input": "Mozart debuted his newest symphony at the Burgtheater in Vienna before an eager audience.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0896",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0896"
+    },
+    {
+      "sample": {
+        "input": "Florence Nightingale proposed improved sanitation and clean water supplies to reduce cholera among soldiers.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0903",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0903"
+    },
+    {
+      "sample": {
+        "input": "Cleopatra VII loved commissioning painted portraits of herself to be displayed on her royal barge and shared with allies.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0908",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "{\n  \"severity\": \"MINOR\",\n  \"recommendation\": \"APPROVE\",\n  \"issues_found\": [\n    {\n      \"type\": \"historical_accuracy\",\n      \"description\": \"The sample implies that Cleopatra VII commissioned painted portraits of herself to be displayed on her royal barge and shared with allies. Although Cleopatra was known for her skillful image management (evident in coins and sculptures), the specific practice of commissioning painted portraits for display on a royal barge is not well documented. This might raise a slight historical accuracy",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0908"
+    },
+    {
+      "sample": {
+        "input": "Leonardo da Vinci dissected plants and drew detailed sketches to study their anatomy.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0917",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0917"
+    },
+    {
+      "sample": {
+        "input": "Pablo Picasso painted a celebrated portrait of Gertrude Stein in Paris in 1906.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0920",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0920"
+    },
+    {
+      "sample": {
+        "input": "George Washington participated in drafting the U.S. Constitution using a quill pen and parchment.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0926",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "{\n  \"severity\": \"MODERATE\",\n  \"recommendation\":",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0926"
+    },
+    {
+      "sample": {
+        "input": "Marie Curie collaborated with Pierre Curie on experiments investigating the medical uses of radium in Paris.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0941",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0941"
+    },
+    {
+      "sample": {
+        "input": "Julius Caesar frequently attended performances of Roman playwrights like Terence to gauge public sentiment in the Forum.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0944",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0944"
+    },
+    {
+      "sample": {
+        "input": "During the Gallic Wars, Julius Caesar relied on scouts, local guides, and handwritten maps to navigate the dense forests of Germania.",
+        "target_scores": {
+          "Yes": 0,
+          "No": 1
+        }
+      },
+      "review": {
+        "sample_id": "sample_0968",
+        "sample_type": "PLAUSIBLE",
+        "error": "Failed to parse review response",
+        "raw_response": "{\n  \"severity\": \"NONE\",\n  \"recommendation\": \"APPROVE\",\n  \"issues_found\": [],\n  \"historical_accuracy_score\": 8,\n  \"overall_quality_score\": 8,\n  \"detailed_feedback\": \"There are no clear",
+        "severity": "CRITICAL",
+        "recommendation": "REJECT"
+      },
+      "reason": "Quality issues detected",
+      "sample_id": "sample_0968"
+    }
+  ]
+}

@@ -1,0 +1,477 @@
+{
+  "metrics": {
+    "n_samples": 10,
+    "follows_from_premises": {
+      "agreement": 0.9,
+      "kappa": 0.7368421052631581,
+      "orig_true_rate": 0.2,
+      "new_true_rate": 0.3
+    },
+    "all_premises_true": {
+      "agreement": 0.8,
+      "kappa": 0.6000000000000001,
+      "orig_true_rate": 0.7,
+      "new_true_rate": 0.5
+    },
+    "any_premises_false": {
+      "agreement": 0.8,
+      "kappa": 0.6000000000000001,
+      "orig_true_rate": 0.3,
+      "new_true_rate": 0.5
+    },
+    "refuse": {
+      "agreement": 1.0,
+      "orig_true_rate": 0.0,
+      "new_true_rate": 0.0
+    },
+    "final_label": {
+      "agreement": 0.7,
+      "orig_distribution": {
+        "confabulation": 0.1,
+        "hallucination": 0.2,
+        "non_entailment": 0.6,
+        "sound": 0.1
+      },
+      "new_distribution": {
+        "confabulation": 0.3,
+        "hallucination": 0.2,
+        "non_entailment": 0.5,
+        "sound": 0.0
+      },
+      "confusion_matrix": {
+        "confabulation": {
+          "confabulation": 1,
+          "hallucination": 0,
+          "non_entailment": 0,
+          "sound": 0
+        },
+        "hallucination": {
+          "confabulation": 1,
+          "hallucination": 1,
+          "non_entailment": 0,
+          "sound": 0
+        },
+        "non_entailment": {
+          "confabulation": 0,
+          "hallucination": 1,
+          "non_entailment": 5,
+          "sound": 0
+        },
+        "sound": {
+          "confabulation": 1,
+          "hallucination": 0,
+          "non_entailment": 0,
+          "sound": 0
+        }
+      }
+    }
+  },
+  "comparison_details": [
+    {
+      "sample_idx": 24,
+      "model": "microsoft_Phi-3-mini-4k-instruct",
+      "dataset": "social_chemistry",
+      "original_label": "non_entailment",
+      "new_label": "non_entailment",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "Honesty is generally considered a moral standard.",
+          "Honesty builds trust, and trust is a foundation of healthy relationships.",
+          "Covering up behavior can lead to more severe consequences if truth is eventually revealed.",
+          "Honesty contributes to a person's integrity, which is highly respected in society.",
+          "Society functions better when everyone is honest because it promotes fairness and justice.",
+          "Honesty is a principle that respects the truth and the feelings of others."
+        ],
+        "conclusion": "The best answer is: (B) No, the action is inappropriate.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Honesty is generally considered a moral standard.",
+          "Honesty builds trust, and trust is a foundation of healthy relationships.",
+          "Covering up behavior can lead to more severe consequences if truth is eventually revealed.",
+          "Honesty contributes to a person's integrity, which is highly respected in society.",
+          "Society functions better when everyone is honest because it promotes fairness and justice.",
+          "Honesty is a principle that respects the truth and the feelings of others."
+        ],
+        "conclusion": "Considering all these points, honesty about behavior is not only inappropriate but also harmful to oneself and others. So the best answer is: (B) No, the action is inappropriate.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      }
+    },
+    {
+      "sample_idx": 99,
+      "model": "Qwen_Qwen2.5-1.5B-Instruct",
+      "dataset": "logical_deduction",
+      "original_label": "non_entailment",
+      "new_label": "hallucination",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "A cardinal is to the right of the finch.",
+          "A pigeon is to the right of the cardinal.",
+          "Therefore, the order from left to right is: finch, cardinal, pigeon."
+        ],
+        "conclusion": "The best answer is: (A) No, the statement is implausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "A cardinal is to the right of a finch.",
+          "A pigeon is to the right of a cardinal.",
+          "Therefore, the order from left to right is finch, cardinal, pigeon.",
+          "Therefore, the finch is not the leftmost (the response says 'book' but intends bird)."
+        ],
+        "conclusion": "The best answer is: (A) No, the statement is implausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      }
+    },
+    {
+      "sample_idx": 27,
+      "model": "Qwen_Qwen2.5-1.5B-Instruct",
+      "dataset": "sports_understanding",
+      "original_label": "confabulation",
+      "new_label": "confabulation",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "Kawhi Leonard is an NBA player.",
+          "A turnaround jumper is not a valid basketball move.",
+          "The sentence is illogical and incoherent."
+        ],
+        "conclusion": "The best answer is: (A) No, the sentence is implausible.",
+        "premise_truth_values": [
+          true,
+          false,
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Kawhi Leonard is an NBA player.",
+          "A turnaround jumper is not a valid basketball move.",
+          "If a sentence describes an invalid/impossible basketball move, then the sentence is implausible."
+        ],
+        "conclusion": "The best answer is: (A) No, the sentence is implausible.",
+        "premise_truth_values": [
+          true,
+          false,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      }
+    },
+    {
+      "sample_idx": 25,
+      "model": "google_gemma-2-2b-it",
+      "dataset": "logical_deduction",
+      "original_label": "non_entailment",
+      "new_label": "non_entailment",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "A minivan is older than a bus.",
+          "A bus is older than a truck."
+        ],
+        "conclusion": "The best answer is: (A) No, the statement is implausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "The minivan is older than the bus.",
+          "The bus is older than the truck.",
+          "The statement being evaluated asserts that \"a truck is the newest.\"",
+          "If one vehicle is older than a second, and the second is older than a third, then the third is the newest of the three (transitivity of \"older than\" for these three)."
+        ],
+        "conclusion": "The best answer is: (A) No, the statement is implausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      }
+    },
+    {
+      "sample_idx": 142,
+      "model": "google_gemma-2-2b-it",
+      "dataset": "logical_deduction",
+      "original_label": "non_entailment",
+      "new_label": "non_entailment",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "Bananas are more expensive than oranges.",
+          "Plums are more expensive than bananas.",
+          "Oranges are the least expensive (\"leftmost\").",
+          "Plums are more expensive than oranges."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Bananas are more expensive than oranges.",
+          "Plums are more expensive than bananas.",
+          "Therefore, plums are more expensive than oranges.",
+          "Oranges is the least expensive (leftmost)."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      }
+    },
+    {
+      "sample_idx": 41,
+      "model": "google_gemma-2-2b-it",
+      "dataset": "social_chemistry",
+      "original_label": "hallucination",
+      "new_label": "hallucination",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "It is never appropriate to be pessimistic.",
+          "Helping someone understand that something is wrong is never appropriate.",
+          "It is important to always be respectful of how people feel and to maintain healthy relationships with others."
+        ],
+        "conclusion": "The best answer is: (B) No, the action is inappropriate.",
+        "premise_truth_values": [
+          false,
+          false,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "It is never appropriate to be pessimistic.",
+          "Helping someone understand that something is wrong is never appropriate.",
+          "It's important to always be respectful of how people feel and to maintain healthy relationships with others."
+        ],
+        "conclusion": "The best answer is: (B) No, the action is inappropriate.",
+        "premise_truth_values": [
+          false,
+          false,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      }
+    },
+    {
+      "sample_idx": 64,
+      "model": "Qwen_Qwen2.5-1.5B-Instruct",
+      "dataset": "anachronisms",
+      "original_label": "hallucination",
+      "new_label": "confabulation",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "The Principia Mathematica was written by Isaac Newton.",
+          "The Principia Mathematica was written in the 18th century.",
+          "The discovery of quantum entanglement occurred in the 19th century.",
+          "Quantum entanglement was not yet understood by the time of the Principia Mathematica."
+        ],
+        "conclusion": "The best answer is: (A) No, does not contain anachronistic elements.",
+        "premise_truth_values": [
+          true,
+          false,
+          false,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "The Principia Mathematica was written by Isaac Newton in the 18th century.",
+          "Quantum entanglement was discovered in the 19th century.",
+          "Quantum entanglement was not yet understood by the time of the Principia Mathematica.",
+          "If a concept was not understood at the time, then mentioning it in a work from that time would not be anachronistic (i.e., would not be inconsistent with the time period)."
+        ],
+        "conclusion": "The best answer is: (A) No, does not contain anachronistic elements.",
+        "premise_truth_values": [
+          false,
+          false,
+          true,
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      }
+    },
+    {
+      "sample_idx": 30,
+      "model": "Qwen_Qwen2.5-1.5B-Instruct",
+      "dataset": "logical_deduction",
+      "original_label": "non_entailment",
+      "new_label": "non_entailment",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "A jeep is older than a motorcycle.",
+          "A wagon is older than a jeep.",
+          "Therefore, the order from oldest to youngest is: wagon, jeep, motorcycle."
+        ],
+        "conclusion": "The best answer is: (B) No, the statement is implausible (i.e., the jeep is not the second-oldest).",
+        "premise_truth_values": [
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "The description states that a jeep is older than a motorcycle.",
+          "The description states that a wagon is older than a jeep.",
+          "Therefore, the order from oldest to youngest is: wagon, jeep, motorcycle."
+        ],
+        "conclusion": "The best answer is: (B) No, the statement is implausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      }
+    },
+    {
+      "sample_idx": 33,
+      "model": "microsoft_Phi-3-mini-4k-instruct",
+      "dataset": "logical_deduction",
+      "original_label": "non_entailment",
+      "new_label": "non_entailment",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "The order of birds from left to right is finch, owl, heron.",
+          "The owl is to the right of the finch.",
+          "The heron is to the right of the owl.",
+          "Therefore, the heron is the rightmost."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "The order is finch, owl, heron.",
+          "The owl is to the right of the finch.",
+          "The heron is to the right of the owl.",
+          "Therefore the heron is the rightmost."
+        ],
+        "conclusion": "Therefore, the best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      }
+    },
+    {
+      "sample_idx": 171,
+      "model": "Qwen_Qwen2.5-7B-Instruct",
+      "dataset": "sports_understanding",
+      "original_label": "sound",
+      "new_label": "confabulation",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "Sergio Ramos is a soccer player.",
+          "In soccer, it is common for players to request the ball or indicate they are available to receive a pass (e.g., \"calling for the ball\").",
+          "The term \"screen\" is used in various sports, including soccer, to describe a maneuver where a player positions to block an opponent."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Sergio Ramos is a soccer player.",
+          "In soccer, it is common for players to request the ball or to indicate that they are available to receive a pass (i.e., 'calling for the ball').",
+          "The term 'screen' is used in various sports, including soccer, to describe a defensive or offensive maneuver where a player stands in a position to block an opponent."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      }
+    }
+  ]
+}

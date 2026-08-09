@@ -1,0 +1,144 @@
+{
+  "examples": [
+    {
+      "input": "Leonardo da Vinci unveiled his groundbreaking anatomical study, which was based on meticulous dissections and precise sketches that revealed hidden structures within the human body, marking a milestone in Renaissance medicine.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "During a live demonstration of alternating current, Nikola Tesla documented the event through detailed sketches and published his findings in scientific journals.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "Leonardo da Vinci's favorite smartphone app was Snapchat.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "During a live demonstration of alternating current, Nikola Tesla live-streamed the event on Facebook for a global audience.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "In a lively Medici workshop, Leonardo da Vinci exchanged innovative ideas on engineering with his contemporary, Michelangelo.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "At a prestigious summit in Istanbul, Suleiman the Magnificent and Bayezid II exchanged views on empire expansion strategies.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "Kylie Jenner's favorite smartphone app was Snapchat.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "Leonardo da Vinci unveiled his groundbreaking anatomical study, which incorporated detailed MRI scans to reveal hidden structures within the human body, defying the constraints of Renaissance medicine.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "In the Renaissance era, Leonardo da Vinci crafted intricate engineering sketches on a digital tablet, showcasing his futuristic approach to art and science.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "At a prestigious summit in Istanbul, Genghis Khan and Barack Obama exchanged views on empire expansion strategies.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "Rihanna's daily playlist on Spotify featured modern hip-hop hits.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "During a contemporary leadership summit in London, King Henry VIII discussed digital strategies with global business magnate Jeff Bezos.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "In a historically consistent account, Julius Caesar's triumphant address at the Roman Forum was recounted by trusted scribes and later inscribed on public monuments.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "At a vibrant Tudor court gathering, King Henry VIII reviewed state affairs with his trusted contemporary advisor, Thomas Wolsey.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "Leonardo da Vinci documented the progress of his engineering project by taking digital photos with a camera, adding a modern twist to his legacy.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "Cleopatra's daily playlist on Spotify featured modern hip-hop hits.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "In the Renaissance era, Leonardo da Vinci meticulously drafted his engineering sketches on parchment with ink and a quill, exemplifying the artistic methods of his time.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    },
+    {
+      "input": "At a cutting-edge tech conference in Silicon Valley, Leonardo da Vinci unveiled sketches of his flying machine to modern entrepreneur Mark Zuckerberg.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "In an unexpected twist of history, Julius Caesar live-streamed his victorious address from the Roman Forum using his smartphone, capturing the moment in real time.",
+      "target_scores": {
+        "Yes": 1,
+        "No": 0
+      }
+    },
+    {
+      "input": "Leonardo da Vinci recorded the progress of his engineering project through detailed sketches and handwritten notes in his meticulously kept journals.",
+      "target_scores": {
+        "Yes": 0,
+        "No": 1
+      }
+    }
+  ]
+}

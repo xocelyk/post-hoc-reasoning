@@ -1,0 +1,9 @@
+model_name,dataset_name,modification_type,change_rate,n_changed,parse_rate,n_parsed,n_examples
+Qwen_Qwen2.5-1.5B-Instruct,anachronisms,ellipses,0.09,9,1.0,100,100
+Qwen_Qwen2.5-1.5B-Instruct,logical_deduction,ellipses,0.04,4,1.0,100,100
+Qwen_Qwen2.5-1.5B-Instruct,social_chemistry,ellipses,0.02,2,1.0,100,100
+Qwen_Qwen2.5-1.5B-Instruct,sports_understanding,ellipses,0.26,26,1.0,100,100
+google_gemma-2-2b-it,anachronisms,ellipses,0.05,5,1.0,100,100
+google_gemma-2-2b-it,logical_deduction,ellipses,0.05,5,1.0,100,100
+google_gemma-2-2b-it,social_chemistry,ellipses,0.05,5,1.0,100,100
+google_gemma-2-2b-it,sports_understanding,ellipses,0.14,14,1.0,100,100

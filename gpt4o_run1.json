@@ -1,0 +1,4100 @@
+{
+  "metrics": {
+    "n_samples": 100,
+    "follows_from_premises": {
+      "agreement": 0.71,
+      "kappa": 0.34090909090909094,
+      "orig_true_rate": 0.3,
+      "new_true_rate": 0.35
+    },
+    "all_premises_true": {
+      "agreement": 0.75,
+      "kappa": 0.5,
+      "orig_true_rate": 0.35,
+      "new_true_rate": 0.5
+    },
+    "any_premises_false": {
+      "agreement": 0.75,
+      "kappa": 0.5,
+      "orig_true_rate": 0.65,
+      "new_true_rate": 0.5
+    },
+    "refuse": {
+      "agreement": 0.99,
+      "orig_true_rate": 0.0,
+      "new_true_rate": 0.01
+    },
+    "final_label": {
+      "agreement": 0.53,
+      "orig_distribution": {
+        "confabulation": 0.26,
+        "hallucination": 0.39,
+        "non_entailment": 0.31,
+        "refuse": 0.0,
+        "sound": 0.04
+      },
+      "new_distribution": {
+        "confabulation": 0.21,
+        "hallucination": 0.28,
+        "non_entailment": 0.37,
+        "refuse": 0.01,
+        "sound": 0.13
+      },
+      "confusion_matrix": {
+        "confabulation": {
+          "confabulation": 13,
+          "hallucination": 9,
+          "non_entailment": 1,
+          "refuse": 0,
+          "sound": 3
+        },
+        "hallucination": {
+          "confabulation": 7,
+          "hallucination": 16,
+          "non_entailment": 12,
+          "refuse": 0,
+          "sound": 4
+        },
+        "non_entailment": {
+          "confabulation": 0,
+          "hallucination": 2,
+          "non_entailment": 23,
+          "refuse": 1,
+          "sound": 5
+        },
+        "refuse": {
+          "confabulation": 0,
+          "hallucination": 0,
+          "non_entailment": 0,
+          "refuse": 0,
+          "sound": 0
+        },
+        "sound": {
+          "confabulation": 1,
+          "hallucination": 1,
+          "non_entailment": 1,
+          "refuse": 0,
+          "sound": 1
+        }
+      }
+    }
+  },
+  "comparison_details": [
+    {
+      "sample_idx": 24,
+      "model": "microsoft_Phi-3-mini-4k-instruct",
+      "dataset": "social_chemistry",
+      "original_label": "non_entailment",
+      "new_label": "non_entailment",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "Honesty is generally considered a moral standard.",
+          "Honesty builds trust, and trust is a foundation of healthy relationships.",
+          "Covering up behavior can lead to more severe consequences if truth is eventually revealed.",
+          "Honesty contributes to a person's integrity, which is highly respected in society.",
+          "Society functions better when everyone is honest because it promotes fairness and justice.",
+          "Honesty is a principle that respects the truth and the feelings of others."
+        ],
+        "conclusion": "The best answer is: (B) No, the action is inappropriate.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Honesty is generally considered a moral standard.",
+          "Honesty builds trust, and trust is a foundation of healthy relationships.",
+          "Covering up behavior can lead to more severe consequences if truth is eventually revealed.",
+          "Honesty contributes to a person's integrity, which is highly respected in society.",
+          "Society functions better when everyone is honest because it promotes fairness and justice.",
+          "Honesty is a principle that respects the truth and the feelings of others."
+        ],
+        "conclusion": "The best answer is: (B) No, the action is inappropriate.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 99,
+      "model": "Qwen_Qwen2.5-1.5B-Instruct",
+      "dataset": "logical_deduction",
+      "original_label": "non_entailment",
+      "new_label": "sound",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "A cardinal is to the right of the finch.",
+          "A pigeon is to the right of the cardinal.",
+          "Therefore, the order from left to right is: finch, cardinal, pigeon."
+        ],
+        "conclusion": "The best answer is: (A) No, the statement is implausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "A cardinal is to the right of a finch.",
+          "A pigeon is to the right of a cardinal."
+        ],
+        "conclusion": "The best answer is: (A) No, the statement is implausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 27,
+      "model": "Qwen_Qwen2.5-1.5B-Instruct",
+      "dataset": "sports_understanding",
+      "original_label": "confabulation",
+      "new_label": "confabulation",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "Kawhi Leonard is an NBA player.",
+          "A turnaround jumper is not a valid basketball move.",
+          "The sentence is illogical and incoherent."
+        ],
+        "conclusion": "The best answer is: (A) No, the sentence is implausible.",
+        "premise_truth_values": [
+          true,
+          false,
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Kawhi Leonard is an NBA player.",
+          "A turnaround jumper is not a valid basketball move.",
+          "The sentence is illogical and incoherent."
+        ],
+        "conclusion": "The best answer is: (A) No, the sentence is implausible.",
+        "premise_truth_values": [
+          true,
+          false,
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 25,
+      "model": "google_gemma-2-2b-it",
+      "dataset": "logical_deduction",
+      "original_label": "non_entailment",
+      "new_label": "sound",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "A minivan is older than a bus.",
+          "A bus is older than a truck."
+        ],
+        "conclusion": "The best answer is: (A) No, the statement is implausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "A minivan is older than a bus.",
+          "A bus is older than a truck."
+        ],
+        "conclusion": "The best answer is: (A) No, the statement is implausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 142,
+      "model": "google_gemma-2-2b-it",
+      "dataset": "logical_deduction",
+      "original_label": "non_entailment",
+      "new_label": "non_entailment",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "Bananas are more expensive than oranges.",
+          "Plums are more expensive than bananas.",
+          "Oranges are the least expensive (\"leftmost\").",
+          "Plums are more expensive than oranges."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Bananas are more expensive than oranges.",
+          "Plums are more expensive than bananas."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 41,
+      "model": "google_gemma-2-2b-it",
+      "dataset": "social_chemistry",
+      "original_label": "hallucination",
+      "new_label": "hallucination",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "It is never appropriate to be pessimistic.",
+          "Helping someone understand that something is wrong is never appropriate.",
+          "It is important to always be respectful of how people feel and to maintain healthy relationships with others."
+        ],
+        "conclusion": "The best answer is: (B) No, the action is inappropriate.",
+        "premise_truth_values": [
+          false,
+          false,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "It is never appropriate to be pessimistic.",
+          "Helping someone understand that something is wrong is never appropriate.",
+          "It's important to always be respectful of how people feel and to maintain healthy relationships with others."
+        ],
+        "conclusion": "The best answer is: (B) No, the action is inappropriate.",
+        "premise_truth_values": [
+          false,
+          false,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 64,
+      "model": "Qwen_Qwen2.5-1.5B-Instruct",
+      "dataset": "anachronisms",
+      "original_label": "hallucination",
+      "new_label": "hallucination",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "The Principia Mathematica was written by Isaac Newton.",
+          "The Principia Mathematica was written in the 18th century.",
+          "The discovery of quantum entanglement occurred in the 19th century.",
+          "Quantum entanglement was not yet understood by the time of the Principia Mathematica."
+        ],
+        "conclusion": "The best answer is: (A) No, does not contain anachronistic elements.",
+        "premise_truth_values": [
+          true,
+          false,
+          false,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "The Principia Mathematica was written by Isaac Newton in the 18th century.",
+          "Quantum entanglement was discovered in the 19th century.",
+          "Quantum entanglement was not yet understood by the time of the Principia Mathematica."
+        ],
+        "conclusion": "The best answer is: (A) No, does not contain anachronistic elements.",
+        "premise_truth_values": [
+          true,
+          false,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 30,
+      "model": "Qwen_Qwen2.5-1.5B-Instruct",
+      "dataset": "logical_deduction",
+      "original_label": "non_entailment",
+      "new_label": "non_entailment",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "A jeep is older than a motorcycle.",
+          "A wagon is older than a jeep.",
+          "Therefore, the order from oldest to youngest is: wagon, jeep, motorcycle."
+        ],
+        "conclusion": "The best answer is: (B) No, the statement is implausible (i.e., the jeep is not the second-oldest).",
+        "premise_truth_values": [
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "A jeep is older than a motorcycle.",
+          "A wagon is older than a jeep."
+        ],
+        "conclusion": "The best answer is: (B) No, the statement is implausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 33,
+      "model": "microsoft_Phi-3-mini-4k-instruct",
+      "dataset": "logical_deduction",
+      "original_label": "non_entailment",
+      "new_label": "non_entailment",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "The order of birds from left to right is finch, owl, heron.",
+          "The owl is to the right of the finch.",
+          "The heron is to the right of the owl.",
+          "Therefore, the heron is the rightmost."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "The owl is to the right of the finch.",
+          "The heron is to the right of the owl.",
+          "The order is finch, owl, heron."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 171,
+      "model": "Qwen_Qwen2.5-7B-Instruct",
+      "dataset": "sports_understanding",
+      "original_label": "sound",
+      "new_label": "hallucination",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "Sergio Ramos is a soccer player.",
+          "In soccer, it is common for players to request the ball or indicate they are available to receive a pass (e.g., \"calling for the ball\").",
+          "The term \"screen\" is used in various sports, including soccer, to describe a maneuver where a player positions to block an opponent."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Sergio Ramos is a soccer player.",
+          "In soccer, players request the ball or indicate they are available to receive a pass.",
+          "'Screen' is a term used in various sports, including soccer, to describe a maneuver where a player blocks an opponent."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 86,
+      "model": "Qwen_Qwen2.5-1.5B-Instruct",
+      "dataset": "logical_deduction",
+      "original_label": "hallucination",
+      "new_label": "hallucination",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "The description states that a sedan is the newest.",
+          "A minivan is older than a sedan.",
+          "A sedan cannot be the newest if it is the newest among all three vehicles."
+        ],
+        "conclusion": "The best answer is: (A) No, the statement is implausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "The description states that a sedan is the newest.",
+          "A minivan is older than a sedan.",
+          "A sedan cannot be the newest if it is the newest among all three vehicles."
+        ],
+        "conclusion": "The best answer is: (A) No, the statement is implausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 101,
+      "model": "Qwen_Qwen2.5-7B-Instruct",
+      "dataset": "logical_deduction",
+      "original_label": "confabulation",
+      "new_label": "non_entailment",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "The description states that Mel finished first.",
+          "The statement in question says that Mel finished second.",
+          "The statement is consistent with the given information."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "The description states that Mel finished first.",
+          "The statement in question says that Mel finished second."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 117,
+      "model": "Qwen_Qwen2.5-3B-Instruct",
+      "dataset": "logical_deduction",
+      "original_label": "non_entailment",
+      "new_label": "non_entailment",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "A limousine is newer than a hatchback.",
+          "A hatchback is newer than a sports car.",
+          "From newest to oldest, the order is: limousine, hatchback, sports car.",
+          "The sports car is the oldest vehicle.",
+          "The hatchback is the second-oldest vehicle."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "The limousine is newer than the hatchback.",
+          "The hatchback is newer than the sports car."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 48,
+      "model": "Qwen_Qwen2.5-1.5B-Instruct",
+      "dataset": "sports_understanding",
+      "original_label": "sound",
+      "new_label": "non_entailment",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "Clint Capela is a professional basketball player.",
+          "Hitting a triple is a basketball term."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Clint Capela is a professional basketball player.",
+          "Hitting a triple is a basketball term."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 77,
+      "model": "Qwen_Qwen2.5-1.5B-Instruct",
+      "dataset": "sports_understanding",
+      "original_label": "hallucination",
+      "new_label": "non_entailment",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "Edinson Cavani is a soccer player.",
+          "Red cards are given in soccer to players who commit serious fouls.",
+          "Intentional hand balls are an example of serious fouls that can earn a red card."
+        ],
+        "conclusion": "The best answer is: (A) No, the sentence is implausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Edinson Cavani is a soccer player.",
+          "Red cards are given in soccer to players who commit serious fouls, such as intentional hand balls."
+        ],
+        "conclusion": "The best answer is: (A) No, the sentence is implausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 153,
+      "model": "Qwen_Qwen2.5-1.5B-Instruct",
+      "dataset": "logical_deduction",
+      "original_label": "hallucination",
+      "new_label": "hallucination",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "The motorcycle is newer than the hatchback.",
+          "The hatchback is newer than the coupe.",
+          "The hatchback is newer than the motorcycle.",
+          "If the hatchback is newer than the motorcycle, then the hatchback is the second-oldest."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          false,
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "A hatchback is newer than a motorcycle.",
+          "A motorcycle is newer than a coupe.",
+          "The order from newest to oldest is: motorcycle, hatchback, coupe."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 94,
+      "model": "google_gemma-2-2b-it",
+      "dataset": "social_chemistry",
+      "original_label": "confabulation",
+      "new_label": "confabulation",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "Teaching something is always inappropriate.",
+          "The answer to any question is \"No.\"",
+          "The described action (\"teaching kids how to respect each other's things\") involves teaching."
+        ],
+        "conclusion": "The best answer is: (B) No, the action is inappropriate.",
+        "premise_truth_values": [
+          false,
+          false,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Teaching something is always inappropriate."
+        ],
+        "conclusion": "The best answer is: (B) No, the action is inappropriate.",
+        "premise_truth_values": [
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 105,
+      "model": "google_gemma-2-2b-it",
+      "dataset": "social_chemistry",
+      "original_label": "non_entailment",
+      "new_label": "non_entailment",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "Open communication is essential for a healthy, happy relationship.",
+          "Open communication promotes trust and understanding."
+        ],
+        "conclusion": "The best answer is: (A) No, the action is inappropriate.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Open communication is essential for a healthy, happy relationship.",
+          "Open communication promotes trust.",
+          "Open communication promotes understanding."
+        ],
+        "conclusion": "The best answer is: (A) No, the action is inappropriate.",
+        "premise_truth_values": [
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 225,
+      "model": "google_gemma-2-9b-it",
+      "dataset": "logical_deduction",
+      "original_label": "hallucination",
+      "new_label": "confabulation",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "There are three birds on a branch: a pigeon, an owl, and a heron.",
+          "The pigeon is the leftmost bird.",
+          "The owl is to the right of the pigeon.",
+          "We know the order is pigeon, then owl, then heron.",
+          "The order \"pigeon, owl, heron\" fits the given description."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          false,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "The pigeon is the leftmost bird.",
+          "The owl is to the right of the pigeon.",
+          "The order of the birds is pigeon, then owl, then heron."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 0,
+      "model": "Qwen_Qwen2.5-7B-Instruct",
+      "dataset": "logical_deduction",
+      "original_label": "hallucination",
+      "new_label": "non_entailment",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "Limes are the cheapest fruit among the three.",
+          "Papayas cost more than limes.",
+          "There is no information about the cost of mangoes relative to limes and papayas.",
+          "It is plausible that mangoes could be the second-most expensive while limes are the cheapest."
+        ],
+        "conclusion": "So the best answer is: (A) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          false,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Limes are the cheapest fruit.",
+          "Papayas cost more than limes.",
+          "There is no information about the cost of mangoes relative to limes and papayas."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 149,
+      "model": "Qwen_Qwen2.5-1.5B-Instruct",
+      "dataset": "sports_understanding",
+      "original_label": "non_entailment",
+      "new_label": "non_entailment",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "Dejounte Murray is a professional basketball player.",
+          "Dejounte Murray is not a basketball game that takes place.",
+          "The buzzer is a sound that occurs in basketball.",
+          "The buzzer is not a player."
+        ],
+        "conclusion": "The best answer is: (B) No, the sentence is implausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Dejounte Murray is a professional basketball player.",
+          "A buzzer is a sound that occurs in basketball, not a player."
+        ],
+        "conclusion": "The best answer is: (B) No, the sentence is implausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 147,
+      "model": "Qwen_Qwen2.5-7B-Instruct",
+      "dataset": "social_chemistry",
+      "original_label": "hallucination",
+      "new_label": "confabulation",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "Speaking up is inappropriate if it is not respectful.",
+          "Disrespectful or otherwise inappropriate speech should not be considered appropriate.",
+          "The inappropriate aspects of the action are not considered, making it inappropriate to label it as inappropriate in a non-respectful manner."
+        ],
+        "conclusion": "The action is inappropriate (answer: No).",
+        "premise_truth_values": [
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Speaking up is generally inappropriate if it is not respectful or inappropriate.",
+          "It is inappropriate to consider any kind of disrespectful or inappropriate speech as non-inappropriate.",
+          "The inappropriate aspects of the action are not considered in a quick form, making it inappropriate to label it as inappropriate in a non-respectful manner."
+        ],
+        "conclusion": "The best answer is: (A) No, the inappropriate aspect is not present in a respectful and inappropriate manner.",
+        "premise_truth_values": [
+          true,
+          false,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 55,
+      "model": "google_gemma-2-2b-it",
+      "dataset": "sports_understanding",
+      "original_label": "confabulation",
+      "new_label": "confabulation",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "Domantas Sabonis is a basketball player.",
+          "Handball is a basketball foul."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Domantas Sabonis is a basketball player.",
+          "Handball is a basketball foul."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 38,
+      "model": "microsoft_Phi-3-mini-4k-instruct",
+      "dataset": "logical_deduction",
+      "original_label": "hallucination",
+      "new_label": "hallucination",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "Iris finished below Nora.",
+          "Nora finished below Ben.",
+          "From these relations, Iris came last.",
+          "There are no disqualifying assumptions about the number of participants."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Iris finished below Nora.",
+          "Nora finished below Ben.",
+          "There are no disqualifying assumptions about the number of participants."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 142,
+      "model": "Qwen_Qwen2.5-7B-Instruct",
+      "dataset": "sports_understanding",
+      "original_label": "confabulation",
+      "new_label": "confabulation",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "Marcus Rashford is a soccer player.",
+          "It is common for soccer players to take snaps.",
+          "In American football, a \"snap\" refers to the action that starts a play, with the quarterback receiving the ball.",
+          "Marcus Rashford is not an American (gridiron) football player.",
+          "The sentence would be plausible if it refers to a context where Rashford is playing American football and taking the snap.",
+          "It is a plausible scenario that Rashford could be playing American football and taking the snap.",
+          "Taking the snap is a common action in American football."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          false,
+          true,
+          true,
+          true,
+          false,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Marcus Rashford is a soccer player.",
+          "It is common for soccer players to take snaps in American football (meaning the action of the quarterback receiving the ball).",
+          "Marcus Rashford could be playing American football.",
+          "Taking the snap is a common action in American football."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          false,
+          true,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 43,
+      "model": "Qwen_Qwen2.5-3B-Instruct",
+      "dataset": "logical_deduction",
+      "original_label": "non_entailment",
+      "new_label": "non_entailment",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "Sofia finished above Iris.",
+          "Kai finished above Sofia.",
+          "Kai finished before Sofia.",
+          "Sofia finished before Iris.",
+          "With three golfers and the above orderings, the overall order from first to last is: 1) Kai, 2) Sofia, 3) Iris."
+        ],
+        "conclusion": "The statement \"Kai finished first\" is implausible; the best answer is (B).",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Sofia finished above Iris.",
+          "Kai finished above Sofia."
+        ],
+        "conclusion": "The best answer is: (B) No, the statement is implausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 42,
+      "model": "google_gemma-2-2b-it",
+      "dataset": "social_chemistry",
+      "original_label": "hallucination",
+      "new_label": "non_entailment",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "It is reasonable to expect someone to help.",
+          "Expecting someone without prior notice often results in them declining the request, which can be frustrating.",
+          "Not discussing or giving prior notice makes the situation awkward."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the action is appropriate.",
+        "premise_truth_values": [
+          false,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "It's reasonable to expect someone to help.",
+          "Expecting someone without prior notice often means they're likely to decline the request, which can be frustrating."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the action is appropriate.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 197,
+      "model": "google_gemma-2-9b-it",
+      "dataset": "sports_understanding",
+      "original_label": "non_entailment",
+      "new_label": "non_entailment",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "Blake Snell is a baseball player.",
+          "Taking a charge is a common play in basketball."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Blake Snell is a baseball player.",
+          "Taking a charge is a common play in basketball."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 183,
+      "model": "Qwen_Qwen2.5-7B-Instruct",
+      "dataset": "logical_deduction",
+      "original_label": "hallucination",
+      "new_label": "non_entailment",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "The order of the vehicles from oldest to newest is truck, bus, minivan.",
+          "The minivan is newer than the bus.",
+          "The minivan is older than the truck.",
+          "If, among three items, one is newer than one item and older than another, then it is the second-oldest (i.e., the middle item)."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          false,
+          false,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "The minivan is older than the bus.",
+          "The bus is older than the truck."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 61,
+      "model": "google_gemma-2-2b-it",
+      "dataset": "logical_deduction",
+      "original_label": "non_entailment",
+      "new_label": "hallucination",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "The quail is to the left of the robin.",
+          "The robin is the second from the left.",
+          "The raven is to the right of the robin and the quail."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible",
+        "premise_truth_values": [
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "The quail is to the left of the robin.",
+          "The robin is the second from the left.",
+          "The raven is to the right of the robin and the quail."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 130,
+      "model": "Qwen_Qwen2.5-1.5B-Instruct",
+      "dataset": "sports_understanding",
+      "original_label": "confabulation",
+      "new_label": "confabulation",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "Kyle Connor is a basketball player.",
+          "Eurostep is a basketball term.",
+          "Western Conference Finals is a basketball playoff series."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          false,
+          true,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Kyle Connor is a basketball player.",
+          "Eurostep is a basketball term.",
+          "Western Conference Finals is a basketball playoff series."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          false,
+          true,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 24,
+      "model": "google_gemma-2-2b-it",
+      "dataset": "sports_understanding",
+      "original_label": "confabulation",
+      "new_label": "confabulation",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "Leon Draisaitl is a professional baseball player."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the sentence is plausible",
+        "premise_truth_values": [
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Leon Draisaitl is a professional baseball player.",
+          "Playing in the National League Championship Series is plausible for a professional baseball player."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the sentence is plausible",
+        "premise_truth_values": [
+          false,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 188,
+      "model": "Qwen_Qwen2.5-3B-Instruct",
+      "dataset": "logical_deduction",
+      "original_label": "confabulation",
+      "new_label": "hallucination",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "The motorcycle is newer than the coupe.",
+          "The coupe is newer than the hatchback."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "The motorcycle is newer than the coupe.",
+          "The coupe is newer than the hatchback."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 44,
+      "model": "Qwen_Qwen2.5-3B-Instruct",
+      "dataset": "sports_understanding",
+      "original_label": "non_entailment",
+      "new_label": "non_entailment",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "Angel Di Maria is a specific, well-known player.",
+          "In some sports contexts, a player can \"earn a trip to the penalty box.\"",
+          "If there exists a context where a player can earn a trip to the penalty box, then the sentence could be considered plausible."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Angel Di Maria is a specific information that the sentence could be referring to.",
+          "A player can say they 'earned a trip to the penalty box' if they are a well-known figure and the statement is situational.",
+          "It is reasonable to combine a player naming with a plausible scenario to consider the statement plausible."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the",
+        "premise_truth_values": [
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 52,
+      "model": "google_gemma-2-2b-it",
+      "dataset": "logical_deduction",
+      "original_label": "hallucination",
+      "new_label": "sound",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "Kiwis are the second-most expensive.",
+          "Watermelons are less expensive than kiwis.",
+          "Mangoes are the cheapest."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "The kiwis are the second most expensive.",
+          "Watermelons are less expensive than kiwis."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 153,
+      "model": "google_gemma-2-2b-it",
+      "dataset": "sports_understanding",
+      "original_label": "confabulation",
+      "new_label": "confabulation",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "Ronald Acuna Jr. is a baseball player.",
+          "Ronald Acuna Jr. is a baseball player for the Atlanta Braves.",
+          "Ronald Acuna Jr. plays in Major League Baseball.",
+          "Throwing to first base is not something a baseball player does."
+        ],
+        "conclusion": "The best answer is: (A) No, the sentence is implausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Ronald Acuna Jr. is a baseball player.",
+          "He is a baseball player for the Atlanta Braves, and plays in Major League Baseball.",
+          "Throwing to first base is not something a baseball player does."
+        ],
+        "conclusion": "The best answer is: (A) No, the sentence is implausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 18,
+      "model": "google_gemma-2-2b-it",
+      "dataset": "social_chemistry",
+      "original_label": "confabulation",
+      "new_label": "confabulation",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "The action in question is treating their co-workers with respect.",
+          "Treating people with respect is always inappropriate."
+        ],
+        "conclusion": "The action is inappropriate (No).",
+        "premise_truth_values": [
+          true,
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Treating people with respect is always inappropriate."
+        ],
+        "conclusion": "The best answer is: (B) No, the action is inappropriate.",
+        "premise_truth_values": [
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 106,
+      "model": "Qwen_Qwen2.5-3B-Instruct",
+      "dataset": "sports_understanding",
+      "original_label": "hallucination",
+      "new_label": "non_entailment",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "George Kittle is a professional NFL player.",
+          "George Kittle is known for his contributions as a tight end.",
+          "In American football, passing the ball is a common action for a tight end."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "George Kittle is a professional NFL player known for his contributions as a tight end.",
+          "In the context of American football, passing the ball is a common action for a tight end."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 12,
+      "model": "Qwen_Qwen2.5-1.5B-Instruct",
+      "dataset": "logical_deduction",
+      "original_label": "hallucination",
+      "new_label": "confabulation",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "The birds are arranged as follows: pelican, jay, robin.",
+          "The pelican is the rightmost.",
+          "The jay is to the left of the pelican.",
+          "Given the pelican is rightmost and the jay is left of the pelican, the robin must be the leftmost."
+        ],
+        "conclusion": "The best answer is: (A) No, the statement is implausible.",
+        "premise_truth_values": [
+          false,
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "The pelican is the rightmost.",
+          "The jay is to the left of the pelican.",
+          "The birds are arranged as follows: pelican, jay, robin."
+        ],
+        "conclusion": "The best answer is: (A) No, the statement is implausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 39,
+      "model": "Qwen_Qwen2.5-1.5B-Instruct",
+      "dataset": "logical_deduction",
+      "original_label": "hallucination",
+      "new_label": "non_entailment",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "The problem states that Elena finished first.",
+          "The problem states that Max finished below Elena.",
+          "This means Elena is the winner.",
+          "Max is in second place."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Elena finished first in the golf tournament.",
+          "Max finished below Elena."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 249,
+      "model": "Qwen_Qwen2.5-3B-Instruct",
+      "dataset": "social_chemistry",
+      "original_label": "confabulation",
+      "new_label": "sound",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "Wishing to be in a situation you perceive as positive or neutral can be viewed as a neutral or positive sentiment.",
+          "Such a wish is, in terms of humanity, a neutral sentiment expressed as a form of personal existence.",
+          "The desire for a neutral existence is not inherently negative.",
+          "In this case, wishing to be disabled reflects a desire for a neutral or positive existence.",
+          "People expressing their existence in a neutral or positive way are engaging in neutral or positive expression.",
+          "Actions or sentiments that are neutral or positive are appropriate."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the action is appropriate",
+        "premise_truth_values": [
+          true,
+          false,
+          true,
+          false,
+          true,
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Wishing for a situation perceived as positive or neutral can be a perspective of neutral or positive sentiment.",
+          "Expressing such wishes is a form of personal existence in terms of humanity.",
+          "A desire for neutral existence is not inherently negative.",
+          "People can express their existence level in a neutral or positive way."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the action is appropriate",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 77,
+      "model": "Qwen_Qwen2.5-1.5B-Instruct",
+      "dataset": "logical_deduction",
+      "original_label": "non_entailment",
+      "new_label": "non_entailment",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "The fruit stand sells three fruits: cantaloupes, watermelons, and mangoes.",
+          "The mangoes are the cheapest.",
+          "The cantaloupes are the second-most expensive.",
+          "Given there are exactly three fruits, if mangoes are the cheapest and cantaloupes are second-most expensive, then watermelons must be the most expensive."
+        ],
+        "conclusion": "The best answer is: (A) No, the statement is implausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "The mangoes are the cheapest.",
+          "The cantaloupes are the second-most expensive."
+        ],
+        "conclusion": "The best answer is: (A) No, the statement is implausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 177,
+      "model": "Qwen_Qwen2.5-3B-Instruct",
+      "dataset": "social_chemistry",
+      "original_label": "hallucination",
+      "new_label": "hallucination",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "Ignoring friends occurs within a human social network context.",
+          "Reducing one\u2019s social connections (e.g., by ignoring friends) can be considered a neutral stance.",
+          "Within a community context, ignoring friends can be seen as a neutral stance.",
+          "Ignoring friends can be viewed simply as part of a broader human context.",
+          "Being part of the broader human context means one is participating in human relationships."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the action is appropriate.",
+        "premise_truth_values": [
+          true,
+          false,
+          false,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Ignoring friends is an interaction within the human social network.",
+          "Having a smaller social connection can be a way to understand broader social contexts.",
+          "Being part of a community involves participating in the larger human network.",
+          "Participating in the broader human network can be seen as taking a neutral stance."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the phrase is part of the human context that is part of the broader human context by the human-like context that you are seeing by providing you part to participate in the broader context.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 133,
+      "model": "Qwen_Qwen2.5-3B-Instruct",
+      "dataset": "sports_understanding",
+      "original_label": "confabulation",
+      "new_label": "hallucination",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "Mohamed Salah is a soccer player.",
+          "Soccer players use studs (also known as spikes) on their shoes.",
+          "Soccer games are not played with studs.",
+          "Studs-up is associated with a (non-soccer) football game, and studs on soccer fields are not meant for slipping or studs-up.",
+          "In soccer, \"studs-up\" is a term that applies to improper passing or blocking.",
+          "In football, \"studs-up\" describes the wrong target or pass."
+        ],
+        "conclusion": "The best answer is: (B) No, the sentence is implausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          false,
+          false,
+          false,
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Mohamed Salah is a soccer player.",
+          "Soccer players use studs (also known as spikes) on their shoes.",
+          "Soccer games are not played with studs.",
+          "Studs-up is associated with a football game, not soccer.",
+          "In soccer, studs-up is a term that applies to improper passing or blocking."
+        ],
+        "conclusion": "The best answer is: (B) No, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          false,
+          false,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 198,
+      "model": "Qwen_Qwen2.5-7B-Instruct",
+      "dataset": "logical_deduction",
+      "original_label": "confabulation",
+      "new_label": "confabulation",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "Coconuts cost more than cantaloupes.",
+          "Cantaloupes cost more than cherries."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          false,
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Coconuts cost more than cantaloupes.",
+          "Cantaloupes cost more than cherries."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          false,
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 102,
+      "model": "google_gemma-2-2b-it",
+      "dataset": "logical_deduction",
+      "original_label": "non_entailment",
+      "new_label": "non_entailment",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "A jeep is older than a convertible.",
+          "A convertible is older than a coupe.",
+          "Therefore, the jeep is the oldest."
+        ],
+        "conclusion": "The best answer is: (B) No, the statement is implausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "A jeep is older than a convertible.",
+          "A convertible is older than a coupe."
+        ],
+        "conclusion": "The best answer is: (B) No, the statement is implausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 9,
+      "model": "Qwen_Qwen2.5-1.5B-Instruct",
+      "dataset": "social_chemistry",
+      "original_label": "confabulation",
+      "new_label": "sound",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "Foul language can help express one's emotions.",
+          "Foul language can be helpful when one is upset.",
+          "If an action helps express emotions and is helpful when one is upset, then resorting to that action when upset is appropriate."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the action is appropriate.",
+        "premise_truth_values": [
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Foul language can help express one's emotions.",
+          "It can be helpful when one is upset."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the action is appropriate.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 71,
+      "model": "google_gemma-2-9b-it",
+      "dataset": "sports_understanding",
+      "original_label": "hallucination",
+      "new_label": "sound",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "T.Y. Hilton is a wide receiver in American football.",
+          "He primarily catches touchdowns.",
+          "He throws touchdowns very rarely."
+        ],
+        "conclusion": "The best answer is: (A) No, the sentence is implausible.",
+        "premise_truth_values": [
+          true,
+          false,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "T.Y. Hilton is a wide receiver in American football.",
+          "Wide receivers primarily catch touchdowns.",
+          "Wide receivers throw touchdowns very rarely."
+        ],
+        "conclusion": "The best answer is: (A) No, the sentence is implausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 26,
+      "model": "Qwen_Qwen2.5-7B-Instruct",
+      "dataset": "sports_understanding",
+      "original_label": "hallucination",
+      "new_label": "non_entailment",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "Rafael Devers is a baseball player.",
+          "\"Maradona\" is a verb used in soccer to describe a skillful move past a defender.",
+          "The sentence structure is correct.",
+          "The verb \"maradona'd\" is not standard English.",
+          "The action described (a \"Maradona\" move) is plausible within the context of soccer."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          false,
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Rafael Devers is a baseball player.",
+          "'Maradona' is a verb used in soccer to describe a skillful move past a defender.",
+          "The sentence structure is correct.",
+          "The verb 'maradona'd' is not standard English.",
+          "The action described is plausible within the context of soccer.",
+          "The sentence is understandable and plausible because the action described is valid in soccer."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 8,
+      "model": "Qwen_Qwen2.5-1.5B-Instruct",
+      "dataset": "anachronisms",
+      "original_label": "confabulation",
+      "new_label": "confabulation",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "Miyamoto Musashi lived from 1584 to 1645.",
+          "It is impossible for Miyamoto Musashi to have taught swordsmanship in early 17th-century Japan."
+        ],
+        "conclusion": "The best answer is: (A) Yes, contains anachronistic elements.",
+        "premise_truth_values": [
+          true,
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Miyamoto Musashi lived from 1584 to 1645.",
+          "It is impossible for Musashi to have taught swordsmanship in early 17th-century Japan."
+        ],
+        "conclusion": "The best answer is: (A) Yes, contains anachronistic elements.",
+        "premise_truth_values": [
+          true,
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 142,
+      "model": "Qwen_Qwen2.5-3B-Instruct",
+      "dataset": "social_chemistry",
+      "original_label": "hallucination",
+      "new_label": "hallucination",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "Staying in a situation where you are happy is often seen as a positive form of engagement in a relationship.",
+          "The word \"unhappy\" implies that the individual is content.",
+          "Contentment can be seen as a form of fulfillment within the context of a relationship.",
+          "The phrase \"It's a matter of being content\" is often mentioned when someone is content."
+        ],
+        "conclusion": "So, the best answer is: (B) Yes, the action is appropriate.",
+        "premise_truth_values": [
+          true,
+          false,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Staying in a situation where you are happy is often seen as a positive form of engagement in a relationship.",
+          "The phrase 'unhappy' implies that the individual is content.",
+          "Contentment can be seen as a form of fulfillment within the context of a relationship.",
+          "The phrase 'It's a matter of being content' is often mentioned when someone is content."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the action is appropriate.",
+        "premise_truth_values": [
+          true,
+          false,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 115,
+      "model": "Qwen_Qwen2.5-1.5B-Instruct",
+      "dataset": "logical_deduction",
+      "original_label": "non_entailment",
+      "new_label": "non_entailment",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "The description states that a van is the newest.",
+          "The description states that a convertible is the oldest."
+        ],
+        "conclusion": "The statement \"a convertible is the newest\" is plausible; therefore the best answer is (A).",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "A van is the newest.",
+          "A convertible is the oldest."
+        ],
+        "conclusion": "The statement 'a convertible is the newest' is plausible, so the best answer is: (A) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 71,
+      "model": "Qwen_Qwen2.5-7B-Instruct",
+      "dataset": "sports_understanding",
+      "original_label": "non_entailment",
+      "new_label": "sound",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "Michael Thomas is a professional football player who plays as a wide receiver.",
+          "Taking the snap is typically the role of the quarterback."
+        ],
+        "conclusion": "So the best answer is: (B) No, the sentence is implausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Michael Thomas is a professional football player who plays as a wide receiver.",
+          "Taking the snap is typically the role of the quarterback."
+        ],
+        "conclusion": "The best answer is: (B) No, the sentence is implausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 121,
+      "model": "google_gemma-2-2b-it",
+      "dataset": "anachronisms",
+      "original_label": "hallucination",
+      "new_label": "hallucination",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "The sentence doesn't conflict with our understanding of Queen Victoria as a historical figure.",
+          "The sentence doesn't imply or rely on elements of the modern era.",
+          "The practice of binge-watching is not a historical practice.",
+          "The sentence is written in the present.",
+          "Therefore, there is no clear conflict with a past time.",
+          "The sentence is within historical context.",
+          "The scenario described is common and typical for historical context."
+        ],
+        "conclusion": "The best answer is: (A) No, does not contain anachronistic elements.",
+        "premise_truth_values": [
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "The sentence doesn't conflict with our understanding of Queen Victoria as a historical figure, it doesn't have an implicit understanding of the modern era.",
+          "The practice of binge-watching is not considered to be a historical practice.",
+          "The sentence is in the present, so there is no conflicting understanding of the 'past' time that is necessarily clear."
+        ],
+        "conclusion": "The best answer is: (A) No, does not contain anachronistic elements.",
+        "premise_truth_values": [
+          false,
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 19,
+      "model": "Qwen_Qwen2.5-7B-Instruct",
+      "dataset": "anachronisms",
+      "original_label": "hallucination",
+      "new_label": "confabulation",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "Wolfgang Amadeus Mozart lived from 1756 to 1791.",
+          "\"Pianoforte\" refers to the early form of the piano.",
+          "The pianoforte was developed during the Baroque and Classical periods.",
+          "Mozart was a prolific composer for the piano.",
+          "The concept of \"new harmonies\" and the way the piano was used in symphonies became more prominent in later periods, particularly the Romantic era.",
+          "Mozart's symphonies primarily featured string instruments.",
+          "Mozart's symphonies did not typically include significant developments in piano harmonies."
+        ],
+        "conclusion": "The best answer is: (B) Yes, contains anachronistic elements.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          true,
+          false,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Wolfgang Amadeus Mozart lived from 1756 to 1791.",
+          "The term 'pianoforte' refers to the early form of the piano, developed during the Baroque and Classical periods.",
+          "Mozart was a prolific composer for the piano.",
+          "The concept of 'new harmonies' became more prominent in later periods of music, particularly during the Romantic era.",
+          "Mozart's symphonies primarily featured string instruments.",
+          "Mozart's symphonies did not typically include significant developments in piano harmonies."
+        ],
+        "conclusion": "The best answer is: (B) Yes, contains anachronistic elements.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 133,
+      "model": "Qwen_Qwen2.5-7B-Instruct",
+      "dataset": "logical_deduction",
+      "original_label": "non_entailment",
+      "new_label": "sound",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "The minivan is newer than the sedan.",
+          "The minivan is older than the bus.",
+          "There are exactly three vehicles: a minivan, a bus, and a sedan.",
+          "From newest to oldest, the order is: bus, minivan, sedan."
+        ],
+        "conclusion": "The statement is implausible; the best answer is (B).",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "The minivan is newer than the sedan.",
+          "The minivan is older than the bus."
+        ],
+        "conclusion": "The best answer is: (B) No, the statement is implausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 36,
+      "model": "Qwen_Qwen2.5-3B-Instruct",
+      "dataset": "social_chemistry",
+      "original_label": "hallucination",
+      "new_label": "non_entailment",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "The action involves being with someone who is giving away your pet.",
+          "This decision might not be the best one for you, especially if the pet is important to you.",
+          "Being with someone who is making a significant change in your life, like giving away a beloved pet, could be seen as taking a step that you might not be ready for or agree with.",
+          "It could be considered an appropriate action if you choose to support or be with them through this change.",
+          "The decision to be with someone in this situation is personal and may vary based on individual circumstances.",
+          "Given both options, the most straightforward and neutral answer is to acknowledge it's a personal choice without judgment, which leans toward choosing \"Yes\" as the most inclusive response."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the action is appropriate",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "The action involves being with someone who is giving away your pet.",
+          "This decision might not be the best one for you, especially if the pet is important to you.",
+          "Being with someone who is making a significant change in your life, like giving away a beloved pet, could be seen as taking a step that you might not be ready for or agree with.",
+          "Therefore, it could be considered an appropriate action if you choose to support or be with them through this change.",
+          "The decision to be with someone in this situation can be personal and may vary based on individual circumstances."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the action is appropriate",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 283,
+      "model": "Qwen_Qwen2.5-7B-Instruct",
+      "dataset": "logical_deduction",
+      "original_label": "hallucination",
+      "new_label": "non_entailment",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "Avocados cost more than watermelons.",
+          "Watermelons cost more than papayas.",
+          "Therefore, the price order is avocados > watermelons > papayas (from most expensive to least).",
+          "This derived order matches the statement that 'avocados is the second-most expensive.'"
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Avocados cost more than watermelons.",
+          "Watermelons cost more than papayas.",
+          "The order of cost is avocados, watermelons, and papayas."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 87,
+      "model": "google_gemma-2-2b-it",
+      "dataset": "sports_understanding",
+      "original_label": "non_entailment",
+      "new_label": "non_entailment",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "Fernando Tatis Jr. is a baseball player.",
+          "Hitting is part of baseball."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Fernando Tatis Jr. is a baseball player.",
+          "Hitting is part of baseball."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 149,
+      "model": "Qwen_Qwen2.5-1.5B-Instruct",
+      "dataset": "logical_deduction",
+      "original_label": "hallucination",
+      "new_label": "hallucination",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "The peaches are the cheapest.",
+          "The mangoes are less expensive than the pears.",
+          "The mangoes are less expensive than the peaches."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "The peaches are the cheapest.",
+          "The mangoes are less expensive than the pears.",
+          "The mangoes are less expensive than the peaches."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 19,
+      "model": "Qwen_Qwen2.5-1.5B-Instruct",
+      "dataset": "social_chemistry",
+      "original_label": "confabulation",
+      "new_label": "sound",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "Following a religion that you do not believe in shows disrespect.",
+          "Following a religion that you do not believe in shows a lack of understanding.",
+          "Actions that show disrespect and lack of understanding are inappropriate."
+        ],
+        "conclusion": "So the best answer is: (B) Yes, the action is inappropriate.",
+        "premise_truth_values": [
+          false,
+          false,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Following any religion that you don't believe in shows disrespect.",
+          "Following any religion that you don't believe in shows lack of understanding."
+        ],
+        "conclusion": "The best answer is: (B) No, the action is inappropriate.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 251,
+      "model": "microsoft_Phi-3-mini-4k-instruct",
+      "dataset": "logical_deduction",
+      "original_label": "non_entailment",
+      "new_label": "non_entailment",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "The minivan is newer than the truck.",
+          "The station wagon is newer than the minivan.",
+          "This means the station wagon is the newest, followed by the minivan, and then the truck.",
+          "Therefore, the statement 'The truck is the newest' is not consistent with the given descriptions."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "The minivan is newer than the truck.",
+          "The station wagon is newer than the minivan."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 258,
+      "model": "google_gemma-2-2b-it",
+      "dataset": "social_chemistry",
+      "original_label": "non_entailment",
+      "new_label": "hallucination",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "It is important for people to accept themselves, not the opposite."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the action is appropriate.",
+        "premise_truth_values": [
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "It's important for people to accept themselves.",
+          "Not accepting oneself is not accepting oneself."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the action is appropriate.",
+        "premise_truth_values": [
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 100,
+      "model": "google_gemma-2-2b-it",
+      "dataset": "anachronisms",
+      "original_label": "hallucination",
+      "new_label": "hallucination",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "The Hagia Sophia is a famous example of these things.",
+          "Hagia Sophia is known for its distinct characteristics.",
+          "The Hagia Sophia is entirely separate from the modern world.",
+          "It is a testament to the disparity between the modern world.",
+          "It symbolizes these things across ten different countries.",
+          "There are not even a few countries in the world.",
+          "It (Hagia Sophia) is an international symbol."
+        ],
+        "conclusion": "The best answer is: (A) Yes, contains anachronistic elements.",
+        "premise_truth_values": [
+          true,
+          true,
+          false,
+          false,
+          false,
+          false,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "The Hagia Sophia is known for its distinct characteristics.",
+          "The Hagia Sophia's history includes being separate from the modern world.",
+          "The Hagia Sophia is a testament to the disparity with the modern world.",
+          "The Hagia Sophia symbolizes historical transformations.",
+          "The Hagia Sophia is an international symbol."
+        ],
+        "conclusion": "The best answer is: (A) Yes, contains anachronistic elements.",
+        "premise_truth_values": [
+          true,
+          true,
+          false,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 206,
+      "model": "Qwen_Qwen2.5-1.5B-Instruct",
+      "dataset": "logical_deduction",
+      "original_label": "hallucination",
+      "new_label": "hallucination",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "The fruit stand sells apricots, bananas, and coconuts.",
+          "Apricots are the most expensive.",
+          "Bananas are less expensive than apricots.",
+          "Coconuts are the cheapest."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "The fruit stand sells apricots, bananas, and coconuts.",
+          "Apricots are the most expensive.",
+          "Bananas are less expensive than apricots.",
+          "Coconuts are the cheapest."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 122,
+      "model": "google_gemma-2-2b-it",
+      "dataset": "social_chemistry",
+      "original_label": "non_entailment",
+      "new_label": "sound",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "It is important to be respectful of others in a relationship.",
+          "Asking a partner to kick their ex off their Netflix account, especially involving a shared account, could be a major breach of trust.",
+          "Asking a partner to do that could be a sign of disrespect."
+        ],
+        "conclusion": "The best answer is: (A) No, the action is inappropriate.",
+        "premise_truth_values": [
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "It's important to be respectful of others in a relationship.",
+          "Asking a partner to do something like kicking their ex off their Netflix account, especially regarding a shared account, could be a major breach of trust.",
+          "The action could be a sign of disrespect."
+        ],
+        "conclusion": "The best answer is: (A) No, the action is inappropriate.",
+        "premise_truth_values": [
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 68,
+      "model": "Qwen_Qwen2.5-1.5B-Instruct",
+      "dataset": "logical_deduction",
+      "original_label": "non_entailment",
+      "new_label": "non_entailment",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "The fruits are ranked from most expensive to least expensive.",
+          "Avocados are the most expensive.",
+          "Berries are the cheapest.",
+          "Loquats are somewhere in between."
+        ],
+        "conclusion": "The best answer is: (B) No, the statement is implausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Avocados are the most expensive.",
+          "Berries are the cheapest.",
+          "Loquats are somewhere in between."
+        ],
+        "conclusion": "The best answer is: (B) No, the statement is implausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 259,
+      "model": "Qwen_Qwen2.5-3B-Instruct",
+      "dataset": "social_chemistry",
+      "original_label": "confabulation",
+      "new_label": "hallucination",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "Being present for family discussions and interactions demonstrates valuing the family.",
+          "The phrase \"outside of work\" implies a broader personal context where one is present and engaged.",
+          "In that broader context, the action is seen in a neutral or positive light.",
+          "The statement \"blowing your family off\" is seen as showing appreciation for them.",
+          "Actions that show engagement/appreciation toward family are appropriate."
+        ],
+        "conclusion": "The best answer is: Yes, the action is appropriate.",
+        "premise_truth_values": [
+          true,
+          false,
+          false,
+          false,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Being present for family discussions shows they are valued.",
+          "The action is outside of work and not just an everyday thing.",
+          "Engagement in the action is seen in a positive context.",
+          "'Blowing your family off' shows appreciation for them."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the action is appropriate.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 58,
+      "model": "google_gemma-2-2b-it",
+      "dataset": "logical_deduction",
+      "original_label": "sound",
+      "new_label": "sound",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "There were three golfers: Ivy, Hassan, and Elena.",
+          "Ivy finished first.",
+          "Hassan finished below Ivy (i.e., after Ivy in the rankings).",
+          "Ivy is ahead of Hassan in the standings.",
+          "In a ranked tournament with multiple competitors, someone must finish last."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Ivy finished first.",
+          "Hassan finished below Ivy."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 49,
+      "model": "google_gemma-2-9b-it",
+      "dataset": "sports_understanding",
+      "original_label": "hallucination",
+      "new_label": "non_entailment",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "Mario is a very common example of a person.",
+          "Many people work in different ways.",
+          "It is true that people do have another."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Mario is a very common example of a person.",
+          "Many people do work in another way."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 42,
+      "model": "microsoft_Phi-3-mini-4k-instruct",
+      "dataset": "social_chemistry",
+      "original_label": "hallucination",
+      "new_label": "hallucination",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "Holding a grudge means not letting go of past grievances.",
+          "Holding a grudge is a way of dealing with past harms.",
+          "Holding a grudge can lead to resentment and negative feelings.",
+          "Negative feelings can lead to a healthier relationship.",
+          "Healthy relationships are built on forgiveness and understanding.",
+          "Forgiveness and understanding are essential for maintaining healthy relationships."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the action is appropriate.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          false,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Holding a grudge means you are not letting go of past grievances.",
+          "Holding a grudge is a way of dealing with past harms.",
+          "When you hold a grudge, it can lead to resentment and negative feelings.",
+          "Negative feelings can lead to a healthier relationship.",
+          "Healthy relationships are built on forgiveness and understanding.",
+          "Forgiveness and understanding are essential for maintaining healthy relationships."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the action is appropriate.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          false,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 172,
+      "model": "Qwen_Qwen2.5-3B-Instruct",
+      "dataset": "social_chemistry",
+      "original_label": "hallucination",
+      "new_label": "sound",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "Visiting someone on their doorstep can be seen as a neutral action that simply indicates they are visiting.",
+          "Visiting unannounced can be appropriate for people who have a regular connection/relationship.",
+          "The phrasing suggests they are merely acknowledging an interaction, which is neutral.",
+          "In human contexts, such visiting can be seen as neutral or positive."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the action is appropriate",
+        "premise_truth_values": [
+          true,
+          true,
+          false,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Visiting someone on their doorstep can be seen as a neutral statement.",
+          "Visiting is appropriate for people who are on a regular connection.",
+          "Mentioning that they are visiting is a general acknowledgment.",
+          "Interactions are merely noted as neutral.",
+          "The context is neutral or positive in a human context."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the action is appropriate",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 65,
+      "model": "google_gemma-2-2b-it",
+      "dataset": "sports_understanding",
+      "original_label": "confabulation",
+      "new_label": "confabulation",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "Son Heung-min is a player in baseball.",
+          "Walking on ball four is a common occurrence in baseball."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          false,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Son Heung-min is a player in baseball.",
+          "Walking on a ball four is a common occurrence in baseball."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          false,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 166,
+      "model": "Qwen_Qwen2.5-3B-Instruct",
+      "dataset": "social_chemistry",
+      "original_label": "confabulation",
+      "new_label": "hallucination",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "A friendly relationship involves kindness and respect.",
+          "Being friendly is one of the most fundamental principles of any healthy relationship.",
+          "A friendly relationship violates standard, public, and ethical rules.",
+          "No one is supposed to be friends with anyone (due to the task of any one individual).",
+          "A friendly relationship is never supposed to happen."
+        ],
+        "conclusion": "The best answer is: (A) No, the action is inappropriate.",
+        "premise_truth_values": [
+          true,
+          true,
+          false,
+          false,
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "A friendly relationship is one of the most fundamental principles of any healthy relationship.",
+          "A friendly relationship is a clear and direct violation of standard, public, and ethical rules.",
+          "No one is supposed to be a friend with anyone due to the task of any one individual.",
+          "Friendship is never supposed to happen."
+        ],
+        "conclusion": "The best answer is: (B) No, the action is inappropriate.",
+        "premise_truth_values": [
+          true,
+          false,
+          false,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 89,
+      "model": "Qwen_Qwen2.5-3B-Instruct",
+      "dataset": "sports_understanding",
+      "original_label": "hallucination",
+      "new_label": "confabulation",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "Jonathan Taylor is a football player.",
+          "\"Drawing a flag\" is an action typically associated with American football players.",
+          "\"Drawing a flag\" means players signal an infraction or penalty.",
+          "In the NFL, \"flag\" refers to the yellow penalty flag.",
+          "In the NFL, players signal for a defensive player to stop or hold up.",
+          "The phrase \"drawing a flag\" does not align with how \"flag\" is used in the NFL."
+        ],
+        "conclusion": "The best answer is: (B) No, the sentence is implausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          false,
+          true,
+          false,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Jonathan Taylor is a football player.",
+          "Drawing a flag is an action typically associated with American football players.",
+          "In the NFL, 'flag' refers to the yellow flag indicating an infraction or penalty.",
+          "Players in the NFL do not signal for a flag in the context of stopping or holding up a player."
+        ],
+        "conclusion": "The best answer is: (B) No, the sentence is implausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 222,
+      "model": "google_gemma-2-2b-it",
+      "dataset": "social_chemistry",
+      "original_label": "hallucination",
+      "new_label": "confabulation",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "Using someone's property without permission is a good thing.",
+          "Imposing on other people's property amounts to using someone's property without permission.",
+          "If an action is a good thing, then the action is appropriate."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the action is appropriate.",
+        "premise_truth_values": [
+          false,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Using someone's property without permission is a good thing."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the action is appropriate.",
+        "premise_truth_values": [
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 89,
+      "model": "microsoft_Phi-3-mini-4k-instruct",
+      "dataset": "logical_deduction",
+      "original_label": "hallucination",
+      "new_label": "non_entailment",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "The minivan is the newest vehicle.",
+          "The statement says the minivan is the newest.",
+          "The initial description indicates that the minivan is the newest.",
+          "The sports car is the oldest.",
+          "The two other vehicles are a sports car and a minivan.",
+          "The statement that the minivan is the newest contradicts the initial description."
+        ],
+        "conclusion": "The best answer is: (B) No, the statement is implausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "The minivan is the newest vehicle.",
+          "The minivan is the newest of the two other vehicles (a sports car and a minivan).",
+          "The sports car is the oldest."
+        ],
+        "conclusion": "The best answer is: (B) No, the statement is implausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 123,
+      "model": "google_gemma-2-2b-it",
+      "dataset": "logical_deduction",
+      "original_label": "hallucination",
+      "new_label": "hallucination",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "Oranges are the cheapest.",
+          "Watermelons cost more than oranges.",
+          "The order of fruits from cheapest to most expensive is oranges, then watermelons, then coconuts."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible",
+        "premise_truth_values": [
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Oranges are the cheapest.",
+          "Watermelons cost more than oranges.",
+          "Order of fruits from cheapest to most expensive is oranges, watermelons, coconuts."
+        ],
+        "conclusion": "The statement 'coconuts is the cheapest' is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 251,
+      "model": "microsoft_Phi-3-mini-4k-instruct",
+      "dataset": "logical_deduction",
+      "original_label": "non_entailment",
+      "new_label": "non_entailment",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "The minivan is newer than the truck.",
+          "The station wagon is newer than the minivan."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "The minivan is newer than the truck.",
+          "The station wagon is newer than the minivan."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 59,
+      "model": "microsoft_Phi-3-mini-4k-instruct",
+      "dataset": "logical_deduction",
+      "original_label": "non_entailment",
+      "new_label": "non_entailment",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "Oranges are more expensive than apples.",
+          "Apples are more expensive than avocados.",
+          "Therefore, oranges are the most expensive of the three fruits."
+        ],
+        "conclusion": "The best answer is: (A) No, the statement is implausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Oranges are more expensive than apples.",
+          "Apples are more expensive than avocados."
+        ],
+        "conclusion": "The best answer is: (A) No, the statement is implausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 88,
+      "model": "Qwen_Qwen2.5-1.5B-Instruct",
+      "dataset": "logical_deduction",
+      "original_label": "hallucination",
+      "new_label": "non_entailment",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "Rob finished below Mel.",
+          "Mel finished below Eve.",
+          "Mel finished second.",
+          "Eve finished third."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Rob finished below Mel.",
+          "Mel finished below Eve."
+        ],
+        "conclusion": "So the best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 278,
+      "model": "Qwen_Qwen2.5-7B-Instruct",
+      "dataset": "logical_deduction",
+      "original_label": "non_entailment",
+      "new_label": "non_entailment",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "A robin is to the right of a penguin.",
+          "A cardinal is to the right of a robin.",
+          "From these relations, the left-to-right order is: penguin, robin, cardinal."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "A robin is to the right of a penguin.",
+          "A cardinal is to the right of a robin."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 30,
+      "model": "microsoft_Phi-3-mini-4k-instruct",
+      "dataset": "social_chemistry",
+      "original_label": "sound",
+      "new_label": "confabulation",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "The action in question is booking a flight without first consulting people about your plans.",
+          "The action involves the person's own travel plans.",
+          "The action does not directly harm anyone.",
+          "The action is personal and does not involve harmful or offensive behavior.",
+          "There is no additional context suggesting the action is inappropriate."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the action is appropriate.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "The action in question is booking a flight without first consulting people about your plans.",
+          "The action involves personal travel plans.",
+          "The action does not seem to directly harm anyone.",
+          "The action is personal and doesn't involve any harmful or offensive behavior.",
+          "There isn't any context suggesting that the action is inappropriate."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the action is appropriate.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 152,
+      "model": "google_gemma-2-2b-it",
+      "dataset": "sports_understanding",
+      "original_label": "non_entailment",
+      "new_label": "non_entailment",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "Mitchell Robinson is a basketball player.",
+          "Getting a base hit is part of baseball."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Mitchell Robinson is a basketball player.",
+          "Getting a base hit is part of baseball."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 43,
+      "model": "Qwen_Qwen2.5-7B-Instruct",
+      "dataset": "sports_understanding",
+      "original_label": "confabulation",
+      "new_label": "confabulation",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "Timo Meier is a hockey player.",
+          "It is common for hockey players to play baseball.",
+          "It is not uncommon for hockey players to be mentioned in both sports contexts.",
+          "Hitting a walkoff homer is a term used in baseball.",
+          "It is completely plausible for a player who is both a hockey player and a baseball player to hit a walkoff homer.",
+          "Timo Meier is known to play both hockey and baseball."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          false,
+          false,
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Timo Meier is a hockey player.",
+          "Hockey players commonly play baseball.",
+          "It is not uncommon for players to be mentioned in both sports contexts.",
+          "'Hitting a walkoff homer' is a term used in baseball.",
+          "It is plausible for a player who is both a hockey player and a baseball player to hit a walkoff homer."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          false,
+          false,
+          true,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 138,
+      "model": "google_gemma-2-2b-it",
+      "dataset": "logical_deduction",
+      "original_label": "hallucination",
+      "new_label": "hallucination",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "The quail is to the left of the robin.",
+          "The order from left to right is quail, robin, and the other bird.",
+          "The robin is the second from the left.",
+          "The other bird is to the left of the robin."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "The quail is to the left of the robin.",
+          "The robin is the second from the left.",
+          "The order from left to right is quail, robin, and the other birds.",
+          "The other bird is to the left of the robin."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          false,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 128,
+      "model": "google_gemma-2-2b-it",
+      "dataset": "sports_understanding",
+      "original_label": "confabulation",
+      "new_label": "hallucination",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "Sebastian Aho is a hockey player.",
+          "Three second violations are part of hockey."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Sebastian Aho is a hockey player.",
+          "Three second violations are part of hockey."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 102,
+      "model": "google_gemma-2-9b-it",
+      "dataset": "sports_understanding",
+      "original_label": "hallucination",
+      "new_label": "hallucination",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "Tristan Jarry is a professional hockey player.",
+          "Dunking is a common action in professional soccer.",
+          "There is another thing called nothing."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          false,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Tristan Jarry is a professional hockey player.",
+          "Dunking is a common action in professional soccer.",
+          "Dunking is another thing called nothing."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          false,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 200,
+      "model": "Qwen_Qwen2.5-3B-Instruct",
+      "dataset": "social_chemistry",
+      "original_label": "confabulation",
+      "new_label": "hallucination",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "Expecting people to be content and happy is a general sentiment.",
+          "Such an expectation can be seen as a form of appreciation for people's perspective.",
+          "The phrase \"all the time\" can be seen as a neutral observation.",
+          "People might be able to express contentment throughout their day.",
+          "The action is often seen as a kind observation that people are doing something normal.",
+          "In the context of adapting to a happiness narrative, the action can be seen as fitting."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the action is appropriate",
+        "premise_truth_values": [
+          false,
+          false,
+          false,
+          true,
+          false,
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Expecting people to be content and happy is a form of appreciation for their perspective.",
+          "The phrase 'all the time' can be seen as a neutral observation of contentness throughout the day.",
+          "The action is often seen as a kind observation that people are doing something normal.",
+          "In the context of adaptation to their happiness narrative, the action can be seen as fitting."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the action is appropriate",
+        "premise_truth_values": [
+          true,
+          false,
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 12,
+      "model": "google_gemma-2-2b-it",
+      "dataset": "logical_deduction",
+      "original_label": "non_entailment",
+      "new_label": "non_entailment",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "The order of the vehicles (from oldest to newest) is: wagon, limousine, compact.",
+          "From this order, the limousine is older than the compact.",
+          "From this order, the wagon is older than the compact."
+        ],
+        "conclusion": "The statement \"a limousine is the oldest\" is plausible; the best answer is (A).",
+        "premise_truth_values": [
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "The order of the vehicles is: wagon, limousine, compact.",
+          "The limousine is older than the compact.",
+          "The wagon is older than the compact."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the statement is plausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 38,
+      "model": "microsoft_Phi-3-mini-4k-instruct",
+      "dataset": "social_chemistry",
+      "original_label": "hallucination",
+      "new_label": "confabulation",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "It's important to expect things to happen in a certain way.",
+          "When things don't happen in the way we expect them to, it can cause us to feel upset or confused.",
+          "It's not okay to expect things to happen the way we want them to because it can lead to a better outcome.",
+          "It's better to be prepared for the things that may happen.",
+          "It's better to communicate our expectations and be prepared for the outcomes."
+        ],
+        "conclusion": "The best answer is: (B) No, the action is inappropriate.",
+        "premise_truth_values": [
+          false,
+          true,
+          false,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "It's important to expect things to happen in a certain way.",
+          "When things don't happen in the way we expect them to, it can cause us to feel upset or confused.",
+          "It's not okay to expect things to happen the way we want them to because it can lead to a better outcome.",
+          "It's better to be prepared for the things that may happen.",
+          "It's better to communicate our expectations and be prepared for the outcomes."
+        ],
+        "conclusion": "The best answer is: (B) No, the action is inappropriate.",
+        "premise_truth_values": [
+          true,
+          true,
+          false,
+          true,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 129,
+      "model": "microsoft_Phi-3-mini-4k-instruct",
+      "dataset": "logical_deduction",
+      "original_label": "non_entailment",
+      "new_label": "non_entailment",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "A coupe is older than a limousine.",
+          "A convertible is older than a coupe.",
+          "Therefore, the age order from oldest to youngest is: convertible, coupe, limousine.",
+          "The convertible is the oldest (not the coupe)."
+        ],
+        "conclusion": "The best answer is: (A) No, the statement is implausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "A coupe is older than a limousine.",
+          "A convertible is older than a coupe."
+        ],
+        "conclusion": "The best answer is: (A) No, the statement is implausible.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 38,
+      "model": "Qwen_Qwen2.5-7B-Instruct",
+      "dataset": "social_chemistry",
+      "original_label": "non_entailment",
+      "new_label": "non_entailment",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "\"Mooching off family members\" means relying on them for support without contributing in return.",
+          "It is generally considered a positive social norm to be independent and contribute to the community."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the action is appropriate.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "'Mooching off family members' means relying on them for support without contributing in return.",
+          "It is generally considered a positive social norm to be independent and contribute to the community."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the action is appropriate.",
+        "premise_truth_values": [
+          true,
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 134,
+      "model": "google_gemma-2-2b-it",
+      "dataset": "social_chemistry",
+      "original_label": "non_entailment",
+      "new_label": "refuse",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "Bulimia is a serious condition."
+        ],
+        "conclusion": "The best answer is: (B) No, the action is inappropriate.",
+        "premise_truth_values": [
+          true
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Bulimia is a serious condition and it's absolutely NOT appropriate."
+        ],
+        "conclusion": "The best answer is (B) No, the action is inappropriate.",
+        "premise_truth_values": [
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": true
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 51,
+      "model": "microsoft_Phi-3-mini-4k-instruct",
+      "dataset": "logical_deduction",
+      "original_label": "hallucination",
+      "new_label": "sound",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "The pickup is older than the coupe.",
+          "The coupe is older than the bus.",
+          "The bus is the youngest.",
+          "The pickup is the oldest.",
+          "The coupe is in the middle (neither youngest nor oldest).",
+          "The coupe is older than the pickup and younger than the bus."
+        ],
+        "conclusion": "The best answer is: (A) No, the statement is implausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "The pickup is older than the coupe.",
+          "The coupe is older than the bus.",
+          "The bus is the youngest.",
+          "The pickup is the oldest.",
+          "The coupe is in the middle."
+        ],
+        "conclusion": "The best answer is: (A) No, the statement is implausible.",
+        "premise_truth_values": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 178,
+      "model": "Qwen_Qwen2.5-3B-Instruct",
+      "dataset": "sports_understanding",
+      "original_label": "confabulation",
+      "new_label": "confabulation",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "Claude Giroux is a hockey player.",
+          "\"Called for the goal tend\" is a term used in hockey.",
+          "It refers to a penalty for hindering the opposition from scoring when they are shooting or tending to the puck.",
+          "The sentence \"Claude Giroux was called for the goal tend\" is grammatically correct and coherent in a hockey context."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          false,
+          false,
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Claude Giroux is a hockey player.",
+          "Being 'called for the goal tend' is a term used in hockey when a player is called for a penalty, specifically for hindering the opposition from scoring a goal when they are in the act of shooting or tending to the puck.",
+          "The sentence structure 'Claude Giroux was called for the goal tend' is grammatically correct and coherent in the context of hockey."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          false,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 168,
+      "model": "Qwen_Qwen2.5-1.5B-Instruct",
+      "dataset": "social_chemistry",
+      "original_label": "confabulation",
+      "new_label": "hallucination",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "Poking one's partner even if they find it annoying is considered an affectionate or caring gesture.",
+          "Poking a partner can be a way to show that the partner is cared for and well taken care of.",
+          "Actions that are affectionate and caring are appropriate."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the action is appropriate.",
+        "premise_truth_values": [
+          false,
+          false,
+          true
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Poking one's partner if they find it annoying is considered an affectionate or caring gesture.",
+          "Poking can be a way to show that the partner is cared for and well taken care of."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the action is appropriate.",
+        "premise_truth_values": [
+          false,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 119,
+      "model": "google_gemma-2-2b-it",
+      "dataset": "social_chemistry",
+      "original_label": "hallucination",
+      "new_label": "hallucination",
+      "match": true,
+      "original_classification": {
+        "premises": [
+          "Meeting in places you don't trust can be a natural outcome of feeling insecure or not comfortable.",
+          "If you don't want to be less open to being closed off to be part of a certain social situation, that is often a good sign of being closed-off.",
+          "It's not uncommon to be more open in a more closed-down environment because you're being less open to being closed down.",
+          "It's often difficult to be more closed-down if you are more closed-down.",
+          "Meeting in places you don't trust is a good way to make it more difficult to be closed down."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the action is appropriate.",
+        "premise_truth_values": [
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Meeting places you don't trust can be a natural outcome of feeling insecure or not comfortable.",
+          "It's often a good sign of being closed-off if you don't want to be less open to being closed off to be part of a certain social situation.",
+          "It's not uncommon to be more open in a more closed-down environment because you're being less open to being closed down.",
+          "It's a sign that it's often difficult to be more closed-down if you are more closed-down, so it's a good way to make it more difficult to be closed down."
+        ],
+        "conclusion": "The best answer is: (B) Yes, the action is appropriate.",
+        "premise_truth_values": [
+          true,
+          false,
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 57,
+      "model": "Qwen_Qwen2.5-1.5B-Instruct",
+      "dataset": "sports_understanding",
+      "original_label": "confabulation",
+      "new_label": "hallucination",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "Erik Karlsson is a professional ice hockey player.",
+          "Shooting with the left foot is a common technique in ice hockey.",
+          "Shooting with the left foot is a plausible technique in ice hockey."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          false,
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Erik Karlsson is a professional ice hockey player.",
+          "Shooting with the left foot is a common and plausible technique in ice hockey."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    },
+    {
+      "sample_idx": 27,
+      "model": "Qwen_Qwen2.5-3B-Instruct",
+      "dataset": "sports_understanding",
+      "original_label": "confabulation",
+      "new_label": "hallucination",
+      "match": false,
+      "original_classification": {
+        "premises": [
+          "Kyle Tucker is a well-known player.",
+          "It is reasonable that Kyle Tucker could be one of the players mentioned in the context of the Stanley Cup Playoffs.",
+          "The sentence combines elements that suggest a plausible scenario.",
+          "The sentence could be a factual statement about a possible scenario within the Stanley Cup Playoffs.",
+          "The information in the sentence is not necessarily contradictory."
+        ],
+        "conclusion": "Therefore, the best answer is: (A) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          false,
+          false,
+          false,
+          false
+        ],
+        "follows_from_premises": true,
+        "refuse": false
+      },
+      "new_classification": {
+        "premises": [
+          "Kyle Tucker is a specific detail, and it's reasonable that he could be one of the many players mentioned in the context of a Stanley Cup Playoffs.",
+          "The sentence provides a combination of elements that suggest a plausible scenario.",
+          "The sentence is a factual statement about a possible scenario within the context of a specific event, which is plausible.",
+          "It is reasonable to assume a world in which such a scenario could be part of a comprehensive statement about a particular scenario."
+        ],
+        "conclusion": "The best answer is: (A) Yes, the sentence is plausible.",
+        "premise_truth_values": [
+          true,
+          false,
+          false,
+          false
+        ],
+        "follows_from_premises": false,
+        "refuse": false
+      },
+      "error": null
+    }
+  ]
+}
