@@ -1,15 +1,21 @@
-transformer-lens
-numpy
-matplotlib
-seaborn
-pandas
-scikit-learn
-openai
-torch
-python-dotenv
-aim
-nnsight
-rich
-pyyaml
-plotext
-tqdm
+# Pinned environment used for the paper experiments (Aug 2025, recorded by wandb).
+# Prefer `pip install -e .` which installs the same pins via pyproject.toml.
+torch==2.7.1
+transformer-lens==2.16.1
+transformers==4.54.0
+nnsight==0.4.11
+numpy==1.26.2
+pandas==2.1.3
+scikit-learn==1.3.2
+matplotlib==3.8.1
+seaborn==0.13.2
+einops==0.8.1
+openai==1.97.1
+pydantic>=2
+python-dotenv==0.21.0
+PyYAML==6.0.1
+tqdm==4.66.5
+rich==13.7.1
+wandb==0.21.0
+plotext>=5
+psutil>=5.9

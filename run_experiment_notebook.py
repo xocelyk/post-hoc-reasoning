@@ -25,18 +25,17 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
 
 # Add src directory to path for imports
-sys.path.append(os.path.join(os.path.dirname(__file__), "src"))
 
 print("📦 Importing modules...")
-from config import ConfigLoader, ExperimentRunConfig, create_experiment_configs
-from cache_manager import ExperimentManager, ExperimentCache
-from data_loading import load_all_datasets
-from models import ChatModel
-from nnsight_models import NNsightChatModel
-from parsing_utils import parse_response
-from utils import generate_with_steering as generate_with_steering_utils
-from nnsight_utils import extract_activations, generate_with_steering, ProbeResult, train_probes, batch_generate_text
-from steering_methods import (
+from post_hoc_reasoning.config import ConfigLoader, ExperimentRunConfig, create_experiment_configs
+from post_hoc_reasoning.cache_manager import ExperimentManager, ExperimentCache
+from post_hoc_reasoning.data_loading import load_all_datasets
+from post_hoc_reasoning.models import ChatModel
+from post_hoc_reasoning.nnsight_models import NNsightChatModel
+from post_hoc_reasoning.parsing_utils import parse_response
+from post_hoc_reasoning.utils import generate_with_steering as generate_with_steering_utils
+from post_hoc_reasoning.nnsight_utils import extract_activations, generate_with_steering, ProbeResult, train_probes, batch_generate_text
+from post_hoc_reasoning.steering_methods import (
     CAASingleLayerSteering, 
     CAALayerIncrementalSteering, 
     LogisticRegressionSteering
@@ -47,7 +46,7 @@ print("✓ All modules imported successfully")
 #%% Configuration and Setup
 print("📖 Setting up configuration...")
 
-config_path = "configs/test.yaml"
+config_path = "configs/smoke_test.yaml"
 if not os.path.exists(config_path):
     raise FileNotFoundError(f"Configuration file not found: {config_path}")
 

@@ -13,14 +13,13 @@ import os
 import pickle
 from dataclasses import dataclass, field
 import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), "src"))
 from typing import Any, Dict, List
 
 import numpy as np
 import yaml
 
 # Local imports from existing project
-from src.config import ModelConfig, DatasetConfig  # type: ignore
+from post_hoc_reasoning.config import ModelConfig, DatasetConfig  # type: ignore
 
 
 # ---------------------------------------------------------------------------
@@ -103,10 +102,10 @@ def sample_orthogonal_direction(w: np.ndarray, rng: np.random.Generator) -> np.n
 # ---------------------------------------------------------------------------
 
 def run_experiment(config: OrthogonalRunConfig) -> None:
-    from src.models import ChatModel  # type: ignore
+    from post_hoc_reasoning.models import ChatModel  # type: ignore
     rng = np.random.default_rng(config.steering.seed)
-    from src.parsing_utils import parse_response  # type: ignore
-    from src.utils import generate_with_steering  # type: ignore
+    from post_hoc_reasoning.parsing_utils import parse_response  # type: ignore
+    from post_hoc_reasoning.utils import generate_with_steering  # type: ignore
 
     for model_cfg in config.models:
         model_name_sanitised = model_cfg.name.replace("/", "_")
