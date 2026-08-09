@@ -97,10 +97,11 @@ def batch_get_resid_activations(
         batch_prompts = prompts[i:i + batch_size]
         batch_tokens = model.to_tokens(batch_prompts)
         
-        # Add max length truncation to prevent very long sequences
-        max_length = 512  # Reasonable max length
-        if batch_tokens.shape[1] > max_length:
-            batch_tokens = batch_tokens[:, :max_length]
+        # Truncate very long sequences, keeping the END of the prompt: activations
+        # are read at the last token, so dropping the head preserves the answer
+        # position while dropping the tail would extract from the wrong content
+        max_length = 1024
+        batch_tokens = batch_tokens[:, -max_length:]
         
         # Extract activations using nnsight tracing
         with model.model.trace(batch_tokens):
