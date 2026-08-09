@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the paper below."
+title: "Post-Hoc Reasoning in Chain of Thought: Decoding and Steering Pre-Committed Answers"
+authors:
+  - family-names: Cox
+    given-names: Kyle
+  - family-names: Kianersi
+    given-names: Darius
+  - family-names: Garriga-Alonso
+    given-names: Adrià
+year: 2026
+preferred-citation:
+  type: conference-paper
+  title: "Post-Hoc Reasoning in Chain of Thought: Decoding and Steering Pre-Committed Answers"
+  authors:
+    - family-names: Cox
+      given-names: Kyle
+    - family-names: Kianersi
+      given-names: Darius
+    - family-names: Garriga-Alonso
+      given-names: Adrià
+  collection-title: "ICML Workshop on Mechanistic Interpretability"
+  year: 2026
