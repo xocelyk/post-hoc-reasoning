@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Generate a clean Markdown table from cot_sensitivity_summary_6.csv.
+Generate a clean Markdown table from results/cot_sensitivity/cot_sensitivity_summary_6.csv.
 
 The output includes per (model, dataset):
   - Baseline change rate
@@ -97,8 +97,8 @@ def main() -> None:
     parser.add_argument(
         "--csv",
         type=Path,
-        default=Path("cot_sensitivity_summary_6.csv"),
-        help="Path to cot_sensitivity_summary_6.csv",
+        default=Path("results/cot_sensitivity/cot_sensitivity_summary_6.csv"),
+        help="Path to results/cot_sensitivity/cot_sensitivity_summary_6.csv",
     )
     parser.add_argument(
         "--outdir",
