@@ -15,7 +15,7 @@ authors = [
 ]
 requires-python = ">=3.10,<3.13"
 dependencies = [
-  "torch==2.7.1",
+  "torch==2.13.0",
   "transformer-lens==2.16.1",
   "transformers==4.54.0",
   "nnsight==0.4.11",
