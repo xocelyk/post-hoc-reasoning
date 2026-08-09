@@ -14,8 +14,6 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install (CPU torch)
-        run: |
-          uv venv
-          uv pip install --extra-index-url https://download.pytorch.org/whl/cpu -e . pytest
+        run: uv pip install --extra-index-url https://download.pytorch.org/whl/cpu -e . pytest
       - name: Run smoke tests
         run: uv run pytest -q
