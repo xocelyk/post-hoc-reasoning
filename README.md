@@ -15,8 +15,13 @@ traces to see how the model rationalizes a steered answer.
 ## Setup
 
 ```bash
-pip install -r requirements.txt
+pip install -e .
 ```
+
+This installs the `post_hoc_reasoning` package with the pinned dependency
+versions used for the paper experiments (also mirrored in
+`requirements.txt`). Verify the install with `pytest` (smoke tests; no model
+downloads).
 
 Experiments run on models from Hugging Face via TransformerLens or nnsight
 (Gemma-2, Qwen-2.5, Phi-3, Llama-2 families; see `configs/`). The CoT
@@ -26,8 +31,9 @@ classification step calls the OpenAI API — set `OPENAI_API_KEY` in `.env`.
 
 | Path | Contents |
 |---|---|
-| `src/` | Library: data loading, probe training, steering methods, experiment runners (TransformerLens and nnsight backends), caching |
-| `configs/` | YAML experiment configs (model / datasets / split seeds) |
+| `src/post_hoc_reasoning/` | Library: data loading, probe training, steering methods, experiment runners (TransformerLens and nnsight backends), caching |
+| `configs/steering/`, `configs/orthogonal_steering/` | YAML configs for the five paper models (Gemma-2 2B/9B, Qwen-2.5 1.5B/3B/7B); `configs/smoke_test.yaml` is a small config for quick runs |
+| `tests/` | Smoke tests (parsing, probe training on synthetic data, config loading) |
 | `data/` | Question datasets (anachronisms, sports understanding, logical deduction, social chemistry, …) — see `DATASETS.md` |
 | `scripts/` | Analysis and figure scripts |
 | `results/` | CoT sensitivity result tables (CSV) |
@@ -39,7 +45,7 @@ classification step calls the OpenAI API — set `OPENAI_API_KEY` in `.env`.
 **Probes and answer steering** (Sections: Pre-CoT Probes, Answer Steering):
 
 ```bash
-python run_transformer_lens_experiments.py --config configs/transformer_lens_by_model/gemma-2-2b-it.yaml
+python run_transformer_lens_experiments.py --config configs/steering/gemma-2-2b-it.yaml
 python run_nnsight_experiments.py --config <config>          # nnsight backend
 python run_orthogonal_steering_experiments.py --config <config>  # random-orthogonal baseline
 ```

@@ -12,10 +12,9 @@ import sys
 from typing import List, Optional
 
 # Add src directory to path for imports
-sys.path.append(os.path.join(os.path.dirname(__file__), "src"))
 
-from config import ConfigLoader, ExperimentRunConfig, save_default_configs
-from nnsight_utils.experiment_runner import UnifiedExperimentRunner
+from post_hoc_reasoning.config import ConfigLoader, ExperimentRunConfig, save_default_configs
+from post_hoc_reasoning.nnsight_utils.experiment_runner import UnifiedExperimentRunner
 
 
 def create_parser() -> argparse.ArgumentParser:
@@ -169,7 +168,7 @@ def apply_overrides(
     """Apply command-line overrides to configuration."""
     # Model overrides
     if args.models:
-        from config import ModelConfig
+        from post_hoc_reasoning.config import ModelConfig
 
         backend = args.backend if args.backend else "auto"
         config.models = [ModelConfig(name=model, backend=backend) for model in args.models]
@@ -181,7 +180,7 @@ def apply_overrides(
 
     # Dataset overrides
     if args.datasets:
-        from config import DatasetConfig
+        from post_hoc_reasoning.config import DatasetConfig
 
         new_datasets = []
         for dataset in args.datasets:
@@ -230,7 +229,7 @@ def list_experiments(cache_dir: str = "cache"):
     from rich.console import Console
     from rich.table import Table
 
-    from cache_manager import ExperimentManager
+    from post_hoc_reasoning.cache_manager import ExperimentManager
 
     console = Console()
     exp_manager = ExperimentManager(cache_dir)
@@ -298,7 +297,7 @@ def main():
         print("🔄 Resuming incomplete experiments...")
 
         # Create a minimal config for resume functionality
-        from config import create_default_config
+        from post_hoc_reasoning.config import create_default_config
 
         config = create_default_config()
         config.cache_dir = args.cache_dir
