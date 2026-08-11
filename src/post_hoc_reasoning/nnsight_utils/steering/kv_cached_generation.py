@@ -253,20 +253,24 @@ def generate_with_steering_single(
     # Generate with interventions using the corrected nnsight pattern
     with model.model.generate(tokens, **gen_kwargs) as generator:
         
-        # Apply steering interventions during generation
+        # Apply steering interventions during generation.
+        # steering_tensors are already scaled by alpha in prepare_steering_tensors —
+        # do NOT multiply by alpha again here (doing so squares the strength).
+        # The (seq_len == 1) factor restricts steering to decode steps, matching the
+        # TransformerLens hook in utils.py, which skips the prompt's prefill pass.
         for layer in layers:
-            # Get the residual stream output for this layer
-            # Apply steering - simplified approach matching the working example
             steering_vector = steering_tensors[layer]
-            
+
             if hasattr(model.model, 'transformer') and hasattr(model.model.transformer, 'h'):
                 # GPT-style models (GPT2, etc.)
                 with model.model.transformer.h.all():
-                    model.model.transformer.h[layer].output[0] += alpha * steering_vector
+                    out = model.model.transformer.h[layer].output[0]
+                    out += steering_vector * (out.size(1) == 1)
             elif hasattr(model.model, 'model') and hasattr(model.model.model, 'layers'):
                 # Llama/Gemma style models
                 with model.model.model.layers.all():
-                    model.model.model.layers[layer].output[0] += alpha * steering_vector
+                    out = model.model.model.layers[layer].output[0]
+                    out += steering_vector * (out.size(1) == 1)
             else:
                 # Generic fallback
                 raise ValueError(f"Unsupported model architecture: {type(model.model)}")
