@@ -61,6 +61,22 @@ classification figure comes from `scripts/visualize_rollout_yes_only.py`.
 **Figures**: probe AUC / steering figures are produced in
 `visualize_results.ipynb`; published copies live in `figs/`.
 
+**Projection discriminability figures** — when (token position, aligned at CoT
+start) and where (layer) the model's answer becomes linearly decodable:
+
+```bash
+python scripts/generate_projection_figures.py \
+    --model google/gemma-2-9b-it \
+    --generations cache/experiments/<model>/<ds>/<split>/<hash>/data/train_generations.pkl \
+    --dataset-name sports_understanding --out figs/projections
+```
+
+Self-contained (single HF backend for every model — no TransformerLens/HF
+basis-matching assumptions): recomputes difference-of-means directions from the
+train fold, projects held-out traces, and renders a per-position AUC curve plus
+a layer × position AUC heatmap. GPU required. Example outputs for GPT-OSS 20B
+are in `figs/projections/`.
+
 ## Experiment caches
 
 Raw experiment caches (activations, steered generations, classified rollouts)
