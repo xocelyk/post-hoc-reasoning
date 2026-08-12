@@ -77,6 +77,26 @@ train fold, projects held-out traces, and renders a per-position AUC curve plus
 a layer × position AUC heatmap. GPU required. Example outputs for GPT-OSS 20B
 are in `figs/projections/`.
 
+## GPT-OSS 20B rerun (reasoning-model appendix)
+
+The original GPT-OSS appendix runs were affected by an activation-extraction
+truncation bug (fixed in this repo) and used a divergent prompt set. The
+corrected, methodology-matched rerun:
+
+```bash
+python scripts/export_paper_inputs.py          # instruct experiments' exact items/splits
+python scripts/paper_rerun_gptoss.py           # generations -> probes -> steering (GPU, ~10h)
+```
+
+Matches the instruct pipeline exactly (caa-single-layer difference-of-means
+probes, raw-vector `resid += alpha * w` steering at the best layer on decode
+steps only, alpha in {0,2,...,20}, both directions, 100%-unparsed early stop),
+with two documented accommodations: `max_new_tokens=2000` (the repo's
+reasoning-model precedent; instruct models used 200) and 50 steered items per
+direction per alpha. Summary numbers are committed in `results/gptoss_rerun/`
+(probe AUC by layer per dataset; steering success/unparsed rates by alpha,
+without generation text).
+
 ## Experiment caches
 
 Raw experiment caches (activations, steered generations, classified rollouts)
